@@ -271,7 +271,7 @@ def get_fct_data(odds_data, investment_data,type):
 def print_data():
   for watch in watchlist:
     time = datetime.now() + datere.relativedelta(hours=8)
-    data = pd.DataFrame(np.asarray(race_dict[watch]['odds']['data'].tail(1).values),columns = namelist.loc['馬名'],index = [time.strftime("%H:%M:%S")])
+    data = pd.DataFrame(np.asarray(race_dict[watch]['odds']['data'].tail(2).values),columns = namelist.loc['馬名'],index = [time.strftime("%H:%M:%S")])
     with pd.option_context('display.max_rows', None, 'display.max_columns',None):  # more options can be specified also
         name = methodCHlist[methodlist.index(watch)]
         st.write(f'{name} 賠率')
