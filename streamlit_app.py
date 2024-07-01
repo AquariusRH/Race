@@ -488,6 +488,7 @@ if st.session_state.reset:
             horse_dict[f'No.{horse}'].setdefault(method, {})
             for focus in focuslist:
                 horse_dict[f'No.{horse}'][method].setdefault(focus,pd.DataFrame())
+    st.session_state.reset = False            
     st.write('完成✅')
 
 
