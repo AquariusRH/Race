@@ -300,9 +300,12 @@ def print_concern_weird_dict():
     for method in methodlist:
         name = methodCHlist[methodlist.index(method)]
         st.write(f'{name} 異常投注')
+        printColumns = st.columns(2)
         df = weird_dict[method].tail(20)
-        df
-        df.value_counts('No.').to_frame().T
+        with printColumns[0]:
+            st.dataframe(df)
+        with printColumns[1]:
+            st.dataframe(df.value_counts('No.').to_frame().T)
 def print_bar_chart():
     for method in ['overall','qin_qpl','WIN','PLA','fct']:
         if method == 'overall':
@@ -495,11 +498,13 @@ if st.session_state.reset:
 
     start_time = time.time()
     end_time = start_time + 60*45
+    placeholder = st.empty()
     with st.empty():
         while time.time() <= end_time:
-            get_data()
-            find_diff()
-            print_data()
-            print_concern_weird_dict()
-            print_bar_chart()
-            time.sleep(30)
+            with st.container():
+                get_data()
+                find_diff()
+                print_data()
+                print_concern_weird_dict()
+                print_bar_chart()
+                time.sleep(30)
