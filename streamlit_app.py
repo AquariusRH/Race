@@ -301,11 +301,17 @@ def print_concern_weird_dict():
         name = methodCHlist[methodlist.index(method)]
         st.write(f'{name} 異常投注')
         printColumns = st.columns(2)
-        df = weird_dict[method].tail(20)
+        data = weird_dict[method].tail(20)
+        if not data.empty:
+            idx = data.index.time
+            df = data.set_index(idx)
+        else:
+            df = data
         with printColumns[0]:
             st.dataframe(df)
         with printColumns[1]:
             st.dataframe(df.value_counts('No.').to_frame().T)
+            
 def print_bar_chart():
     for method in ['overall','qin_qpl','WIN','PLA','fct']:
         if method == 'overall':
