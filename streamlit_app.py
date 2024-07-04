@@ -270,7 +270,7 @@ def get_fct_data(odds_data, investment_data,type):
 def print_data():
   for watch in watchlist:
     if watch == 'WIN':
-      readline = 2
+      readline = 10
     elif watch == 'PLA':
       readline = 1
     data = race_dict[watch]['odds']['data'].tail(readline)
