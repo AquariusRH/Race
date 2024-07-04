@@ -343,30 +343,35 @@ def print_bar_chart():
         diff[diff<0] = 0
         X = data_df.columns
         X_axis = np.arange(len(X))
+        colour = ['pink','red','green','blue']
         if not data_before.empty:
           if data_1st.empty:
-            plt.bar(X_axis, data_df.iloc[-1], 0.4, label='總投注', color='pink')
+            plt.bar(X_axis, data_df.iloc[-1], 0.4, label='總投注', color=colour[0])
           else:
-              plt.bar(X_axis-0.2, diff.iloc[0], 0.2, label='30分鐘', color='blue')
-              if not data_2nd.empty:
-                plt.bar(X_axis, diff.iloc[1], 0.2, label='10分鐘', color='red')
+            if data_2nd.empty:
+                plt.bar(X_axis-0.2, diff.iloc[0], 0.2, label='30分鐘', color=colour[1])
+            else:
+                plt.bar(X_axis-0.2, diff.iloc[0]+diff.iloc[1], 0.2, label='30分鐘', color=colour[1])
+                plt.bar(X_axis, diff.iloc[1], 0.2, label='10分鐘', color=colour[2])
                 if not data_3rd.empty:
-                    plt.bar(X_axis+0.2, diff.iloc[2], 0.2, label='3分鐘', color='green')
+                    plt.bar(X_axis+0.2, diff.iloc[2], 0.2, label='3分鐘', color=colour[3])
         else:
           if not data_1st.empty:
-            plt.bar(X_axis-0.2, data_df.iloc[0], 0.2, label='30分鐘', color='blue')
-            if not data_2nd.empty:
-                plt.bar(X_axis, diff.iloc[0], 0.2, label='10分鐘', color='red')
+            if data_2nd.empty:
+                plt.bar(X_axis-0.2, data_df.iloc[0], 0.2, label='30分鐘', color=colour[1])         
+            else:
+                plt.bar(X_axis-0.2, data_df.iloc[0]+diff.iloc[0], 0.2, label='30分鐘', color=colour[1])    
+                plt.bar(X_axis, diff.iloc[0], 0.2, label='10分鐘', color=colour[2])
                 if not data_3rd.empty:
-                    plt.bar(X_axis+0.2, diff.iloc[1], 0.2, label='3分鐘', color='green')
+                    plt.bar(X_axis+0.2, diff.iloc[1], 0.2, label='3分鐘', color=colour[3])
           else:
             if not data_2nd.empty:
-                plt.bar(X_axis-0.2,data_df.iloc[0],0.4,label = '10分鐘',color = 'red')
+                plt.bar(X_axis-0.2,data_df.iloc[0],0.4,label = '10分鐘',color = colour[2])
                 if not data_3rd.empty:
-                    plt.bar(X_axis+0.2, diff.iloc[0], 0.4, label='3分鐘', color='green')
+                    plt.bar(X_axis+0.2, diff.iloc[0], 0.4, label='3分鐘', color=colour[3])
             else:
                 if not data_3rd.empty:
-                    plt.bar(X_axis,data_df.iloc[0],0.4,label = '3分鐘',color = 'green')
+                    plt.bar(X_axis,data_df.iloc[0],0.4,label = '3分鐘',color = colour[3])
             
         plt.xticks(X_axis, namelist[X].loc['馬名'],rotation = 45,fontsize = 12)
         plt.grid(color = 'lightgrey' , axis = 'y',linestyle = '--')
