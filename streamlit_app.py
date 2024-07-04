@@ -308,9 +308,9 @@ def print_concern_weird_dict():
         else:
             df = data
         with printColumns[0]:
-            st.dataframe(df)
+            df
         with printColumns[1]:
-            st.dataframe(df.value_counts('No.').to_frame().T)
+            df.value_counts('No.').to_frame().T
             
 def print_bar_chart():
     for method in ['overall','qin_qpl','WIN','PLA','fct']:
