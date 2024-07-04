@@ -67,7 +67,7 @@ def get_win_pla_data(odds_data, investment_data):
             expected_investment = pd.DataFrame(investment / previous_odds) / 1000
             error_investment = current_investment - expected_investment.values
             for combination in error_investment.columns:
-                error = error_investment[combination].values[0]
+                error = round(error_investment[combination].values[0],0)
                 if method == 'WIN':
                   benchmark = benchmark_win
                 else:
@@ -127,7 +127,7 @@ def get_qin_data(odds_data, investment_data,type):
         expected_investment = pd.DataFrame(investment / previous_odds) / 1000
         error_investment = current_investment - expected_investment.values
         for combination in error_investment.columns:
-            error = error_investment[combination].values[0]
+            error = round(error_investment[combination].values[0],0)
             benchmark = benchmark_qin
             if error > benchmark:
               if error < benchmark * 2 :
@@ -184,7 +184,7 @@ def get_qpl_data(odds_data, investment_data,type):
         expected_investment = pd.DataFrame(investment / previous_odds) / 1000
         error_investment = current_investment - expected_investment.values
         for combination in error_investment.columns:
-            error = error_investment[combination].values[0]
+            error = round(error_investment[combination].values[0],0)
             benchmark = benchmark_qpl
             if error > benchmark:
               if error < benchmark * 2 :
@@ -254,7 +254,7 @@ def get_fct_data(odds_data, investment_data,type):
           expected_investment = pd.DataFrame(investment / previous_odds) / 1000
           error_investment = current_investment - expected_investment.values
           for combination in error_investment.columns:
-              error = error_investment[combination].values[0]
+              error = round(error_investment[combination].values[0],1)
               benchmark = benchmark_fct
               if error > benchmark:
                 if error < benchmark * 2 :
@@ -311,7 +311,6 @@ def print_concern_weird_dict():
             df
         with printColumns[1]:
             df.value_counts('No.').to_frame().T
-            
 def print_bar_chart():
     for method in ['overall','qin_qpl','WIN','PLA','fct']:
         if method == 'overall':
