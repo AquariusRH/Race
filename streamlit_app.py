@@ -349,7 +349,7 @@ def print_bar_chart():
         diff[diff<0] = 0
         X = data_df.columns
         X_axis = np.arange(len(X))
-        colour = ['pink','red','green','blue']
+        colour = ['pink','blue','lime','red']
         if not data_before.empty:
           if data_1st.empty:
             plt.bar(X_axis, data_df.iloc[-1], 0.4, label='總投注', color=colour[0])
