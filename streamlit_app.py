@@ -20,7 +20,6 @@ from streamlit_autorefresh import st_autorefresh
 st.set_page_config(page_title="Jockey Race")
 st.title("Jockey Race")
 
-@st.cache_data
 # @title 2. {func} 下載數據
 def download_data(type,race_no,venue,Date):
     if type == 'winplaodds':
@@ -270,12 +269,17 @@ def get_fct_data(odds_data, investment_data,type):
                 weird_dict[method] = weird_dict[method]._append(error_df)
 def print_data():
   for watch in watchlist:
-    time = datetime.now() + datere.relativedelta(hours=8)
-    data = pd.DataFrame(np.asarray(race_dict[watch]['odds']['data'].tail(2).values),columns = namelist.loc['馬名'],index = [time.strftime("%H:%M:%S")])
+    if watch == 'WIN':
+      readline = 2
+    elif watch == 'PLA':
+      readline = 1
+    data = race_dict[watch]['odds']['data'].tail(readline)
+    idx = data.index.time
+    df = data.set_index(idx)
     with pd.option_context('display.max_rows', None, 'display.max_columns',None):  # more options can be specified also
         name = methodCHlist[methodlist.index(watch)]
         st.write(f'{name} 賠率')
-        data
+        df
 # 賠率改變
 def find_diff():
   for method in methodlist:
@@ -464,7 +468,7 @@ if 'reset' not in st.session_state:
 def click_button():
     st.session_state.reset =  True
 
-st.button('重置數據🔃',on_click=click_button)
+st.button('開始',on_click=click_button)
 
 if st.session_state.reset:
     race_dict={}
@@ -487,13 +491,15 @@ if st.session_state.reset:
         for method in methodlist:
             horse_dict[f'No.{horse}'].setdefault(method, {})
             for focus in focuslist:
-                horse_dict[f'No.{horse}'][method].setdefault(focus,pd.DataFrame())       
-    st.write('完成✅')
+                horse_dict[f'No.{horse}'][method].setdefault(focus,pd.DataFrame())
 
-
-count = st_autorefresh(interval=1000*30,limit=60)
-get_data()
-find_diff()
-print_data()
-print_concern_weird_dict()
-print_bar_chart()
+    start_time = time.time()
+    end_time = start_time + 60*45
+    with st.empty():
+        while time.time() <= end_time:
+            get_data()
+            find_diff()
+            print_data()
+            print_concern_weird_dict()
+            print_bar_chart()
+            time.sleep(30)
