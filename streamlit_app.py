@@ -272,7 +272,7 @@ def print_data():
     if watch == 'WIN':
       readline = 10
     elif watch == 'PLA':
-      readline = 1
+      readline = 10
     data = race_dict[watch]['odds']['data'].tail(readline)
     idx = data.index.time
     df = data.set_index(idx)
@@ -318,17 +318,24 @@ def print_bar_chart():
             df = overall_investment_dict['fct']
         else:
             df = race_dict[method]['investment']['data']
-        first_interval = racetime_df[race_no]["20_minutes_before"]
-        second_interval = racetime_df[race_no]["5_minutes_before"]
+        first_interval = racetime_df[race_no]["30_minutes_before"]
+        second_interval = racetime_df[race_no]["10_minutes_before"]
+        third_interval = racetime_df[race_no]["3_minutes_before"]
         df_before = df[df.index < first_interval]
         data_before = df_before.tail(1)
         df_1st = df[df.index >= first_interval]
         df_1st = df_1st[df_1st.index < second_interval]
         data_1st = df_1st.tail(1)
         df_2nd = df[df.index >= second_interval]
+        df_2nd = df_2nd[df_2nd.index < third_interval]
         data_2nd = df_2nd.tail(1)
+        df_3rd = df[df.index >= third_interval]
+        data_3rd = df_3rd.tail(1)
+        
         data_df = data_before._append(data_1st)
         data_df = data_df._append(data_2nd)
+        data_df = data_df._append(data_3rd)
+        
         if len(data_df.index) >1:
           data_df = data_df._append(df.iloc[[-1]])
         data_df = data_df.sort_values(by=data_df.index[0], axis=1, ascending=False)
@@ -340,16 +347,27 @@ def print_bar_chart():
           if data_1st.empty:
             plt.bar(X_axis, data_df.iloc[-1], 0.4, label='總投注', color='pink')
           else:
-              plt.bar(X_axis-0.2, diff.iloc[0], 0.4, label='20分鐘', color='blue')
+              plt.bar(X_axis-0.2, diff.iloc[0], 0.2, label='30分鐘', color='blue')
               if not data_2nd.empty:
-                plt.bar(X_axis+0.2, diff.iloc[1], 0.4, label='5分鐘', color='red')
+                plt.bar(X_axis, diff.iloc[1], 0.2, label='10分鐘', color='red')
+                if not data_3rd.empty:
+                    plt.bar(X_axis+0.2, diff.iloc[2], 0.2, label='3分鐘', color='green')
         else:
           if not data_1st.empty:
-            plt.bar(X_axis-0.2, data_df.iloc[0], 0.4, label='20分鐘', color='blue')
+            plt.bar(X_axis-0.2, data_df.iloc[0], 0.2, label='30分鐘', color='blue')
             if not data_2nd.empty:
-                plt.bar(X_axis+0.2, diff.iloc[0], 0.4, label='5分鐘', color='red')
+                plt.bar(X_axis, diff.iloc[0], 0.2, label='10分鐘', color='red')
+                if not data_3rd.empty:
+                    plt.bar(X_axis+0.2, diff.iloc[1], 0.2, label='3分鐘', color='green')
           else:
-            plt.bar(X_axis,data_df.iloc[0],0.4,label = '5分鐘',color = 'red')
+            if not data_2nd.empty:
+                plt.bar(X_axis-0.2,data_df.iloc[0],0.4,label = '10分鐘',color = 'red')
+                if not data_3rd.empty:
+                    plt.bar(X_axis+0.2, diff.iloc[0], 0.4, label='3分鐘', color='green')
+            else:
+                if not data_3rd.empty:
+                    plt.bar(X_axis,data_df.iloc[0],0.4,label = '3分鐘',color = 'green')
+            
         plt.xticks(X_axis, namelist[X].loc['馬名'],rotation = 45,fontsize = 12)
         plt.grid(color = 'lightgrey' , axis = 'y',linestyle = '--')
         plt.xlabel("No.",fontsize = 10)
@@ -416,13 +434,13 @@ with infoColumns[2]:
 benchmarkColumns = st.columns(5)
     ## 獨贏
 with benchmarkColumns[0]:
-        benchmark_win = st.number_input('獨贏',min_value=0,value=30,step=1)
+        benchmark_win = st.number_input('獨贏',min_value=0,value=50,step=1)
     ## 位置
 with benchmarkColumns[1]:
         benchmark_pla = st.number_input('位置',min_value=0,value=150,step=1)
     ## 連贏
 with benchmarkColumns[2]:
-        benchmark_qin = st.number_input('連贏',min_value=0,value=75,step=1)
+        benchmark_qin = st.number_input('連贏',min_value=0,value=50,step=1)
     ## 位置Q
 with benchmarkColumns[3]:
         benchmark_qpl = st.number_input('位置Q',min_value=0,value=150,step=1)
@@ -438,12 +456,13 @@ text = rsdata.text.split('\n')
 for line in text:
     if 'racePostTime' in line:
         raceposttime = line.split(' = ')[1].replace(";", "").replace("[", "").replace("]", "").replace('"', "").split(',')[1:]
-racetime_df = pd.DataFrame(index=['Time', '20_minutes_before','5_minutes_before'])
+racetime_df = pd.DataFrame(index=['Time', '30_minutes_before','10_minutes_before','3_minutes_before'])
 for i in range(0, len(raceposttime)):
     racetime = datetime.strptime(raceposttime[i], '%Y-%m-%d %H:%M:%S')
-    first_interval = racetime - timedelta(minutes = 20)
-    second_interval = racetime - timedelta(minutes = 5)
-    racetime_df[i + 1] = [racetime, first_interval,second_interval]
+    first_interval = racetime - timedelta(minutes = 30)
+    second_interval = racetime - timedelta(minutes = 10)
+    third_interval = racetime - timedelta(minutes = 3)
+    racetime_df[i + 1] = [racetime, first_interval,second_interval,third_interval]
 
 link = 'https://bet.hkjc.com/racing/pages/odds_wp.aspx?lang=ch&date='+Date+'&venue='+venue+'&raceno='+str(race_no)
 data = requests.get(link)
@@ -465,13 +484,15 @@ namelist
 total_no_of_horse = len(namelist.columns)
 st.write(f'總馬匹:{total_no_of_horse}')
 
+
 if 'reset' not in st.session_state:
     st.session_state.reset = False
 
-def click_button():
+def click_start_button():
     st.session_state.reset =  True
 
-st.button('開始',on_click=click_button)
+st.button('開始',on_click=click_start_button)
+
 
 if st.session_state.reset:
     race_dict={}
