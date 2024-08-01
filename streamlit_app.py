@@ -537,4 +537,4 @@ if st.session_state.reset:
                 print_data()
                 print_concern_weird_dict()
                 print_bar_chart()
-                time.sleep(30)
+                time.sleep(15)
