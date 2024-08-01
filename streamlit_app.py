@@ -313,6 +313,8 @@ def print_concern_weird_dict():
             df.value_counts('No.').to_frame().T
 def print_bar_chart():
     for method in ['overall','qin_qpl','WIN','PLA','fct']:
+        plt.figure().set_figwidth(15)
+
         if method == 'overall':
             df = overall_investment_dict[method]
         elif method == 'qin_qpl':
@@ -323,24 +325,18 @@ def print_bar_chart():
             df = overall_investment_dict['fct']
         else:
             df = race_dict[method]['investment']['data']
-        first_interval = racetime_df[race_no]["30_minutes_before"]
-        second_interval = racetime_df[race_no]["10_minutes_before"]
-        third_interval = racetime_df[race_no]["3_minutes_before"]
+        first_interval = racetime_df[race_no]["25_minutes_before"]
+        second_interval = racetime_df[race_no]["3_minutes_before"]
+        time = pd.to_datetime(df.index,format = '%H:%M:%S')
         df_before = df[df.index < first_interval]
         data_before = df_before.tail(1)
         df_1st = df[df.index >= first_interval]
         df_1st = df_1st[df_1st.index < second_interval]
         data_1st = df_1st.tail(1)
         df_2nd = df[df.index >= second_interval]
-        df_2nd = df_2nd[df_2nd.index < third_interval]
         data_2nd = df_2nd.tail(1)
-        df_3rd = df[df.index >= third_interval]
-        data_3rd = df_3rd.tail(1)
-        
         data_df = data_before._append(data_1st)
         data_df = data_df._append(data_2nd)
-        data_df = data_df._append(data_3rd)
-        
         if len(data_df.index) >1:
           data_df = data_df._append(df.iloc[[-1]])
         data_df = data_df.sort_values(by=data_df.index[0], axis=1, ascending=False)
@@ -348,36 +344,20 @@ def print_bar_chart():
         diff[diff<0] = 0
         X = data_df.columns
         X_axis = np.arange(len(X))
-        colour = ['pink','blue','lime','red']
         if not data_before.empty:
           if data_1st.empty:
-            plt.bar(X_axis, data_df.iloc[-1], 0.4, label='總投注', color=colour[0])
+            plt.bar(X_axis,data_df.iloc[0],0.4,label='投注額',color ='pink')
           else:
-            if data_2nd.empty:
-                plt.bar(X_axis-0.2, diff.iloc[0], 0.2, label='30分鐘', color=colour[1])
-            else:
-                plt.bar(X_axis-0.2, diff.iloc[0]+diff.iloc[1], 0.2, label='30分鐘', color=colour[1])
-                plt.bar(X_axis, diff.iloc[1], 0.2, label='10分鐘', color=colour[2])
-                if not data_3rd.empty:
-                    plt.bar(X_axis+0.2, diff.iloc[2], 0.2, label='3分鐘', color=colour[3])
+              plt.bar(X_axis-0.2, diff.iloc[0], 0.4, label='25分鐘', color='blue')
+              if not data_2nd.empty:
+                plt.bar(X_axis+0.2, diff.iloc[1], 0.4, label='3分鐘', color='red')
         else:
           if not data_1st.empty:
-            if data_2nd.empty:
-                plt.bar(X_axis-0.2, data_df.iloc[0], 0.2, label='30分鐘', color=colour[1])         
-            else:
-                plt.bar(X_axis-0.2, data_df.iloc[0]+diff.iloc[0], 0.2, label='30分鐘', color=colour[1])    
-                plt.bar(X_axis, diff.iloc[0], 0.2, label='10分鐘', color=colour[2])
-                if not data_3rd.empty:
-                    plt.bar(X_axis+0.2, diff.iloc[1], 0.2, label='3分鐘', color=colour[3])
-          else:
+            plt.bar(X_axis-0.2, data_df.iloc[0], 0.4, label='25分鐘', color='blue')
             if not data_2nd.empty:
-                plt.bar(X_axis-0.2,data_df.iloc[0],0.4,label = '10分鐘',color = colour[2])
-                if not data_3rd.empty:
-                    plt.bar(X_axis+0.2, diff.iloc[0], 0.4, label='3分鐘', color=colour[3])
-            else:
-                if not data_3rd.empty:
-                    plt.bar(X_axis,data_df.iloc[0],0.4,label = '3分鐘',color = colour[3])
-            
+                plt.bar(X_axis+0.2, diff.iloc[0], 0.4, label='3分鐘', color='red')
+          else:
+            plt.bar(X_axis,data_df.iloc[0],0.4,label = '3分鐘',color = 'red')
         plt.xticks(X_axis, namelist[X].loc['馬名'],rotation = 45,fontsize = 12)
         plt.grid(color = 'lightgrey' , axis = 'y',linestyle = '--')
         plt.xlabel("No.",fontsize = 10)
@@ -465,13 +445,12 @@ text = rsdata.text.split('\n')
 for line in text:
     if 'racePostTime' in line:
         raceposttime = line.split(' = ')[1].replace(";", "").replace("[", "").replace("]", "").replace('"', "").split(',')[1:]
-racetime_df = pd.DataFrame(index=['Time', '30_minutes_before','10_minutes_before','3_minutes_before'])
+racetime_df = pd.DataFrame(index=['Time', '25_minutes_before','3_minutes_before'])
 for i in range(0, len(raceposttime)):
     racetime = datetime.strptime(raceposttime[i], '%Y-%m-%d %H:%M:%S')
-    first_interval = racetime - timedelta(minutes = 30)
-    second_interval = racetime - timedelta(minutes = 10)
-    third_interval = racetime - timedelta(minutes = 3)
-    racetime_df[i + 1] = [racetime, first_interval,second_interval,third_interval]
+    first_interval = racetime - timedelta(minutes = 25)
+    second_interval = racetime - timedelta(minutes = 3)
+    racetime_df[i + 1] = [racetime, first_interval,second_interval]
 
 link = 'https://bet.hkjc.com/racing/pages/odds_wp.aspx?lang=ch&date='+Date+'&venue='+venue+'&raceno='+str(race_no)
 data = requests.get(link)
