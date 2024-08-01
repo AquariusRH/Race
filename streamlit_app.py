@@ -395,7 +395,6 @@ def print_bar_chart():
           plt.title('單T',fontsize = 15)
         elif method == 'fct':
           plt.title('二重彩',fontsize = 15)
-        st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot()
         
 def get_overall_investment():
