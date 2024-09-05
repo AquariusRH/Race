@@ -28,7 +28,7 @@ def download_data(type,race_no,venue,Date):
         link = page + 'type=' + type + '&date=' + Date + '&venue=' + venue + '&raceno=' + str(race_no)
     odds_json = requests.get(link)
     odds_data = odds_json.json()
-    investment_link = 'https://bet.hkjc.com/racing/getJSON.aspx?type=pooltot&date=' + Date + '&venue=' + venue + '&raceno=' + str(race_no)
+    investment_link = 'https://bet2.hkjc.com/racing/getJSON.aspx?type=pooltot&date=' + Date + '&venue=' + venue + '&raceno=' + str(race_no)
     investment_json = requests.get(investment_link)
     investment_data = investment_json.json()
     return odds_data , investment_data
@@ -301,20 +301,18 @@ def print_concern_weird_dict():
         name = methodCHlist[methodlist.index(method)]
         st.write(f'{name} 異常投注')
         printColumns = st.columns(2)
-        data = weird_dict[method].tail(20)
+        data = weird_dict[method]
         if not data.empty:
-            idx = data.index.time
-            df = data.set_index(idx)
+            idx = data.tail(20).index.time
+            df = data.tail(20).set_index(idx)
         else:
-            df = data
+            df = data.tail(20)
         with printColumns[0]:
             df
         with printColumns[1]:
             df.value_counts('No.').to_frame().T
 def print_bar_chart():
     for method in ['overall','qin_qpl','WIN','PLA','fct']:
-        plt.figure().set_figwidth(15)
-
         if method == 'overall':
             df = overall_investment_dict[method]
         elif method == 'qin_qpl':
@@ -337,6 +335,7 @@ def print_bar_chart():
         data_2nd = df_2nd.tail(1)
         data_df = data_before._append(data_1st)
         data_df = data_df._append(data_2nd)
+        
         if len(data_df.index) >1:
           data_df = data_df._append(df.iloc[[-1]])
         data_df = data_df.sort_values(by=data_df.index[0], axis=1, ascending=False)
@@ -371,10 +370,9 @@ def print_bar_chart():
           plt.title('獨贏',fontsize = 15)
         elif method == 'PLA':
           plt.title('位置',fontsize = 15)
-        elif method == 'trio':
-          plt.title('單T',fontsize = 15)
         elif method == 'fct':
           plt.title('二重彩',fontsize = 15)
+        st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot()
         
 def get_overall_investment():
@@ -397,7 +395,7 @@ def get_overall_investment():
     overall_investment_dict['overall'] = overall_investment_dict['overall']._append(total_investment_df)
 
 
-page = 'https://bet.hkjc.com/racing/getJSON.aspx?'
+page = 'https://bet2.hkjc.com/racing/getJSON.aspx?'
 types = ['winplaodds','qin','qpl','fct']
 methodlist = ['WIN','PLA','qin','qpl','fct']
 watchlist = ['WIN','PLA']
@@ -438,8 +436,8 @@ with benchmarkColumns[4]:
         benchmark_fct = st.number_input('二重彩',min_value=0.0,value=5.0,step=0.1)
 
 
-detailf = 'https://bet.hkjc.com/racing/script/rsdata.js?lang=ch&date='
-detail = detailf + Date + '&venue=' + venue + '&CV=L4.07R2a'
+detailf = 'https://bet2.hkjc.com/racing/script/rsdata.js?lang=ch&date='
+detail = detailf + Date + '&venue=' + venue + '&CV=CRQ000000146332_BAU'
 rsdata = requests.get(detail)
 text = rsdata.text.split('\n')
 for line in text:
@@ -452,7 +450,7 @@ for i in range(0, len(raceposttime)):
     second_interval = racetime - timedelta(minutes = 3)
     racetime_df[i + 1] = [racetime, first_interval,second_interval]
 
-link = 'https://bet.hkjc.com/racing/pages/odds_wp.aspx?lang=ch&date='+Date+'&venue='+venue+'&raceno='+str(race_no)
+link = 'https://bet2.hkjc.com/racing/pages/odds_wp.aspx?lang=ch&date='+Date+'&venue='+venue+'&raceno='+str(race_no)
 data = requests.get(link)
 text = data.text.split('\n')
 namelist = pd.DataFrame(index=['馬名','騎師'])
@@ -516,4 +514,4 @@ if st.session_state.reset:
                 print_data()
                 print_concern_weird_dict()
                 print_bar_chart()
-                time.sleep(15)
+                time.sleep(30)
