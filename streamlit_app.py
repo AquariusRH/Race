@@ -18,7 +18,7 @@ from streamlit_autorefresh import st_autorefresh
 
 # Show the page title and description.
 st.set_page_config(page_title="Jockey Race")
-st.title("Jockey Race")
+st.title("Jockey Race 賽馬程式")
 
 # @title 2. {func} 下載數據
 def download_data(type,race_no,venue,Date):
@@ -514,4 +514,4 @@ if st.session_state.reset:
                 print_data()
                 print_concern_weird_dict()
                 print_bar_chart()
-                time.sleep(30)
+                time.sleep(15)
