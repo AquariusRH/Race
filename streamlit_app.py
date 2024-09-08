@@ -414,7 +414,7 @@ with infoColumns[1]:
 with infoColumns[2]:
     race_no = st.selectbox(
         '場次:',
-        np.arange(1,10)
+        np.arange(1,12)
     )
 
 # 基準
