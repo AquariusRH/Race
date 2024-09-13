@@ -324,7 +324,7 @@ def print_bar_chart():
         else:
             df = race_dict[method]['investment']['data']
         first_interval = racetime_df[race_no]["25_minutes_before"]
-        second_interval = racetime_df[race_no]["3_minutes_before"]
+        second_interval = racetime_df[race_no]["5_minutes_before"]
         time = pd.to_datetime(df.index,format = '%H:%M:%S')
         df_before = df[df.index < first_interval]
         data_before = df_before.tail(1)
@@ -349,14 +349,14 @@ def print_bar_chart():
           else:
               plt.bar(X_axis-0.2, diff.iloc[0], 0.4, label='25分鐘', color='blue')
               if not data_2nd.empty:
-                plt.bar(X_axis+0.2, diff.iloc[1], 0.4, label='3分鐘', color='red')
+                plt.bar(X_axis+0.2, diff.iloc[1], 0.4, label='5分鐘', color='red')
         else:
           if not data_1st.empty:
             plt.bar(X_axis-0.2, data_df.iloc[0], 0.4, label='25分鐘', color='blue')
             if not data_2nd.empty:
-                plt.bar(X_axis+0.2, diff.iloc[0], 0.4, label='3分鐘', color='red')
+                plt.bar(X_axis+0.2, diff.iloc[0], 0.4, label='5分鐘', color='red')
           else:
-            plt.bar(X_axis,data_df.iloc[0],0.4,label = '3分鐘',color = 'red')
+            plt.bar(X_axis,data_df.iloc[0],0.4,label = '5分鐘',color = 'red')
         plt.xticks(X_axis, namelist[X].loc['馬名'],rotation = 45,fontsize = 12)
         plt.grid(color = 'lightgrey' , axis = 'y',linestyle = '--')
         plt.xlabel("No.",fontsize = 10)
@@ -442,11 +442,11 @@ text = rsdata.text.split('\n')
 for line in text:
     if 'racePostTime' in line:
         raceposttime = line.split(' = ')[1].replace(";", "").replace("[", "").replace("]", "").replace('"', "").split(',')[1:]
-racetime_df = pd.DataFrame(index=['Time', '25_minutes_before','3_minutes_before'])
+racetime_df = pd.DataFrame(index=['Time', '25_minutes_before','5_minutes_before'])
 for i in range(0, len(raceposttime)):
     racetime = datetime.strptime(raceposttime[i], '%Y-%m-%d %H:%M:%S')
     first_interval = racetime - timedelta(minutes = 25)
-    second_interval = racetime - timedelta(minutes = 3)
+    second_interval = racetime - timedelta(minutes = 5)
     racetime_df[i + 1] = [racetime, first_interval,second_interval]
 
 link = 'https://bet2.hkjc.com/racing/pages/odds_wp.aspx?lang=ch&date='+Date+'&venue='+venue+'&raceno='+str(race_no)
