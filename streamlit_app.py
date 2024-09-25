@@ -426,7 +426,7 @@ with benchmarkColumns[3]:
         benchmark_qpl = st.number_input('位置Q',min_value=0,value=200,step=1)
     ## 二重彩
 with benchmarkColumns[4]:
-        benchmark_fct = st.number_input('二重彩',min_value=0,value=10,step=1)
+        benchmark_fct = st.number_input('二重彩',min_value=0,value=5,step=1)
 
 
 detailf = 'https://bet2.hkjc.com/racing/script/rsdata.js?lang=ch&date='
