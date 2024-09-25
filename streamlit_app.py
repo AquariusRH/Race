@@ -414,16 +414,16 @@ with infoColumns[2]:
 benchmarkColumns = st.columns(5)
     ## 獨贏
 with benchmarkColumns[0]:
-        benchmark_win = st.number_input('獨贏',min_value=0,value=100,step=1)
+        benchmark_win = st.number_input('獨贏',min_value=0,value=50,step=1)
     ## 位置
 with benchmarkColumns[1]:
-        benchmark_pla = st.number_input('位置',min_value=0,value=300,step=1)
+        benchmark_pla = st.number_input('位置',min_value=0,value=200,step=1)
     ## 連贏
 with benchmarkColumns[2]:
-        benchmark_qin = st.number_input('連贏',min_value=0,value=100,step=1)
+        benchmark_qin = st.number_input('連贏',min_value=0,value=50,step=1)
     ## 位置Q
 with benchmarkColumns[3]:
-        benchmark_qpl = st.number_input('位置Q',min_value=0,value=300,step=1)
+        benchmark_qpl = st.number_input('位置Q',min_value=0,value=200,step=1)
     ## 二重彩
 with benchmarkColumns[4]:
         benchmark_fct = st.number_input('二重彩',min_value=0,value=10,step=1)
