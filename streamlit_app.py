@@ -312,7 +312,7 @@ def print_concern_weird_dict():
         with printColumns[1]:
             df.value_counts('No.').to_frame().T
 def print_bar_chart():
-    for method in ['overall','qin_qpl']:
+    for method in ['overall','qin_qpl','WIN','PLA']:
         if method == 'overall':
             df = overall_investment_dict[method]
         elif method == 'qin_qpl':
