@@ -312,15 +312,13 @@ def print_concern_weird_dict():
         with printColumns[1]:
             df.value_counts('No.').to_frame().T
 def print_bar_chart():
-    for method in ['overall','qin_qpl','WIN','PLA','fct']:
+    for method in ['overall','qin_qpl']:
         plt.figure().set_figwidth(15)
 
         if method == 'overall':
             df = overall_investment_dict[method]
         elif method == 'qin_qpl':
             df = overall_investment_dict['qin'] + overall_investment_dict['qpl']
-        elif method == 'fct':
-            df = overall_investment_dict['fct']
         else:
             df = race_dict[method]['investment']['data']
         first_interval = racetime_df[race_no]["25_minutes_before"]
@@ -365,12 +363,6 @@ def print_bar_chart():
           plt.title('綜合',fontsize = 15)
         elif method == 'qin_qpl':
           plt.title('連贏 / 位置Q',fontsize = 15)
-        elif method == 'WIN':
-          plt.title('獨贏',fontsize = 15)
-        elif method == 'PLA':
-          plt.title('位置',fontsize = 15)
-        elif method == 'trio':
-          plt.title('單T',fontsize = 15)
         st.pyplot()
         
 def get_overall_investment():
