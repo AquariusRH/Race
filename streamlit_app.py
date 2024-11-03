@@ -312,11 +312,15 @@ def print_concern_weird_dict():
         with printColumns[1]:
             df.value_counts('No.').to_frame().T
 def print_bar_chart():
-    for method in ['overall','qin_qpl','WIN','PLA']:
+    for method in ['overall','qin_qpl','WIN','PLA','fct']:
+        plt.figure().set_figwidth(15)
+
         if method == 'overall':
             df = overall_investment_dict[method]
         elif method == 'qin_qpl':
             df = overall_investment_dict['qin'] + overall_investment_dict['qpl']
+        elif method == 'fct':
+            df = overall_investment_dict['fct']
         else:
             df = race_dict[method]['investment']['data']
         first_interval = racetime_df[race_no]["25_minutes_before"]
@@ -331,7 +335,6 @@ def print_bar_chart():
         data_2nd = df_2nd.tail(1)
         data_df = data_before._append(data_1st)
         data_df = data_df._append(data_2nd)
-        
         if len(data_df.index) >1:
           data_df = data_df._append(df.iloc[[-1]])
         data_df = data_df.sort_values(by=data_df.index[0], axis=1, ascending=False)
@@ -352,7 +355,7 @@ def print_bar_chart():
             if not data_2nd.empty:
                 plt.bar(X_axis+0.2, diff.iloc[0], 0.4, label='5分鐘', color='red')
           else:
-            plt.bar(X_axis,data_df.iloc[0],0.4,label = '5分鐘',color = 'red')
+            plt.bar(X_axis,data_df.iloc[0],0.4,label = '3分鐘',color = 'red')
         plt.xticks(X_axis, namelist[X].loc['馬名'],rotation = 45,fontsize = 12)
         plt.grid(color = 'lightgrey' , axis = 'y',linestyle = '--')
         plt.xlabel("No.",fontsize = 10)
@@ -366,6 +369,8 @@ def print_bar_chart():
           plt.title('獨贏',fontsize = 15)
         elif method == 'PLA':
           plt.title('位置',fontsize = 15)
+        elif method == 'trio':
+          plt.title('單T',fontsize = 15)
         st.pyplot()
         
 def get_overall_investment():
