@@ -502,7 +502,7 @@ if st.session_state.reset:
                 horse_dict[f'No.{horse}'][method].setdefault(focus,pd.DataFrame())
 
     start_time = time.time()
-    end_time = start_time + 60*45
+    end_time = start_time + 60*100
     placeholder = st.empty()
     with st.empty():
         while time.time() <= end_time:
