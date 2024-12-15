@@ -313,6 +313,7 @@ def print_concern_weird_dict():
             df.value_counts('No.').to_frame().T
 def print_bar_chart():
     for method in ['overall','qin_qpl']:
+        fig,ax = plt.subplots()
         if method == 'overall':
             df = overall_investment_dict[method]
         elif method == 'qin_qpl':
@@ -361,7 +362,7 @@ def print_bar_chart():
           plt.title('綜合',fontsize = 15)
         elif method == 'qin_qpl':
           plt.title('連贏 / 位置Q',fontsize = 15)
-        st.pyplot()
+        st.pyplot(fig)
         
 def get_overall_investment():
     total_investment_df = pd.DataFrame(index =[horse_dict[f'No.{1}']['WIN']['investment'].index[-1]], columns=np.arange(total_no_of_horse)+1)
