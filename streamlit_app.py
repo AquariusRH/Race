@@ -353,7 +353,9 @@ def print_bar_chart():
                 plt.bar(X_axis+0.2, diff.iloc[0], 0.4, label='5分鐘', color='red')
           else:
             plt.bar(X_axis,data_df.iloc[0],0.4,label = '3分鐘',color = 'red')
-        plt.xticks(X_axis, namelist[X].loc['馬名'],rotation = 45,fontsize = 12)
+        namelist_sort = namelist[X].loc['馬名']
+        formatted_namelist = [label.split('.')[0] + '\n' + '\n'.join(label.split('.')[1]) for label in namelist_sort]
+        plt.xticks(X, formatted_namelist,fontsize = 12)
         plt.grid(color = 'lightgrey' , axis = 'y',linestyle = '--')
         plt.xlabel("No.",fontsize = 10)
         plt.ylabel("投注額",fontsize = 10)
