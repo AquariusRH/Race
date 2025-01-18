@@ -434,81 +434,42 @@ def main(time_now,odds,investments,period):
   print_bar_chart(time_now)
   print_highlight()
 
-date_picker = widgets.DatePicker(
-    description='日期:',
-    value=datetime.now(),
-    disabled=False
-)
-options = ['ST','HV','S1','S2','S3','S4','S5']
-place_dropdown = widgets.Dropdown(
-    options=options,
-    value=options[0],
-    description='場地:',
-    disabled=False,
-)
-race_options = np.arange(1,12)
-race_dropdown = widgets.Dropdown(
-    options=race_options,
-    value=race_options[0],
-    description='場次:',
-    disabled=False,
-)
-number_input_win = widgets.IntText(
-    value=25,
-    description='獨贏:',
-    disabled=False
-)
-number_input_pla = widgets.IntText(
-    value=150,
-    description='位置:',
-    disabled=False
-)
-number_input_qin = widgets.IntText(
-    value=25,
-    description='連贏:',
-    disabled=False
-)
-number_input_qpl = widgets.IntText(
-    value=150,
-    description='位置Q:',
-    disabled=False
-)
-checkbox = widgets.Checkbox(
-    value=False,
-    description='沒有位置Q',
-    disabled=False
-)
-checkbox_win = widgets.Checkbox(description="WIN", value=True)
-checkbox_pla = widgets.Checkbox(description="PLA", value=True)
-checkbox_qin = widgets.Checkbox(description="QIN")
-checkbox_qpl = widgets.Checkbox(description="QPL")
-# Step 4: Display the date picker widget
+# Display the date picker widget
 infoColumns = st.columns(3)
 with infoColumns[0]:
-    date_picker
+    Date = st.date_input('日期:', value=datetime.now())
 with infoColumns[1]:
-    place_dropdown
+    options = ['ST', 'HV', 'S1', 'S2', 'S3', 'S4', 'S5']
+    venue = st.selectbox('場地:', options)
 with infoColumns[2]:
-    race_dropdown
+    race_options = np.arange(1, 12)
+    race_no = st.selectbox('場次:', race_options)
 
+# Display the number input widgets
 benchmarkColumns = st.columns(4)
 with benchmarkColumns[0]:
-        number_input_win
-    ## 位置
+    benchmark_win = st.number_input('獨贏:', min_value=0, value=25, step=1)
 with benchmarkColumns[1]:
-        number_input_pla
-    ## 連贏
+    benchmark_pla = st.number_input('位置:', min_value=0, value=150, step=1)
 with benchmarkColumns[2]:
-        number_input_qin
-    ## 位置Q
+    benchmark_qin = st.number_input('連贏:', min_value=0, value=25, step=1)
 with benchmarkColumns[3]:
-        number_input_qpl
+    benchmark_qpl = st.number_input('位置Q:', min_value=0, value=150, step=1)
 
-checkbox_win, checkbox_pla, checkbox_qin, checkbox_qpl
-checkbox
-race_no = None
+# Display the checkboxes
+checkbox_win = st.checkbox("WIN", value=True)
+checkbox_pla = st.checkbox("PLA", value=True)
+checkbox_qin = st.checkbox("QIN")
+checkbox_qpl = st.checkbox("QPL")
+
+# Display the checkbox for 沒有位置Q
+checkbox_no_qpl = st.checkbox('沒有位置Q', value=False)
+
+# Initialize variables
+race_no_value = None
 watchlist = []
-watchlist.extend([checkbox_win.description, checkbox_pla.description])
+watchlist.extend([checkbox_win, checkbox_pla])
+
 list1 = ['WIN','PLA','QIN','QPL']
 list2 = ['WIN','PLA','QIN']
 
@@ -521,50 +482,46 @@ print_list_2 = ['overall', 'qin', 'WIN', 'PLA']
 methodlist = list1
 methodCHlist = list1_ch
 print_list = print_list_1
-def on_checkbox_change(change):
-    if change['new']:
-        watchlist.append(change['owner'].description)
-    else:
-        watchlist.remove(change['owner'].description)
 
-def switch_lists(change):
-    global methodlist
-    global methodCHlist
-    global print_list
-    if change['new']:
-        methodlist = list2
-        methodCHlist = list2_ch
-        print_list = print_list_2
-    else:
-        methodlist = list1
-        methodCHlist = list1_ch
-        print_list = print_list_1
+# Update watchlist based on checkbox changes
+if checkbox_win:
+    watchlist.append("WIN")
+else:
+    watchlist.remove("WIN")
 
-def save_change(change):
-    new_value = change['new']
-    description = change['owner'].description
+if checkbox_pla:
+    watchlist.append("PLA")
+else:
+    watchlist.remove("PLA")
 
-def on_change(change):
-    global race_no
-    if change['type'] == 'change' and change['name'] == 'value':
-        race_no = change['new']
+if checkbox_qin:
+    watchlist.append("QIN")
+else:
+    watchlist.remove("QIN")
 
-race_dropdown.observe(on_change)
-place_dropdown.observe(save_change, names='value')
-number_input_win.observe(save_change, names='value')
-number_input_pla.observe(save_change, names='value')
-number_input_qin.observe(save_change, names='value')
-number_input_qpl.observe(save_change, names='value')
-checkbox_win.observe(on_checkbox_change, names='value')
-checkbox_pla.observe(on_checkbox_change, names='value')
-checkbox_qin.observe(on_checkbox_change, names='value')
-checkbox_qpl.observe(on_checkbox_change, names='value')
-checkbox.observe(switch_lists, names='value')
+if checkbox_qpl:
+    watchlist.append("QPL")
+else:
+    watchlist.remove("QPL")
+
+# Switch lists based on 沒有位置Q checkbox
+if checkbox_no_qpl:
+    methodlist = list2
+    methodCHlist = list2_ch
+    print_list = print_list_2
+else:
+    methodlist = list1
+    methodCHlist = list1_ch
+    print_list = print_list_1
+
+# Save changes to race_no
+race_no_value = race_no
+
 benchmark_dict = {
-      "WIN": number_input_win.value,
-      "PLA": number_input_pla.value,
-      "QIN": number_input_qin.value,
-      "QPL": number_input_qpl.value
+      "WIN": benchmark_win,
+      "PLA": benchmark_pla,
+      "QIN": benchmark_qin,
+      "QPL": benchmark_qpl
   }
 
 if 'reset' not in st.session_state:
