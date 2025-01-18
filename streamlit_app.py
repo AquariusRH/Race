@@ -21,380 +21,430 @@ st.set_page_config(page_title="Jockey Race")
 st.title("Jockey Race 賽馬程式")
 
 # @title 2. {func} 下載數據
-def download_data(type,race_no,venue,Date):
-    if type == 'winplaodds':
-        link = page + 'type=' + type + '&date=' + Date + '&venue=' + venue + '&start=' + str(race_no) + '&end=' + str(race_no)
-    elif type == 'qin' or type == 'qpl' or type == 'fct':
-        link = page + 'type=' + type + '&date=' + Date + '&venue=' + venue + '&raceno=' + str(race_no)
-    odds_json = requests.get(link)
-    odds_data = odds_json.json()
-    investment_link = 'https://bet2.hkjc.com/racing/getJSON.aspx?type=pooltot&date=' + Date + '&venue=' + venue + '&raceno=' + str(race_no)
-    investment_json = requests.get(investment_link)
-    investment_data = investment_json.json()
-    return odds_data , investment_data
+# @title 處理數據
+def get_investment_data():
+  url = 'https://info.cld.hkjc.com/graphql/base/'
+  headers = {'Content-Type': 'application/json'}
 
-def get_win_pla_data(odds_data, investment_data):
-    for i in odds_data['OUT'].split('@')[-1].split('#'):
-        time = datetime.now() + datere.relativedelta(hours=8)
-        no_of_horse = np.arange(total_no_of_horse) + 1
-        odds = pd.DataFrame(index=[pd.to_datetime(time.strftime('%Y-%m-%d %H:%M:%S'))], columns=no_of_horse)
-        method = i.split(';')[0]
-        odd = []
-        for j in i.split(';')[1:]:
-            if '=' in j:
-                odd = j.split('=')
-            if odd[1] == 'SCR':
-                odds[int(odd[0])] = np.inf
-            else:
-                odds[int(odd[0])] = float(odd[1])
-        race_dict[method]['odds']['data'] = race_dict[method]['odds']['data']._append(odds)
-        for horse in range(1, total_no_of_horse + 1):
-            indicator = horse
-            horse_dict[f'No.{horse}'][method]['odds'] = horse_dict[f'No.{horse}'][method]['odds']._append(odds[[indicator]])
-    for k in range(0, 2):
-        method = investment_data['inv'][k]['pool']
-        odds = pd.DataFrame([race_dict[method]['odds']['data'].iloc[-1]])
-        investment = float(investment_data['inv'][k]['value']) * 0.825
-        investment_df = round(pd.DataFrame(investment / odds) / 1000 ,0)
-        race_dict[method]['investment']['data'] = race_dict[method]['investment']['data']._append(investment_df)
-        for horse in range(1, total_no_of_horse + 1):
-            indicator = horse
-            horse_dict[f'No.{horse}'][method]['investment'] = horse_dict[f'No.{horse}'][method]['investment']._append(investment_df[[indicator]])
-        if len(race_dict[method]['odds']['data'].index)>1:
-            previous_odds = race_dict[method]['odds']['data'].iloc[[-2]]
-            current_odds = race_dict[method]['odds']['data'].iloc[[-1]]
-            current_investment = race_dict[method]['investment']['data'].iloc[[-1]]
-            expected_investment = pd.DataFrame(investment / previous_odds) / 1000
-            error_investment = current_investment - expected_investment.values
-            for combination in error_investment.columns:
-                error = round(error_investment[combination].values[0],0)
-                if method == 'WIN':
-                  benchmark = benchmark_win
-                else:
-                  benchmark = benchmark_pla
-                if error > benchmark:
-                  if error < benchmark * 2 :
-                    highlight = '-'
-                  elif error < benchmark * 3 :
-                    highlight = '*'
-                  elif error < benchmark * 4 :
-                    highlight = '**'
+  payload_investment = {
+      "operationName": "racing",
+      "variables": {
+          "date": str(Date),
+          "venueCode": venue,
+          "raceNo": int(race_no),
+          "oddsTypes": methodlist
+      },
+      "query": """
+      query racing($date: String, $venueCode: String, $oddsTypes: [OddsType], $raceNo: Int) {
+        raceMeetings(date: $date, venueCode: $venueCode) {
+          totalInvestment
+          poolInvs: pmPools(oddsTypes: $oddsTypes, raceNo: $raceNo) {
+            id
+            leg {
+              number
+              races
+            }
+            status
+            sellStatus
+            oddsType
+            investment
+            mergedPoolId
+            lastUpdateTime
+          }
+        }
+      }
+      """
+  }
+
+  response = requests.post(url, headers=headers, json=payload_investment)
+
+  if response.status_code == 200:
+      investment_data = response.json()
+
+      # Extracting the investment into different types of oddsType
+      investments = {
+          "WIN": [],
+          "PLA": [],
+          "QIN": [],
+          "QPL": []
+      }
+
+      race_meetings = investment_data.get('data', {}).get('raceMeetings', [])
+      if race_meetings:
+          for meeting in race_meetings:
+              pool_invs = meeting.get('poolInvs', [])
+              for pool in pool_invs:
+                  investment = float(pool.get('investment'))
+                  investments[pool.get('oddsType')].append(investment)
+
+          #print("Investments:", investments)
+      else:
+          print("No race meetings found in the response.")
+
+      return investments
+  else:
+      print(f"Error: {response.status_code}")
+
+def get_odds_data():
+  url = 'https://info.cld.hkjc.com/graphql/base/'
+  headers = {'Content-Type': 'application/json'}
+  payload_odds = {
+      "operationName": "racing",
+      "variables": {
+          "date": str(Date),
+          "venueCode": venue,
+          "raceNo": int(race_no),
+          "oddsTypes": methodlist
+      },
+      "query": """
+      query racing($date: String, $venueCode: String, $oddsTypes: [OddsType], $raceNo: Int) {
+        raceMeetings(date: $date, venueCode: $venueCode) {
+          pmPools(oddsTypes: $oddsTypes, raceNo: $raceNo) {
+            id
+            status
+            sellStatus
+            oddsType
+            lastUpdateTime
+            guarantee
+            minTicketCost
+            name_en
+            name_ch
+            leg {
+              number
+              races
+            }
+            cWinSelections {
+              composite
+              name_ch
+              name_en
+              starters
+            }
+            oddsNodes {
+              combString
+              oddsValue
+              hotFavourite
+              oddsDropValue
+              bankerOdds {
+                combString
+                oddsValue
+              }
+            }
+          }
+        }
+      }
+      """
+  }
+
+  response = requests.post(url, headers=headers, json=payload_odds)
+  if response.status_code == 200:
+      odds_data = response.json()
+          # Extracting the oddsValue into different types of oddsType and sorting by combString for QIN and QPL
+      odds_values = {
+          "WIN": [],
+          "PLA": [],
+          "QIN": [],
+          "QPL": []
+      }
+
+      race_meetings = odds_data.get('data', {}).get('raceMeetings', [])
+      for meeting in race_meetings:
+          pm_pools = meeting.get('pmPools', [])
+          for pool in pm_pools:
+              odds_nodes = pool.get('oddsNodes', [])
+              odds_type = pool.get('oddsType')
+              for node in odds_nodes:
+                  oddsValue = node.get('oddsValue')
+                  if oddsValue == 'SCR':
+                    oddsValue = np.inf
                   else:
-                    highlight = '***'
-                  error_df = pd.DataFrame([[combination, error,current_odds[combination].values, highlight]], columns=['No.', 'error','odds', 'Highlight'], index=error_investment.index)
-                  weird_dict[method] = weird_dict[method]._append(error_df)
+                    oddsValue = float(oddsValue)
 
-def get_qin_data(odds_data, investment_data,type):
-    method = type
-    combination = []
-    for i in odds_data['OUT'].split('#'):
-        time = datetime.now() + datere.relativedelta(hours=8)
-        for j in i.split(';')[1:]:
-            if '=' in j:
-                odd = j.split('=')
-            if not combination:
-                combination = [odd[0]]
-            else:
-                combination.append(odd[0])
-        odds = pd.DataFrame(index=[pd.to_datetime(time.strftime('%Y-%m-%d %H:%M:%S'))], columns=combination)
-        for j in i.split(';')[1:]:
-            if '=' in j:
-                odd = j.split('=')
-            if odd[1] == 'SCR':
-                odds[odd[0]] = np.inf
-            else:
-                odds[odd[0]] = float(odd[1])
-    race_dict[method]['odds']['data'] = race_dict[method]['odds']['data']._append(odds)
-    k = 2
-    odds = pd.DataFrame([race_dict[method]['odds']['data'].iloc[-1]])
-    investment = float(investment_data['inv'][k]['value']) * 0.825
-    investment_df = round(pd.DataFrame(investment / odds) / 1000,0)
-    race_dict[method]['investment']['data'] = race_dict[method]['investment']['data']._append(investment_df)
-    for horse in range(1, total_no_of_horse + 1):
-        data_odds = pd.DataFrame(index=[pd.to_datetime(time.strftime('%Y-%m-%d %H:%M:%S'))])
-        data_investment = pd.DataFrame(index=[pd.to_datetime(time.strftime('%Y-%m-%d %H:%M:%S'))])
-        for i in combination:
-          if str(horse) in i.split('-'):
-            indicator = i
-            data_odds[indicator] = odds[indicator]
-            data_investment[indicator] = investment_df[indicator]
-        horse_dict[f'No.{horse}'][method]['odds'] = horse_dict[f'No.{horse}'][method]['odds']._append(data_odds)
-        horse_dict[f'No.{horse}'][method]['investment'] = horse_dict[f'No.{horse}'][method]['investment']._append(data_investment)
-    if len(race_dict[method]['odds']['data'].index) > 1:
-        previous_odds = race_dict[method]['odds']['data'].iloc[[-2]]
-        current_odds = race_dict[method]['odds']['data'].iloc[[-1]]
-        current_investment = race_dict[method]['investment']['data'].iloc[[-1]]
-        expected_investment = pd.DataFrame(investment / previous_odds) / 1000
-        error_investment = current_investment - expected_investment.values
-        for combination in error_investment.columns:
-            error = round(error_investment[combination].values[0],0)
-            benchmark = benchmark_qin
-            if error > benchmark:
-              if error < benchmark * 2 :
-                highlight = '-'
-              elif error < benchmark * 3 :
-                highlight = '*'
-              elif error < benchmark * 4 :
-                highlight = '**'
-              else:
-                highlight = '***'
-              error_df = pd.DataFrame([[combination, error,current_odds[combination].values, highlight]], columns=['No.', 'error','odds', 'Highlight'], index=error_investment.index)
-              weird_dict[method] = weird_dict[method]._append(error_df)
+                  if odds_type in ["QIN", "QPL"]:
+                      odds_values[odds_type].append((node.get('combString'), oddsValue))
+                  else:
+                      odds_values[odds_type].append(oddsValue)
 
-def get_qpl_data(odds_data, investment_data,type):
-    method = type
-    combination = []
-    for i in odds_data['OUT'].split('#'):
-        time = datetime.now() + datere.relativedelta(hours=8)
-        for j in i.split(';')[1:]:
-            if '=' in j:
-                odd = j.split('=')
-            if not combination:
-                combination = [odd[0]]
-            else:
-                combination.append(odd[0])
-        odds = pd.DataFrame(index=[pd.to_datetime(time.strftime('%Y-%m-%d %H:%M:%S'))], columns=combination)
-        for j in i.split(';')[1:]:
-            if '=' in j:
-                odd = j.split('=')
-            if odd[1] == 'SCR':
-                odds[odd[0]] = np.inf
-            else:
-                odds[odd[0]] = float(odd[1])
-    race_dict[method]['odds']['data'] = race_dict[method]['odds']['data']._append(odds)
-    k = 3
-    odds = pd.DataFrame([race_dict[method]['odds']['data'].iloc[-1]])
-    investment = float(investment_data['inv'][k]['value']) * 0.825
-    investment_df = round(pd.DataFrame(investment / odds) / 1000, 0)
-    race_dict[method]['investment']['data'] = race_dict[method]['investment']['data']._append(investment_df)
-    for horse in range(1, total_no_of_horse + 1):
-        data_odds = pd.DataFrame(index=[pd.to_datetime(time.strftime('%Y-%m-%d %H:%M:%S'))])
-        data_investment = pd.DataFrame(index=[pd.to_datetime(time.strftime('%Y-%m-%d %H:%M:%S'))])
-        for i in combination:
-          if str(horse) in i.split('-'):
-            indicator = i
-            data_odds[indicator] = odds[indicator]
-            data_investment[indicator] = investment_df[indicator]
-        horse_dict[f'No.{horse}'][method]['odds'] = horse_dict[f'No.{horse}'][method]['odds']._append(data_odds)
-        horse_dict[f'No.{horse}'][method]['investment'] = horse_dict[f'No.{horse}'][method]['investment']._append(data_investment)
-    if len(race_dict[method]['odds']['data'].index) > 1:
-        previous_odds = race_dict[method]['odds']['data'].iloc[[-2]]
-        current_odds = race_dict[method]['odds']['data'].iloc[[-1]]
-        current_investment = race_dict[method]['investment']['data'].iloc[[-1]]
-        expected_investment = pd.DataFrame(investment / previous_odds) / 1000
-        error_investment = current_investment - expected_investment.values
-        for combination in error_investment.columns:
-            error = round(error_investment[combination].values[0],0)
-            benchmark = benchmark_qpl
-            if error > benchmark:
-              if error < benchmark * 2 :
-                    highlight = '-'
-              elif error < benchmark * 3 :
-                    highlight = '*'
-              elif error < benchmark * 4 :
-                    highlight = '**'
-              else:
-                    highlight = '***'
-              error_df = pd.DataFrame([[combination, error,current_odds[combination].values, highlight]], columns=['No.', 'error','odds', 'Highlight'], index=error_investment.index)
-              weird_dict[method] = weird_dict[method]._append(error_df)
+      # Sorting the QIN and QPL odds values by combString in ascending order
+      odds_values["QIN"].sort(key=lambda x: x[0])
+      odds_values["QPL"].sort(key=lambda x: x[0])
 
-def get_data():
-    for type in types:
-        if type != 'trio':
-          odds_data, investment_data = download_data(type,race_no,venue,Date)
-        if type == 'winplaodds':
-            get_win_pla_data(odds_data, investment_data)
-        elif type == 'qin':
-            get_qin_data(odds_data, investment_data,type)
-        elif type == 'qpl':
-            get_qpl_data(odds_data, investment_data,type)
-        elif type == 'fct':
-            get_fct_data(odds_data, investment_data,type)
-    get_overall_investment()
+      #print("WIN Odds Values:", odds_values["WIN"])
+      #print("PLA Odds Values:", odds_values["PLA"])
+      #print("QIN Odds Values (sorted by combString):", [value for _, value in odds_values["QIN"]])
+      #print("QPL Odds Values (sorted by combString):", [value for _, value in odds_values["QPL"]])
 
-def get_fct_data(odds_data, investment_data,type):
-  method = type
-  combination = []
-  for i in odds_data['OUT'].split('#'):
-          time = datetime.now() + datere.relativedelta(hours=8)
-          for j in i.split(';')[1:]:
-              if '=' in j:
-                  odd = j.split('=')
-              if not combination:
-                  combination = [odd[0]]
-              else:
-                  combination.append(odd[0])
-          odds = pd.DataFrame(index=[pd.to_datetime(time.strftime('%Y-%m-%d %H:%M:%S'))], columns=combination)
-          for j in i.split(';')[1:]:
-              if '=' in j:
-                  odd = j.split('=')
-              if odd[1] == 'SCR':
-                  odds[odd[0]] = np.inf
-              else:
-                  odds[odd[0]] = float(odd[1])
-  race_dict[method]['odds']['data'] = race_dict[method]['odds']['data']._append(odds)
-  investment = float(investment_data['inv'][4]['value']) * 0.805
-  investment_df = round(pd.DataFrame(investment / odds) / 1000, 1)
-  race_dict[method]['investment']['data'] = race_dict[method]['investment']['data']._append(investment_df)
+      return odds_values
+  else:
+      print(f"Error: {response.status_code}")
 
-  for horse in range(1, total_no_of_horse + 1):
-      data_odds = pd.DataFrame(index=[pd.to_datetime(time.strftime('%Y-%m-%d %H:%M:%S'))])
-      data_investment = pd.DataFrame(index=[pd.to_datetime(time.strftime('%Y-%m-%d %H:%M:%S'))])
-      for i in combination:
-        if str(horse) in i.split('-'):
-          indicator = i
-          data_odds[indicator] = odds[indicator]
-          data_investment[indicator] = investment_df[indicator]
-      horse_dict[f'No.{horse}'][method]['odds'] = horse_dict[f'No.{horse}'][method]['odds']._append(data_odds)
-      horse_dict[f'No.{horse}'][method]['investment'] = horse_dict[f'No.{horse}'][method]['investment']._append(data_investment)
-  if len(race_dict[method]['odds']['data'].index) > 1:
-          previous_odds = race_dict[method]['odds']['data'].iloc[[-2]]
-          current_odds = race_dict[method]['odds']['data'].iloc[[-1]]
-          current_investment = race_dict[method]['investment']['data'].iloc[[-1]]
-          expected_investment = pd.DataFrame(investment / previous_odds) / 1000
-          error_investment = current_investment - expected_investment.values
-          for combination in error_investment.columns:
-              error = round(error_investment[combination].values[0],1)
-              benchmark = benchmark_fct
-              if error > benchmark:
-                if error < benchmark * 2 :
-                      highlight = '-'
-                elif error < benchmark * 3 :
-                      highlight = '*'
-                elif error < benchmark * 4 :
-                      highlight = '**'
-                else:
-                      highlight = '***'
-                error_df = pd.DataFrame([[combination, error,current_odds[combination].values, highlight]], columns=['No.', 'error','odds', 'Highlight'], index=error_investment.index)
-                weird_dict[method] = weird_dict[method]._append(error_df)
-def print_data():
+def save_odds_data(time_now,odds):
+  for method in methodlist:
+      if method in ['WIN', 'PLA']:
+        if odds_dict[method].empty:
+            # Initialize the DataFrame with the correct number of columns
+            odds_dict[method] = pd.DataFrame(columns=np.arange(1, len(odds[method]) + 1))
+        odds_dict[method].loc[time_now] = odds[method]
+      elif method in ['QIN','QPL']:
+        combination, odds_array = zip(*odds['QIN'])
+        if odds_dict[method].empty:
+          odds_dict[method] = pd.DataFrame(columns=combination)
+        # Set the values with the specified index
+        odds_dict[method].loc[time_now] = odds_array
+
+def save_investment_data(time_now,investment,odds):
+  for method in methodlist:
+      if method in ['WIN', 'PLA']:
+        if investment_dict[method].empty:
+            # Initialize the DataFrame with the correct number of columns
+            investment_dict[method] = pd.DataFrame(columns=np.arange(1, len(odds[method]) + 1))
+        investment_df = [round(investments[method][0] * 0.825 / 1000 / odd, 2) for odd in odds[method]]
+        investment_dict[method].loc[time_now] = investment_df
+      elif method in ['QIN','QPL']:
+        combination, odds_array = zip(*odds['QIN'])
+        if investment_dict[method].empty:
+          investment_dict[method] = pd.DataFrame(columns=combination)
+        investment_df = [round(investments[method][0] * 0.825 / 1000 / odd, 2) for odd in odds_array]
+        # Set the values with the specified index
+        investment_dict[method].loc[time_now] = investment_df
+
+def print_data(time_now,period):
   for watch in watchlist:
-    if watch == 'WIN':
-      readline = 10
-    elif watch == 'PLA':
-      readline = 10
-    data = race_dict[watch]['odds']['data'].tail(readline)
-    idx = data.index.time
-    df = data.set_index(idx)
+    data = odds_dict[watch].tail(period)
+    data.index = data.index.strftime('%H:%M:%S')
+    if watch in ['WIN','PLA']:
+      data.columns = numbered_dict[race_no]
     with pd.option_context('display.max_rows', None, 'display.max_columns',None):  # more options can be specified also
         name = methodCHlist[methodlist.index(watch)]
-        st.write(f'{name} 賠率')
-        df
-# 賠率改變
-def find_diff():
-  for method in methodlist:
-      for focus in focuslist:
-          if focus == 'odds':
-              diff_df = race_dict[method][focus]['data'].replace('SCR',0).pct_change()*100
+        print(f'{name} 賠率')
+        data
+
+def investment_combined(time_now,method,df):
+  sums = {}
+  for col in df.columns:
+      # Split the column name to get the numbers
+      num1, num2 = col.split(',')
+      # Convert to integers
+      num1, num2 = int(num1), int(num2)
+
+      # Sum the column values
+      col_sum = df[col].sum()
+
+      # Add the sum to the corresponding numbers in the dictionary
+      if num1 in sums:
+          sums[num1] += col_sum
+      else:
+          sums[num1] = col_sum
+
+      if num2 in sums:
+          sums[num2] += col_sum
+      else:
+          sums[num2] = col_sum
+
+  # Convert the sums dictionary to a dataframe for better visualization
+  sums_df = pd.DataFrame([sums],index = [time_now]) /2
+  return sums_df
+
+def get_overall_investment(time_now,dict):
+    investment_df = investment_dict
+    no_of_horse = len(investment_df['WIN'].columns)
+    total_investment_df = pd.DataFrame(index =[time_now], columns=np.arange(1,no_of_horse +1))
+    for method in methodlist:
+      if method in ['WIN','PLA']:
+        overall_investment_dict[method] = overall_investment_dict[method]._append(investment_dict[method].tail(1))
+      elif method in ['QIN','QPL']:
+        overall_investment_dict[method] = overall_investment_dict[method]._append(investment_combined(time_now,method,investment_dict[method].tail(1)))
+
+    for horse in range(1,no_of_horse+1):
+        total_investment = 0
+        for method in methodlist:
+            if method in ['WIN', 'PLA']:
+                investment = overall_investment_dict[method][horse].values[-1]
+            elif method in ['QIN','QPL']:
+                investment = overall_investment_dict[method][horse].values[-1]
+            total_investment += investment
+        total_investment_df[horse] = total_investment
+    overall_investment_dict['overall'] = overall_investment_dict['overall']._append(total_investment_df)
+
+def print_bar_chart(time_now):
+  post_time = post_time_dict[race_no]
+  time_25_minutes_before = np.datetime64(post_time - timedelta(minutes=25) + timedelta(hours=8))
+  time_5_minutes_before = np.datetime64(post_time - timedelta(minutes=5) + timedelta(hours=8))
+
+  for method in print_list:
+    fig, ax1 = plt.subplots(figsize=(12, 6))
+    odds_list = pd.DataFrame()
+    if method == 'overall':
+          df = overall_investment_dict[method]
+          change_data = diff_dict[method].iloc[-1]
+    elif method == 'qin_qpl':
+          df = overall_investment_dict['QIN'] + overall_investment_dict['QPL']
+          change_data = diff_dict['QIN'].sum(axis = 0) + diff_dict['QPL'].sum(axis = 0)
+    elif method == 'qin':
+          df = overall_investment_dict['QIN']
+          change_data = diff_dict[method].sum(axis = 0)
+    elif method in ['WIN', 'PLA']:
+          df = overall_investment_dict[method]
+          odds_list = odds_dict[method]
+          change_data = diff_dict[method].sum(axis = 0)
+
+    df.index = pd.to_datetime(df.index)
+    df_1st = pd.DataFrame()
+    df_2nd = pd.DataFrame()
+    df_3rd = pd.DataFrame()
+
+    df_1st = df[df.index< time_25_minutes_before].tail(1)
+
+    df_2nd = df[(df.index >= time_25_minutes_before) & (df.index < time_5_minutes_before)].tail(1)
+
+    df_3rd = df[df.index>= time_5_minutes_before].tail(1)
+
+    change_df = pd.DataFrame([change_data],columns=change_data.index,index =[df.index[-1]])
+    if method in ['WIN', 'PLA']:
+        odds_list.index = pd.to_datetime(odds_list.index)
+        odds_1st = odds_list[odds_list.index< time_25_minutes_before].tail(1)
+        odds_2nd = odds_list[(odds_list.index >= time_25_minutes_before) & (odds_list.index < time_5_minutes_before)].tail(1)
+        odds_3rd = odds_list[odds_list.index>= time_5_minutes_before].tail(1)
+
+    bars_1st = None
+    bars_2nd = None
+    bars_3rd = None
+    data_df = df_1st._append(df_2nd)
+    final_data_df = data_df._append(df_3rd)
+    sorted_final_data_df = final_data_df.sort_values(by=final_data_df.index[0], axis=1, ascending=False)
+    diff = sorted_final_data_df.diff().dropna()
+    diff[diff < 0] = 0
+    X = sorted_final_data_df.columns
+    X_axis = np.arange(len(X))
+    sorted_change_df = change_df[X]
+    if not df_1st.empty:
+        if df_2nd.empty:
+              bars_1st = ax1.bar(X_axis, sorted_final_data_df.iloc[0], 0.4, label='投注額', color='pink')
+        else:
+              bars_2nd = ax1.bar(X_axis - 0.3, sorted_final_data_df.iloc[1], 0.3, label='25分鐘', color='blue')
+              bar = ax1.bar(X_axis+0.3,sorted_change_df.iloc[0],0.3,label='改變',color='grey')
+              if not df_3rd.empty:
+                  bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
+    else:
+          if not df_2nd.empty:
+              bars_2nd = ax1.bar(X_axis - 0.3, sorted_final_data_df.iloc[0], 0.3, label='25分鐘', color='blue')
+              bar = ax1.bar(X_axis+0.3,sorted_change_df.iloc[0],0.3,label='改變',color='grey')
+              if not df_3rd.empty:
+                  bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
           else:
-              diff_df = race_dict[method][focus]['data'].replace('SCR', 0).diff()
-          diff_df = diff_df.replace(np.nan,0)
-          sign_df = np.sign(diff_df)
-          sign_df = sign_df.replace(0,'.')
-          sign_df = sign_df.replace(1, '+')
-          sign_df = sign_df.replace(-1, '-')
-          race_dict[method][focus]['diff'] = round(diff_df,2)
-          race_dict[method][focus]['sign'] = sign_df
+              bars_3rd = ax1.bar(X_axis-0.2, sorted_final_data_df.iloc[0], 0.4, label='5分鐘', color='red')
+              bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
+
+      # Add numbers above bars
+    if method in ['WIN', 'PLA']:
+        if bars_2nd is not None:
+          sorted_odds_list_2nd = odds_2nd[X].iloc[0]
+          for bar, odds in zip(bars_2nd, sorted_odds_list_2nd):
+              yval = bar.get_height()
+              ax1.text(bar.get_x() + bar.get_width() / 2, yval, odds, ha='center', va='bottom')
+        if bars_3rd is not None:
+          sorted_odds_list_3rd = odds_3rd[X].iloc[0]
+          for bar, odds in zip(bars_3rd, sorted_odds_list_3rd):
+                yval = bar.get_height()
+                ax1.text(bar.get_x() + bar.get_width() / 2, yval, odds, ha='center', va='bottom')
+        elif bars_1st is not None:
+          sorted_odds_list_1st = odds_1st[X].iloc[0]
+          for bar, odds in zip(bars_1st, sorted_odds_list_1st):
+              yval = bar.get_height()
+              ax1.text(bar.get_x() + bar.get_width() / 2, yval, odds, ha='center', va='bottom')
+
+    namelist_sort = [numbered_dict[race_no][i - 1] for i in X]
+    formatted_namelist = [label.split('.')[0] + '.' + '\n'.join(label.split('.')[1]) for label in namelist_sort]
+    plt.xticks(X_axis, formatted_namelist, fontsize=12)
+    ax1.grid(color='lightgrey', axis='y', linestyle='--')
+    ax1.set_ylabel('投注額',fontsize=15)
+    ax1.tick_params(axis='y')
+    fig.legend()
+
+    if method == 'overall':
+          plt.title('綜合', fontsize=15)
+    elif method == 'qin_qpl':
+          plt.title('連贏 / 位置Q', fontsize=15)
+    elif method == 'qin':
+          plt.title('連贏', fontsize=15)
+    elif method == 'WIN':
+          plt.title('獨贏', fontsize=15)
+    elif method == 'PLA':
+          plt.title('位置', fontsize=15)
+
+    st.pyplot(fig)
+
+def weird_data(investments):
+  for method in methodlist:
+    latest_investment = investment_dict[method].tail(1).values
+    last_time_odds = odds_dict[method].tail(2).head(1)
+    expected_investment = investments[method][0]*0.825 / 1000 / last_time_odds
+    diff = latest_investment - expected_investment
+    if method in ['WIN','PLA']:
+        diff_dict[method] = diff_dict[method]._append(diff)
+    elif method in ['QIN','QPL']:
+        diff_dict[method] = diff_dict[method]._append(investment_combined(time_now,method,diff))
+    benchmark = benchmark_dict.get(method)
+    diff.index = diff.index.strftime('%H:%M:%S')
+    for index in investment_dict[method].tail(1).columns:
+      error = diff[index].values[0]
+      error_df = []
+      if error > benchmark:
+        if error < benchmark * 2 :
+          highlight = '-'
+        elif error < benchmark * 3 :
+          highlight = '*'
+        elif error < benchmark * 4 :
+          highlight = '**'
+        else:
+          highlight = '***'
+        error_df = pd.DataFrame([[index,error,odds_dict[method].tail(1)[index].values,highlight]], columns=['No.', 'error','odds', 'Highlight'],index = diff.index)
+      weird_dict[method] = weird_dict[method]._append(error_df)
+
+def change_overall(time_now):
+  total_investment = diff_dict['WIN'].sum(axis=0)+diff_dict['PLA'].sum(axis=0)+diff_dict['QIN'].sum(axis=0)+diff_dict['QPL'].sum(axis=0)
+  total_investment_df = pd.DataFrame([total_investment],index = [time_now])
+  diff_dict['overall'] = diff_dict['overall']._append(total_investment_df)
 
 def print_concern_weird_dict():
     for method in methodlist:
         name = methodCHlist[methodlist.index(method)]
-        st.write(f'{name} 異常投注')
-        printColumns = st.columns(2)
-        data = weird_dict[method]
-        if not data.empty:
-            idx = data.tail(20).index.time
-            df = data.tail(20).set_index(idx)
-        else:
-            df = data.tail(20)
-        with printColumns[0]:
-            df
-        with printColumns[1]:
-            df.value_counts('No.').to_frame().T
-def print_bar_chart():
-    for method in ['overall','qin_qpl','PLA']:
-        fig,ax = plt.subplots()
-        if method == 'overall':
-            df = overall_investment_dict[method]
-        elif method == 'qin_qpl':
-            df = overall_investment_dict['qin'] + overall_investment_dict['qpl']
-        else:
-            df = race_dict[method]['investment']['data']
-        first_interval = racetime_df[race_no]["25_minutes_before"]
-        second_interval = racetime_df[race_no]["5_minutes_before"]
-        time = pd.to_datetime(df.index,format = '%H:%M:%S')
-        df_before = df[df.index < first_interval]
-        data_before = df_before.tail(1)
-        df_1st = df[df.index >= first_interval]
-        df_1st = df_1st[df_1st.index < second_interval]
-        data_1st = df_1st.tail(1)
-        df_2nd = df[df.index >= second_interval]
-        data_2nd = df_2nd.tail(1)
-        data_df = data_before._append(data_1st)
-        data_df = data_df._append(data_2nd)
-        if len(data_df.index) >1:
-          data_df = data_df._append(df.iloc[[-1]])
-        data_df = data_df.sort_values(by=data_df.index[0], axis=1, ascending=False)
-        diff = data_df.diff().dropna()
-        diff[diff<0] = 0
-        X = data_df.columns
-        X_axis = np.arange(len(X))
-        if not data_before.empty:
-          if data_1st.empty:
-            plt.bar(X_axis,data_df.iloc[0],0.4,label='投注額',color ='pink')
-          else:
-              plt.bar(X_axis-0.2, diff.iloc[0], 0.4, label='25分鐘', color='blue')
-              if not data_2nd.empty:
-                plt.bar(X_axis+0.2, diff.iloc[1], 0.4, label='5分鐘', color='red')
-        else:
-          if not data_1st.empty:
-            plt.bar(X_axis-0.2, data_df.iloc[0], 0.4, label='25分鐘', color='blue')
-            if not data_2nd.empty:
-                plt.bar(X_axis+0.2, diff.iloc[0], 0.4, label='5分鐘', color='red')
-          else:
-            plt.bar(X_axis,data_df.iloc[0],0.4,label = '3分鐘',color = 'red')
-        namelist_sort = namelist[X].loc['馬名']
-        formatted_namelist = [label.split('.')[0] + '\n' + '\n'.join(label.split('.')[1]) for label in namelist_sort]
-        plt.xticks(X_axis, formatted_namelist,fontsize = 12)
-        plt.grid(color = 'lightgrey' , axis = 'y',linestyle = '--')
-        plt.xlabel("No.",fontsize = 10)
-        plt.ylabel("投注額",fontsize = 10)
-        plt.legend()
-        if method == 'overall':
-          plt.title('綜合',fontsize = 15)
-        elif method == 'qin_qpl':
-          plt.title('連贏 / 位置Q',fontsize = 15)
-        elif method == 'PLA':
-          plt.title('位置',fontsize = 15)
-        st.pyplot(fig)
-        
-def get_overall_investment():
-    total_investment_df = pd.DataFrame(index =[horse_dict[f'No.{1}']['WIN']['investment'].index[-1]], columns=np.arange(total_no_of_horse)+1)
-    investment_df = pd.DataFrame(index=[horse_dict[f'No.{1}']['WIN']['investment'].index[-1]],columns=np.arange(total_no_of_horse) + 1)
-    for method in methodlist:
-        overall_investment_dict[method] = overall_investment_dict[method]._append(investment_df)
-    for horse in range(1,total_no_of_horse+1):
-        total_investment = 0
-        for method in methodlist:
-            if method == 'WIN' or method == 'PLA':
-                investment = horse_dict[f'No.{horse}'][method]['investment'].iloc[-1].values
-            elif method == 'qin' or method == 'qpl' or method == 'fct':
-                investment = horse_dict[f'No.{horse}'][method]['investment'].iloc[-1].sum() /2
-            elif method == 'trio':
-                investment = horse_dict[f'No.{horse}'][method]['investment'].iloc[-1].sum() /3
-            total_investment = investment + total_investment
-            overall_investment_dict[method].iloc[-1,(horse-1)] = investment
-        total_investment_df[horse] = total_investment
-    overall_investment_dict['overall'] = overall_investment_dict['overall']._append(total_investment_df)
+        print(f'{name} 異常投注')
+        df = weird_dict[method]
+        df.tail(20)[::-1]
+        count = df.value_counts('No.')
+        count.to_frame().T
 
+def print_highlight():
+  df = weird_dict['QIN']
+  if not df.empty:
+    filtered_df = df[df['Highlight'] == '***']
+    if not filtered_df.empty:
+      crosstab = pd.crosstab(filtered_df['No.'],filtered_df['Highlight']).sort_values(by='***', ascending=False)
+      crosstab
 
-page = 'https://bet2.hkjc.com/racing/getJSON.aspx?'
-types = ['winplaodds','qin','qpl','fct']
-methodlist = ['WIN','PLA','qin','qpl','fct']
+def main(time_now,odds,investments,period):
+  save_odds_data(time_now,odds)
+  save_investment_data(time_now,investments,odds)
+  print_data(time_now,period)
+  get_overall_investment(time_now,investments)
+  weird_data(investments)
+  change_overall(time_now)
+  print_concern_weird_dict()
+  print_bar_chart(time_now)
+  print_highlight()
+
+list1 = ['WIN','PLA','QIN','QPL']
+list2 = ['WIN','PLA','QIN']
 watchlist = ['WIN','PLA']
-focuslist = ['odds','investment']
-categorylist = ['data','diff','sign']
-methodCHlist = ['獨贏','位置','連贏','位置Q','二重彩']
+list1_ch = ['獨贏','位置','連贏','位置Q']
+list2_ch = ['獨贏','位置','連贏']
+
+print_list_1 = ['overall', 'qin_qpl', 'WIN', 'PLA']
+print_list_2 = ['overall', 'qin', 'WIN', 'PLA']
+
+methodlist = list1
+methodCHlist = list1_ch
+print_list = print_list_1
 
 infoColumns = st.columns(3)
 with infoColumns[0]:
@@ -411,7 +461,7 @@ with infoColumns[2]:
     )
 
 # 基準
-benchmarkColumns = st.columns(5)
+benchmarkColumns = st.columns(4)
     ## 獨贏
 with benchmarkColumns[0]:
         benchmark_win = st.number_input('獨贏',min_value=0,value=25,step=1)
@@ -424,44 +474,13 @@ with benchmarkColumns[2]:
     ## 位置Q
 with benchmarkColumns[3]:
         benchmark_qpl = st.number_input('位置Q',min_value=0,value=150,step=1)
-    ## 二重彩
-with benchmarkColumns[4]:
-        benchmark_fct = st.number_input('二重彩',min_value=0,value=5,step=1)
 
-
-detailf = 'https://bet2.hkjc.com/racing/script/rsdata.js?lang=ch&date='
-detail = detailf + Date + '&venue=' + venue + '&CV=CRQ000000146332_BAU'
-rsdata = requests.get(detail)
-text = rsdata.text.split('\n')
-for line in text:
-    if 'racePostTime' in line:
-        raceposttime = line.split(' = ')[1].replace(";", "").replace("[", "").replace("]", "").replace('"', "").split(',')[1:]
-racetime_df = pd.DataFrame(index=['Time', '25_minutes_before','5_minutes_before'])
-for i in range(0, len(raceposttime)):
-    racetime = datetime.strptime(raceposttime[i], '%Y-%m-%d %H:%M:%S')
-    first_interval = racetime - timedelta(minutes = 25)
-    second_interval = racetime - timedelta(minutes = 5)
-    racetime_df[i + 1] = [racetime, first_interval,second_interval]
-
-link = 'https://bet2.hkjc.com/racing/pages/odds_wp.aspx?lang=ch&date='+Date+'&venue='+venue+'&raceno='+str(race_no)
-data = requests.get(link)
-text = data.text.split('\n')
-namelist = pd.DataFrame(index=['馬名','騎師'])
-
-for line in text:
-    if 'normalRunnerList' in line:
-      j=1
-      for i in line.split(','):
-        if 'nameCh' in i:
-          k = i.split(':')[-1].replace('"','')
-          name = f'{j}.{k}'
-        if 'jockeyNameCh' in i:
-          jockeyname = i.split(':')[-1].replace('"','')
-          namelist[j] = [name,jockeyname]
-          j+=1
-namelist
-total_no_of_horse = len(namelist.columns)
-st.write(f'總馬匹:{total_no_of_horse}')
+benchmark_dict = {
+      "WIN": benchmark_win,
+      "PLA": benchmark_pla,
+      "QIN": benchmark_qin,
+      "QPL": benchmark_qpl
+  }
 
 
 if 'reset' not in st.session_state:
@@ -472,29 +491,262 @@ def click_start_button():
 
 st.button('開始',on_click=click_start_button)
 
+url = 'https://info.cld.hkjc.com/graphql/base/'
+headers = {'Content-Type': 'application/json'}
+payload = {
+    "operationName": "raceMeetings",
+    "variables": {"date": str(Date), "venueCode": venue},
+    "query": """
+    fragment raceFragment on Race {
+      id
+      no
+      status
+      raceName_en
+      raceName_ch
+      postTime
+      country_en
+      country_ch
+      distance
+      wageringFieldSize
+      go_en
+      go_ch
+      ratingType
+      raceTrack {
+        description_en
+        description_ch
+      }
+      raceCourse {
+        description_en
+        description_ch
+        displayCode
+      }
+      claCode
+      raceClass_en
+      raceClass_ch
+      judgeSigns {
+        value_en
+      }
+    }
+
+    fragment racingBlockFragment on RaceMeeting {
+      jpEsts: pmPools(
+        oddsTypes: [TCE, TRI, FF, QTT, DT, TT, SixUP]
+        filters: ["jackpot", "estimatedDividend"]
+      ) {
+        leg {
+          number
+          races
+        }
+        oddsType
+        jackpot
+        estimatedDividend
+        mergedPoolId
+      }
+      poolInvs: pmPools(
+        oddsTypes: [WIN, PLA, QIN, QPL, CWA, CWB, CWC, IWN, FCT, TCE, TRI, FF, QTT, DBL, TBL, DT, TT, SixUP]
+      ) {
+        id
+        leg {
+          races
+        }
+      }
+      penetrometerReadings(filters: ["first"]) {
+        reading
+        readingTime
+      }
+      hammerReadings(filters: ["first"]) {
+        reading
+        readingTime
+      }
+      changeHistories(filters: ["top3"]) {
+        type
+        time
+        raceNo
+        runnerNo
+        horseName_ch
+        horseName_en
+        jockeyName_ch
+        jockeyName_en
+        scratchHorseName_ch
+        scratchHorseName_en
+        handicapWeight
+        scrResvIndicator
+      }
+    }
+
+    query raceMeetings($date: String, $venueCode: String) {
+      timeOffset {
+        rc
+      }
+      activeMeetings: raceMeetings {
+        id
+        venueCode
+        date
+        status
+        races {
+          no
+          postTime
+          status
+          wageringFieldSize
+        }
+      }
+      raceMeetings(date: $date, venueCode: $venueCode) {
+        id
+        status
+        venueCode
+        date
+        totalNumberOfRace
+        currentNumberOfRace
+        dateOfWeek
+        meetingType
+        totalInvestment
+        country {
+          code
+          namech
+          nameen
+          seq
+        }
+        races {
+          ...raceFragment
+          runners {
+            id
+            no
+            standbyNo
+            status
+            name_ch
+            name_en
+            horse {
+              id
+              code
+            }
+            color
+            barrierDrawNumber
+            handicapWeight
+            currentWeight
+            currentRating
+            internationalRating
+            gearInfo
+            racingColorFileName
+            allowance
+            trainerPreference
+            last6run
+            saddleClothNo
+            trumpCard
+            priority
+            finalPosition
+            deadHeat
+            winOdds
+            jockey {
+              code
+              name_en
+              name_ch
+            }
+            trainer {
+              code
+              name_en
+              name_ch
+            }
+          }
+        }
+        obSt: pmPools(oddsTypes: [WIN, PLA]) {
+          leg {
+            races
+          }
+          oddsType
+          comingleStatus
+        }
+        poolInvs: pmPools(
+          oddsTypes: [WIN, PLA, QIN, QPL, CWA, CWB, CWC, IWN, FCT, TCE, TRI, FF, QTT, DBL, TBL, DT, TT, SixUP]
+        ) {
+          id
+          leg {
+            number
+            races
+          }
+          status
+          sellStatus
+          oddsType
+          investment
+          mergedPoolId
+          lastUpdateTime
+        }
+        ...racingBlockFragment
+        pmPools(oddsTypes: []) {
+          id
+        }
+        jkcInstNo: foPools(oddsTypes: [JKC], filters: ["top"]) {
+          instNo
+        }
+        tncInstNo: foPools(oddsTypes: [TNC], filters: ["top"]) {
+          instNo
+        }
+      }
+    }
+    """
+}
+
+# Make a POST request to the API
+response = requests.post(url, json=payload)
+
+# Check if the request was successful
+if response.status_code == 200:
+    data = response.json()
+    # Extract the 'race_no' and 'name_ch' fields and save them into a dictionary
+    race_meetings = data.get('data', {}).get('raceMeetings', [])
+    race_dict = {}
+    post_time_dict = {}
+    for meeting in race_meetings:
+        for race in meeting.get('races', []):
+            race_no = race["no"]
+            post_time = race.get("postTime", "Field not found")
+            time_part = datetime.fromisoformat(post_time)
+            post_time_dict[race_no] = time_part
+            race_dict[race_no] = {"馬名": [], "騎師": [],'練馬師':[],'最近賽績':[]}
+            for runner in race.get('runners', []):
+              if runner.get('standbyNo') == "":
+                name_ch = runner.get('name_ch', 'Field not found')
+                jockey_name_ch = runner.get('jockey', {}).get('name_ch', 'Field not found')
+                trainer_name_ch = runner.get('trainer', {}).get('name_ch', 'Field not found')
+                last6run = runner.get('last6run', 'Field not found')
+                race_dict[race_no]["馬名"].append(name_ch)
+                race_dict[race_no]["騎師"].append(jockey_name_ch)
+                race_dict[race_no]["練馬師"].append(trainer_name_ch)
+                race_dict[race_no]["最近賽績"].append(last6run)
+    
+
+else:
+    print(f'Failed to retrieve data. Status code: {response.status_code}')
+
+race_dataframes = {}
+numbered_dict ={}
+
+for race_no in race_dict:
+    df = pd.DataFrame(race_dict[race_no])
+    df.index += 1  # Set index to start from 1
+    numbered_list = [f"{i+1}. {name}" for i, name in enumerate(race_dict[race_no]['馬名'])]
+    numbered_dict[race_no] = numbered_list
+    race_dataframes[race_no] = df
 
 if st.session_state.reset:
-    race_dict={}
-    concern_dict = {}
-    horse_dict = {}
-    weird_dict = {}
+    odds_dict = {}
+    for method in methodlist:
+        odds_dict[method] = pd.DataFrame()
+    investment_dict = {}
+    for method in methodlist:
+        investment_dict[method] = pd.DataFrame()
     overall_investment_dict = {}
     for method in methodlist:
-        race_dict.setdefault(method,{})
-        for focus in focuslist:
-            race_dict[method].setdefault(focus,{})
-            for category in categorylist:
-                race_dict[method][focus][category] = pd.DataFrame()
-        concern_dict.setdefault(method,pd.DataFrame([],columns=['No.','Old','New','Diff','Highlight']))
-        weird_dict.setdefault(method,pd.DataFrame([],columns=['No.','error','odds','Highlight']))
         overall_investment_dict.setdefault(method, pd.DataFrame())
     overall_investment_dict.setdefault('overall',pd.DataFrame())
-    for horse in range(1,total_no_of_horse+1):
-        horse_dict.setdefault(f'No.{horse}',{})
-        for method in methodlist:
-            horse_dict[f'No.{horse}'].setdefault(method, {})
-            for focus in focuslist:
-                horse_dict[f'No.{horse}'][method].setdefault(focus,pd.DataFrame())
+    weird_dict = {}
+    for method in methodlist:
+        weird_dict.setdefault(method,pd.DataFrame([],columns=['No.','error','odds','Highlight']))
+    diff_dict = {}
+    for method in methodlist:
+        diff_dict.setdefault(method, pd.DataFrame())
+    diff_dict.setdefault('overall',pd.DataFrame())
+    print(f"DataFrame for Race No: {race_no}")
+    race_dataframes[race_no]
 
     start_time = time.time()
     end_time = start_time + 60*100
@@ -502,9 +754,11 @@ if st.session_state.reset:
     with st.empty():
         while time.time() <= end_time:
             with st.container():
-                get_data()
-                find_diff()
-                print_data()
-                print_concern_weird_dict()
-                print_bar_chart()
-                time.sleep(10)
+                time_now = datetime.now() + datere.relativedelta(hours=8)
+                odds = get_odds_data()
+                investments = get_investment_data()
+                period = 10
+                main(time_now,odds,investments,period)
+                time.sleep(8)
+
+
