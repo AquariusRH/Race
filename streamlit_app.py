@@ -711,33 +711,33 @@ if not st.session_state.api_called:
             post_time_dict = {}
             for meeting in race_meetings:
                 for race in meeting.get('races', []):
-                    race_no = race["no"]
+                    race_number = race["no"]
                     post_time = race.get("postTime", "Field not found")
                     time_part = datetime.fromisoformat(post_time)
                     post_time_dict[race_no] = time_part
-                    race_dict[race_no] = {"馬名": [], "騎師": [],'練馬師':[],'最近賽績':[]}
+                    race_dict[race_number] = {"馬名": [], "騎師": [],'練馬師':[],'最近賽績':[]}
                     for runner in race.get('runners', []):
                         if runner.get('standbyNo') == "":
                             name_ch = runner.get('name_ch', 'Field not found')
                             jockey_name_ch = runner.get('jockey', {}).get('name_ch', 'Field not found')
                             trainer_name_ch = runner.get('trainer', {}).get('name_ch', 'Field not found')
                             last6run = runner.get('last6run', 'Field not found')
-                            race_dict[race_no]["馬名"].append(name_ch)
-                            race_dict[race_no]["騎師"].append(jockey_name_ch)
-                            race_dict[race_no]["練馬師"].append(trainer_name_ch)
-                            race_dict[race_no]["最近賽績"].append(last6run)
+                            race_dict[race_number]["馬名"].append(name_ch)
+                            race_dict[race_number]["騎師"].append(jockey_name_ch)
+                            race_dict[race_number]["練馬師"].append(trainer_name_ch)
+                            race_dict[race_number]["最近賽績"].append(last6run)
                 
             race_dataframes = {}
             numbered_dict = {}
     else:
             print(f'Failed to retrieve data. Status code: {response.status_code}')
 
-    for race_no in race_dict:
-            df = pd.DataFrame(race_dict[race_no])
+    for race_number in race_dict:
+            df = pd.DataFrame(race_dict[race_number])
             df.index += 1  # Set index to start from 1
-            numbered_list = [f"{i+1}. {name}" for i, name in enumerate(race_dict[race_no]['馬名'])]
-            numbered_dict[race_no] = numbered_list
-            race_dataframes[race_no] = df
+            numbered_list = [f"{i+1}. {name}" for i, name in enumerate(race_dict[race_number]['馬名'])]
+            numbered_dict[race_number] = numbered_list
+            race_dataframes[race_number] = df
     
 st.button('開始',on_click=click_start_button)
 
