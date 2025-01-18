@@ -30,9 +30,9 @@ def get_investment_data():
   payload_investment = {
       "operationName": "racing",
       "variables": {
-          "date": str(date_picker.value),
-          "venueCode": place_dropdown.value,
-          "raceNo": int(race_dropdown.value),
+          "date": str(Date),
+          "venueCode": place,
+          "raceNo": int(race_no),
           "oddsTypes": methodlist
       },
       "query": """
@@ -92,9 +92,9 @@ def get_odds_data():
   payload_odds = {
       "operationName": "racing",
       "variables": {
-          "date": str(date_picker.value),
-          "venueCode": place_dropdown.value,
-          "raceNo": int(race_dropdown.value),
+          "date": str(Date),
+          "venueCode": place,
+          "raceNo": int(race_no),
           "oddsTypes": methodlist
       },
       "query": """
@@ -456,19 +456,13 @@ with benchmarkColumns[2]:
 with benchmarkColumns[3]:
     benchmark_qpl = st.number_input('位置Q:', min_value=0, value=150, step=1)
 
-# Display the checkboxes
-checkbox_win = st.checkbox("WIN", value=True)
-checkbox_pla = st.checkbox("PLA", value=True)
-checkbox_qin = st.checkbox("QIN")
-checkbox_qpl = st.checkbox("QPL")
 
 # Display the checkbox for 沒有位置Q
 checkbox_no_qpl = st.checkbox('沒有位置Q', value=False)
 
 # Initialize variables
 race_no_value = None
-watchlist = []
-watchlist.extend([checkbox_win, checkbox_pla])
+watchlist = ['WIN','PLA']
 
 list1 = ['WIN','PLA','QIN','QPL']
 list2 = ['WIN','PLA','QIN']
@@ -482,27 +476,6 @@ print_list_2 = ['overall', 'qin', 'WIN', 'PLA']
 methodlist = list1
 methodCHlist = list1_ch
 print_list = print_list_1
-
-# Update watchlist based on checkbox changes
-if checkbox_win:
-    watchlist.append("WIN")
-else:
-    watchlist.remove("WIN")
-
-if checkbox_pla:
-    watchlist.append("PLA")
-else:
-    watchlist.remove("PLA")
-
-if checkbox_qin:
-    watchlist.append("QIN")
-else:
-    watchlist.remove("QIN")
-
-if checkbox_qpl:
-    watchlist.append("QPL")
-else:
-    watchlist.remove("QPL")
 
 # Switch lists based on 沒有位置Q checkbox
 if checkbox_no_qpl:
@@ -536,7 +509,7 @@ if not st.session_state.api_called:
     headers = {'Content-Type': 'application/json'}
     payload = {
         "operationName": "raceMeetings",
-        "variables": {"date": str(date_picker.value), "venueCode": place_dropdown.value},
+        "variables": {"date": str(Date), "venueCode": place},
         "query": """
         fragment raceFragment on Race {
         id
