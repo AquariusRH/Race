@@ -440,7 +440,7 @@ with infoColumns[0]:
     Date = st.date_input('日期:', value=datetime.now())
 with infoColumns[1]:
     options = ['ST', 'HV', 'S1', 'S2', 'S3', 'S4', 'S5']
-    venue = st.selectbox('場地:', options)
+    place = st.selectbox('場地:', options)
 with infoColumns[2]:
     race_options = np.arange(1, 12)
     race_no = st.selectbox('場次:', race_options)
