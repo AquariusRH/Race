@@ -15,7 +15,8 @@ from warnings import simplefilter
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 import math
 from streamlit_autorefresh import st_autorefresh
-
+from ipywidgets import interact
+import ipywidgets as widgets
 # Show the page title and description.
 st.set_page_config(page_title="Jockey Race")
 st.title("Jockey Race 賽馬程式")
@@ -29,9 +30,9 @@ def get_investment_data():
   payload_investment = {
       "operationName": "racing",
       "variables": {
-          "date": str(Date),
-          "venueCode": venue,
-          "raceNo": int(race_no),
+          "date": str(date_picker.value),
+          "venueCode": place_dropdown.value,
+          "raceNo": int(race_dropdown.value),
           "oddsTypes": methodlist
       },
       "query": """
@@ -91,9 +92,9 @@ def get_odds_data():
   payload_odds = {
       "operationName": "racing",
       "variables": {
-          "date": str(Date),
-          "venueCode": venue,
-          "raceNo": int(race_no),
+          "date": str(date_picker.value),
+          "venueCode": place_dropdown.value,
+          "raceNo": int(race_dropdown.value),
           "oddsTypes": methodlist
       },
       "query": """
@@ -354,7 +355,7 @@ def print_bar_chart(time_now):
 
     namelist_sort = [numbered_dict[race_no][i - 1] for i in X]
     formatted_namelist = [label.split('.')[0] + '.' + '\n'.join(label.split('.')[1]) for label in namelist_sort]
-    plt.xticks(X_axis, formatted_namelist, fontsize=15)
+    plt.xticks(X_axis, formatted_namelist, fontsize=12)
     ax1.grid(color='lightgrey', axis='y', linestyle='--')
     ax1.set_ylabel('投注額',fontsize=15)
     ax1.tick_params(axis='y')
@@ -433,9 +434,84 @@ def main(time_now,odds,investments,period):
   print_bar_chart(time_now)
   print_highlight()
 
+date_picker = widgets.DatePicker(
+    description='日期:',
+    value=datetime.now(),
+    disabled=False
+)
+options = ['ST','HV','S1','S2','S3','S4','S5']
+place_dropdown = widgets.Dropdown(
+    options=options,
+    value=options[0],
+    description='場地:',
+    disabled=False,
+)
+race_options = np.arange(1,12)
+race_dropdown = widgets.Dropdown(
+    options=race_options,
+    value=race_options[0],
+    description='場次:',
+    disabled=False,
+)
+number_input_win = widgets.IntText(
+    value=25,
+    description='獨贏:',
+    disabled=False
+)
+number_input_pla = widgets.IntText(
+    value=150,
+    description='位置:',
+    disabled=False
+)
+number_input_qin = widgets.IntText(
+    value=25,
+    description='連贏:',
+    disabled=False
+)
+number_input_qpl = widgets.IntText(
+    value=150,
+    description='位置Q:',
+    disabled=False
+)
+checkbox = widgets.Checkbox(
+    value=False,
+    description='沒有位置Q',
+    disabled=False
+)
+checkbox_win = widgets.Checkbox(description="WIN", value=True)
+checkbox_pla = widgets.Checkbox(description="PLA", value=True)
+checkbox_qin = widgets.Checkbox(description="QIN")
+checkbox_qpl = widgets.Checkbox(description="QPL")
+# Step 4: Display the date picker widget
+infoColumns = st.columns(3)
+with infoColumns[0]:
+    date_picker
+with infoColumns[1]:
+    place_dropdown
+with infoColumns[2]:
+    race_dropdown
+
+benchmarkColumns = st.columns(4)
+with benchmarkColumns[0]:
+        number_input_win
+    ## 位置
+with benchmarkColumns[1]:
+        number_input_pla
+    ## 連贏
+with benchmarkColumns[2]:
+        number_input_qin
+    ## 位置Q
+with benchmarkColumns[3]:
+        number_input_qpl
+
+checkbox_win, checkbox_pla, checkbox_qin, checkbox_qpl
+checkbox
+race_no = None
+watchlist = []
+watchlist.extend([checkbox_win.description, checkbox_pla.description])
 list1 = ['WIN','PLA','QIN','QPL']
 list2 = ['WIN','PLA','QIN']
-watchlist = ['WIN','PLA']
+
 list1_ch = ['獨贏','位置','連贏','位置Q']
 list2_ch = ['獨贏','位置','連贏']
 
@@ -445,287 +521,296 @@ print_list_2 = ['overall', 'qin', 'WIN', 'PLA']
 methodlist = list1
 methodCHlist = list1_ch
 print_list = print_list_1
+def on_checkbox_change(change):
+    if change['new']:
+        watchlist.append(change['owner'].description)
+    else:
+        watchlist.remove(change['owner'].description)
 
-infoColumns = st.columns(3)
-with infoColumns[0]:
-    Date = st.date_input('Date').strftime("%Y/%m/%d")
-with infoColumns[1]:
-    venue = st.selectbox(
-        '場地:',
-        ['ST','HV','S1','S2','S3','S4','S5']
-    )
-with infoColumns[2]:
-    race_no = st.selectbox(
-        '場次:',
-        np.arange(1,12)
-    )
+def switch_lists(change):
+    global methodlist
+    global methodCHlist
+    global print_list
+    if change['new']:
+        methodlist = list2
+        methodCHlist = list2_ch
+        print_list = print_list_2
+    else:
+        methodlist = list1
+        methodCHlist = list1_ch
+        print_list = print_list_1
 
-# 基準
-benchmarkColumns = st.columns(4)
-    ## 獨贏
-with benchmarkColumns[0]:
-        benchmark_win = st.number_input('獨贏',min_value=0,value=25,step=1)
-    ## 位置
-with benchmarkColumns[1]:
-        benchmark_pla = st.number_input('位置',min_value=0,value=150,step=1)
-    ## 連贏
-with benchmarkColumns[2]:
-        benchmark_qin = st.number_input('連贏',min_value=0,value=25,step=1)
-    ## 位置Q
-with benchmarkColumns[3]:
-        benchmark_qpl = st.number_input('位置Q',min_value=0,value=150,step=1)
+def save_change(change):
+    new_value = change['new']
+    description = change['owner'].description
 
+def on_change(change):
+    global race_no
+    if change['type'] == 'change' and change['name'] == 'value':
+        race_no = change['new']
+
+race_dropdown.observe(on_change)
+place_dropdown.observe(save_change, names='value')
+number_input_win.observe(save_change, names='value')
+number_input_pla.observe(save_change, names='value')
+number_input_qin.observe(save_change, names='value')
+number_input_qpl.observe(save_change, names='value')
+checkbox_win.observe(on_checkbox_change, names='value')
+checkbox_pla.observe(on_checkbox_change, names='value')
+checkbox_qin.observe(on_checkbox_change, names='value')
+checkbox_qpl.observe(on_checkbox_change, names='value')
+checkbox.observe(switch_lists, names='value')
 benchmark_dict = {
-      "WIN": benchmark_win,
-      "PLA": benchmark_pla,
-      "QIN": benchmark_qin,
-      "QPL": benchmark_qpl
+      "WIN": number_input_win.value,
+      "PLA": number_input_pla.value,
+      "QIN": number_input_qin.value,
+      "QPL": number_input_qpl.value
   }
-
 
 if 'reset' not in st.session_state:
     st.session_state.reset = False
-
+if 'api_called' not in st.session_state:
+    st.session_state.api_called = False
 def click_start_button():
     st.session_state.reset =  True
 
-st.button('開始',on_click=click_start_button)
-
-url = 'https://info.cld.hkjc.com/graphql/base/'
-headers = {'Content-Type': 'application/json'}
-payload = {
-    "operationName": "raceMeetings",
-    "variables": {"date": str(Date), "venueCode": venue},
-    "query": """
-    fragment raceFragment on Race {
-      id
-      no
-      status
-      raceName_en
-      raceName_ch
-      postTime
-      country_en
-      country_ch
-      distance
-      wageringFieldSize
-      go_en
-      go_ch
-      ratingType
-      raceTrack {
-        description_en
-        description_ch
-      }
-      raceCourse {
-        description_en
-        description_ch
-        displayCode
-      }
-      claCode
-      raceClass_en
-      raceClass_ch
-      judgeSigns {
-        value_en
-      }
-    }
-
-    fragment racingBlockFragment on RaceMeeting {
-      jpEsts: pmPools(
-        oddsTypes: [TCE, TRI, FF, QTT, DT, TT, SixUP]
-        filters: ["jackpot", "estimatedDividend"]
-      ) {
-        leg {
-          number
-          races
-        }
-        oddsType
-        jackpot
-        estimatedDividend
-        mergedPoolId
-      }
-      poolInvs: pmPools(
-        oddsTypes: [WIN, PLA, QIN, QPL, CWA, CWB, CWC, IWN, FCT, TCE, TRI, FF, QTT, DBL, TBL, DT, TT, SixUP]
-      ) {
+if not st.session_state.api_called:
+    url = 'https://info.cld.hkjc.com/graphql/base/'
+    headers = {'Content-Type': 'application/json'}
+    payload = {
+        "operationName": "raceMeetings",
+        "variables": {"date": str(date_picker.value), "venueCode": place_dropdown.value},
+        "query": """
+        fragment raceFragment on Race {
         id
-        leg {
-          races
-        }
-      }
-      penetrometerReadings(filters: ["first"]) {
-        reading
-        readingTime
-      }
-      hammerReadings(filters: ["first"]) {
-        reading
-        readingTime
-      }
-      changeHistories(filters: ["top3"]) {
-        type
-        time
-        raceNo
-        runnerNo
-        horseName_ch
-        horseName_en
-        jockeyName_ch
-        jockeyName_en
-        scratchHorseName_ch
-        scratchHorseName_en
-        handicapWeight
-        scrResvIndicator
-      }
-    }
-
-    query raceMeetings($date: String, $venueCode: String) {
-      timeOffset {
-        rc
-      }
-      activeMeetings: raceMeetings {
-        id
-        venueCode
-        date
+        no
         status
-        races {
-          no
-          postTime
-          status
-          wageringFieldSize
+        raceName_en
+        raceName_ch
+        postTime
+        country_en
+        country_ch
+        distance
+        wageringFieldSize
+        go_en
+        go_ch
+        ratingType
+        raceTrack {
+            description_en
+            description_ch
         }
-      }
-      raceMeetings(date: $date, venueCode: $venueCode) {
-        id
-        status
-        venueCode
-        date
-        totalNumberOfRace
-        currentNumberOfRace
-        dateOfWeek
-        meetingType
-        totalInvestment
-        country {
-          code
-          namech
-          nameen
-          seq
+        raceCourse {
+            description_en
+            description_ch
+            displayCode
         }
-        races {
-          ...raceFragment
-          runners {
-            id
-            no
-            standbyNo
-            status
-            name_ch
-            name_en
-            horse {
-              id
-              code
-            }
-            color
-            barrierDrawNumber
-            handicapWeight
-            currentWeight
-            currentRating
-            internationalRating
-            gearInfo
-            racingColorFileName
-            allowance
-            trainerPreference
-            last6run
-            saddleClothNo
-            trumpCard
-            priority
-            finalPosition
-            deadHeat
-            winOdds
-            jockey {
-              code
-              name_en
-              name_ch
-            }
-            trainer {
-              code
-              name_en
-              name_ch
-            }
-          }
+        claCode
+        raceClass_en
+        raceClass_ch
+        judgeSigns {
+            value_en
         }
-        obSt: pmPools(oddsTypes: [WIN, PLA]) {
-          leg {
-            races
-          }
-          oddsType
-          comingleStatus
         }
-        poolInvs: pmPools(
-          oddsTypes: [WIN, PLA, QIN, QPL, CWA, CWB, CWC, IWN, FCT, TCE, TRI, FF, QTT, DBL, TBL, DT, TT, SixUP]
+
+        fragment racingBlockFragment on RaceMeeting {
+        jpEsts: pmPools(
+            oddsTypes: [TCE, TRI, FF, QTT, DT, TT, SixUP]
+            filters: ["jackpot", "estimatedDividend"]
         ) {
-          id
-          leg {
+            leg {
             number
             races
-          }
-          status
-          sellStatus
-          oddsType
-          investment
-          mergedPoolId
-          lastUpdateTime
+            }
+            oddsType
+            jackpot
+            estimatedDividend
+            mergedPoolId
         }
-        ...racingBlockFragment
-        pmPools(oddsTypes: []) {
-          id
+        poolInvs: pmPools(
+            oddsTypes: [WIN, PLA, QIN, QPL, CWA, CWB, CWC, IWN, FCT, TCE, TRI, FF, QTT, DBL, TBL, DT, TT, SixUP]
+        ) {
+            id
+            leg {
+            races
+            }
         }
-        jkcInstNo: foPools(oddsTypes: [JKC], filters: ["top"]) {
-          instNo
+        penetrometerReadings(filters: ["first"]) {
+            reading
+            readingTime
         }
-        tncInstNo: foPools(oddsTypes: [TNC], filters: ["top"]) {
-          instNo
+        hammerReadings(filters: ["first"]) {
+            reading
+            readingTime
         }
-      }
+        changeHistories(filters: ["top3"]) {
+            type
+            time
+            raceNo
+            runnerNo
+            horseName_ch
+            horseName_en
+            jockeyName_ch
+            jockeyName_en
+            scratchHorseName_ch
+            scratchHorseName_en
+            handicapWeight
+            scrResvIndicator
+        }
+        }
+
+        query raceMeetings($date: String, $venueCode: String) {
+        timeOffset {
+            rc
+        }
+        activeMeetings: raceMeetings {
+            id
+            venueCode
+            date
+            status
+            races {
+            no
+            postTime
+            status
+            wageringFieldSize
+            }
+        }
+        raceMeetings(date: $date, venueCode: $venueCode) {
+            id
+            status
+            venueCode
+            date
+            totalNumberOfRace
+            currentNumberOfRace
+            dateOfWeek
+            meetingType
+            totalInvestment
+            country {
+            code
+            namech
+            nameen
+            seq
+            }
+            races {
+            ...raceFragment
+            runners {
+                id
+                no
+                standbyNo
+                status
+                name_ch
+                name_en
+                horse {
+                id
+                code
+                }
+                color
+                barrierDrawNumber
+                handicapWeight
+                currentWeight
+                currentRating
+                internationalRating
+                gearInfo
+                racingColorFileName
+                allowance
+                trainerPreference
+                last6run
+                saddleClothNo
+                trumpCard
+                priority
+                finalPosition
+                deadHeat
+                winOdds
+                jockey {
+                code
+                name_en
+                name_ch
+                }
+                trainer {
+                code
+                name_en
+                name_ch
+                }
+            }
+            }
+            obSt: pmPools(oddsTypes: [WIN, PLA]) {
+            leg {
+                races
+            }
+            oddsType
+            comingleStatus
+            }
+            poolInvs: pmPools(
+            oddsTypes: [WIN, PLA, QIN, QPL, CWA, CWB, CWC, IWN, FCT, TCE, TRI, FF, QTT, DBL, TBL, DT, TT, SixUP]
+            ) {
+            id
+            leg {
+                number
+                races
+            }
+            status
+            sellStatus
+            oddsType
+            investment
+            mergedPoolId
+            lastUpdateTime
+            }
+            ...racingBlockFragment
+            pmPools(oddsTypes: []) {
+            id
+            }
+            jkcInstNo: foPools(oddsTypes: [JKC], filters: ["top"]) {
+            instNo
+            }
+            tncInstNo: foPools(oddsTypes: [TNC], filters: ["top"]) {
+            instNo
+            }
+        }
+        }
+        """
     }
-    """
-}
 
-# Make a POST request to the API
-response = requests.post(url, json=payload)
+        # Make a POST request to the API
+    response = requests.post(url, json=payload)
 
-# Check if the request was successful
-if response.status_code == 200:
-    data = response.json()
-    # Extract the 'race_no' and 'name_ch' fields and save them into a dictionary
-    race_meetings = data.get('data', {}).get('raceMeetings', [])
-    race_dict = {}
-    post_time_dict = {}
-    for meeting in race_meetings:
-        for race in meeting.get('races', []):
-            race_no = race["no"]
-            post_time = race.get("postTime", "Field not found")
-            time_part = datetime.fromisoformat(post_time)
-            post_time_dict[race_no] = time_part
-            race_dict[race_no] = {"馬名": [], "騎師": [],'練馬師':[],'最近賽績':[]}
-            for runner in race.get('runners', []):
-              if runner.get('standbyNo') == "":
-                name_ch = runner.get('name_ch', 'Field not found')
-                jockey_name_ch = runner.get('jockey', {}).get('name_ch', 'Field not found')
-                trainer_name_ch = runner.get('trainer', {}).get('name_ch', 'Field not found')
-                last6run = runner.get('last6run', 'Field not found')
-                race_dict[race_no]["馬名"].append(name_ch)
-                race_dict[race_no]["騎師"].append(jockey_name_ch)
-                race_dict[race_no]["練馬師"].append(trainer_name_ch)
-                race_dict[race_no]["最近賽績"].append(last6run)
+        # Check if the request was successful
+    if response.status_code == 200:
+            data = response.json()
+            # Extract the 'race_no' and 'name_ch' fields and save them into a dictionary
+            race_meetings = data.get('data', {}).get('raceMeetings', [])
+            race_dict = {}
+            post_time_dict = {}
+            for meeting in race_meetings:
+                for race in meeting.get('races', []):
+                    race_no = race["no"]
+                    post_time = race.get("postTime", "Field not found")
+                    time_part = datetime.fromisoformat(post_time)
+                    post_time_dict[race_no] = time_part
+                    race_dict[race_no] = {"馬名": [], "騎師": [],'練馬師':[],'最近賽績':[]}
+                    for runner in race.get('runners', []):
+                        if runner.get('standbyNo') == "":
+                            name_ch = runner.get('name_ch', 'Field not found')
+                            jockey_name_ch = runner.get('jockey', {}).get('name_ch', 'Field not found')
+                            trainer_name_ch = runner.get('trainer', {}).get('name_ch', 'Field not found')
+                            last6run = runner.get('last6run', 'Field not found')
+                            race_dict[race_no]["馬名"].append(name_ch)
+                            race_dict[race_no]["騎師"].append(jockey_name_ch)
+                            race_dict[race_no]["練馬師"].append(trainer_name_ch)
+                            race_dict[race_no]["最近賽績"].append(last6run)
+                
+            race_dataframes = {}
+            numbered_dict = {}
+    else:
+            print(f'Failed to retrieve data. Status code: {response.status_code}')
+
+    for race_no in race_dict:
+            df = pd.DataFrame(race_dict[race_no])
+            df.index += 1  # Set index to start from 1
+            numbered_list = [f"{i+1}. {name}" for i, name in enumerate(race_dict[race_no]['馬名'])]
+            numbered_dict[race_no] = numbered_list
+            race_dataframes[race_no] = df
     
+st.button('開始',on_click=click_start_button)
 
-else:
-    print(f'Failed to retrieve data. Status code: {response.status_code}')
-
-race_dataframes = {}
-numbered_dict ={}
-
-for race_no in race_dict:
-    df = pd.DataFrame(race_dict[race_no])
-    df.index += 1  # Set index to start from 1
-    numbered_list = [f"{i+1}. {name}" for i, name in enumerate(race_dict[race_no]['馬名'])]
-    numbered_dict[race_no] = numbered_list
-    race_dataframes[race_no] = df
 
 if st.session_state.reset:
     odds_dict = {}
@@ -757,7 +842,7 @@ if st.session_state.reset:
                 time_now = datetime.now() + datere.relativedelta(hours=8)
                 odds = get_odds_data()
                 investments = get_investment_data()
-                period = 10
+                period = 2
                 main(time_now,odds,investments,period)
                 time.sleep(8)
 
