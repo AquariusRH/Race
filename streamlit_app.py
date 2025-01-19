@@ -774,6 +774,8 @@ if st.session_state.reset:
                 investments = get_investment_data()
                 period = 10
                 main(time_now,odds,investments,period)
+              print(race_no)
+              print(post_time_dict[race_no])
                 time.sleep(8)
 
 
