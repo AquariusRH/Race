@@ -772,7 +772,7 @@ if st.session_state.reset:
                 time_now = datetime.now() + datere.relativedelta(hours=8)
                 odds = get_odds_data()
                 investments = get_investment_data()
-                period = 10
+                period = 2
                 main(time_now,odds,investments,period)
                 time.sleep(8)
 
