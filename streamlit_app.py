@@ -804,6 +804,6 @@ if st.session_state.reset:
                 investments = get_investment_data()
                 period = 2
                 main(time_now,odds,investments,period)
-                time.sleep(8)
+                time.sleep(13)
 
 
