@@ -424,12 +424,28 @@ def print_concern_weird_dict():
         count.to_frame().T
 
 def print_highlight():
-  df = weird_dict['QIN']
-  if not df.empty:
-    filtered_df = df[df['Highlight'] == '***']
-    if not filtered_df.empty:
-      crosstab = pd.crosstab(filtered_df['No.'],filtered_df['Highlight']).sort_values(by='***', ascending=False)
-      crosstab
+  for method in ['WIN','QIN']
+    df = weird_dict[method]
+    highlightColumns = st.columns(3)
+    if not df.empty:
+      filtered_df_3 = df[df['Highlight'] == '***']
+      filtered_df_2 = df[df['Highlight'] == '**']
+      filtered_df_1 = df[df['Highlight'] == '*']
+      
+      if not filtered_df_3.empty:
+        with highlightColumns[0]:
+          crosstab_3 = pd.crosstab(filtered_df_3['No.'],filtered_df['Highlight']).sort_values(by='***', ascending=False)
+          crosstab_3
+      if not filtered_df_2.empty:  
+        with highlightColumns[1]:
+          crosstab_2 = pd.crosstab(filtered_df_2['No.'],filtered_df['Highlight']).sort_values(by='**', ascending=False)
+          crosstab_2
+      if not filtered_df_1.empty:  
+        with highlightColumns[2]:
+          crosstab_1 = pd.crosstab(filtered_df_1['No.'],filtered_df['Highlight']).sort_values(by='*', ascending=False)
+          crosstab_1
+
+
 
 def main(time_now,odds,investments,period):
   save_odds_data(time_now,odds)
