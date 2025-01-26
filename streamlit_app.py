@@ -75,9 +75,9 @@ def get_investment_data():
           for meeting in race_meetings:
               pool_invs = meeting.get('poolInvs', [])
               for pool in pool_invs:
-                  if place.value not in ['ST','HV']:
+                  if place not in ['ST','HV']:
                     id = pool.get('id')
-                    if id[8:10] != place.value:
+                    if id[8:10] != place:
                       continue                
                   investment = float(pool.get('investment'))
                   investments[pool.get('oddsType')].append(investment)
@@ -155,9 +155,9 @@ def get_odds_data():
       for meeting in race_meetings:
           pm_pools = meeting.get('pmPools', [])
           for pool in pm_pools:
-              if place.value not in ['ST','HV']:
+              if place not in ['ST','HV']:
                 id = pool.get('id')
-                if id[8:10] != place.value:
+                if id[8:10] != place:
                   continue            
               odds_nodes = pool.get('oddsNodes', [])
               odds_type = pool.get('oddsType')
@@ -720,7 +720,7 @@ if not st.session_state.api_called:
             for meeting in race_meetings:
                 for race in meeting.get('races', []):
                     id = race.get('runners', [])[0].get('id')
-                    if id[8:10] != place.value:
+                    if id[8:10] != place:
                         continue
                     race_number = race["no"]
                     post_time = race.get("postTime", "Field not found")
