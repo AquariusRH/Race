@@ -427,17 +427,14 @@ def print_highlight():
   for method in ['WIN','QIN']:
     df = weird_dict[method]
     highlightColumns = st.columns(3)
-    data = {
-    'No.': [1, 2, 3, 4, 5, 6],
-    'Highlight': ['***', '**', '*', '***', '**', '*']
-    }
-    
-    df = pd.DataFrame(data)
     if not df.empty:
       filtered_df_3 = df[df['Highlight'] == '***']
       filtered_df_2 = df[df['Highlight'] == '**']
       filtered_df_1 = df[df['Highlight'] == '*']
-      
+      if method == 'WIN':
+        st.write('獨嬴')
+      elif method == 'QIN':
+        st.write('連嬴')
       if not filtered_df_3.empty:
         with highlightColumns[0]:
           crosstab_3 = pd.crosstab(filtered_df_3['No.'],filtered_df_3['Highlight']).sort_values(by='***', ascending=False)
