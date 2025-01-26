@@ -424,7 +424,7 @@ def print_concern_weird_dict():
         count.to_frame().T
 
 def print_highlight():
-  for method in ['WIN','QIN']
+  for method in ['WIN','QIN']:
     df = weird_dict[method]
     highlightColumns = st.columns(3)
     if not df.empty:
