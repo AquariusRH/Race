@@ -432,9 +432,9 @@ def print_highlight():
       filtered_df_2 = df[df['Highlight'] == '**']
       filtered_df_1 = df[df['Highlight'] == '*']
       if method == 'WIN':
-        st.write('獨嬴')
+        st.write('獨贏')
       elif method == 'QIN':
-        st.write('連嬴')
+        st.write('連贏')
       if not filtered_df_3.empty:
         with highlightColumns[0]:
           crosstab_3 = pd.crosstab(filtered_df_3['No.'],filtered_df_3['Highlight']).sort_values(by='***', ascending=False)
