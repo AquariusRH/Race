@@ -287,14 +287,14 @@ def print_bar_chart(time_now):
           change_data = diff_dict[method].iloc[-1]
     elif method == 'qin_qpl':
           df = overall_investment_dict['QIN'] + overall_investment_dict['QPL']
-          change_data = diff_dict['QIN'].sum(axis = 0) + diff_dict['QPL'].sum(axis = 0)
+          change_data = diff_dict['QIN'].tail(20).sum(axis = 0) + diff_dict['QPL'].tail(20).sum(axis = 0)
     elif method == 'qin':
           df = overall_investment_dict['QIN']
-          change_data = diff_dict[method].sum(axis = 0)
+          change_data = diff_dict[method].tail(20).sum(axis = 0)
     elif method in ['WIN', 'PLA']:
           df = overall_investment_dict[method]
           odds_list = odds_dict[method]
-          change_data = diff_dict[method].sum(axis = 0)
+          change_data = diff_dict[method].tail(20).sum(axis = 0)
 
     df.index = pd.to_datetime(df.index)
     df_1st = pd.DataFrame()
