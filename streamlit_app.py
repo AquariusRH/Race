@@ -386,7 +386,7 @@ def weird_data(investments):
   for method in methodlist:
     latest_investment = investment_dict[method].tail(1).values
     last_time_odds = odds_dict[method].tail(2).head(1)
-    expected_investment = round(investments[method][0]*0.825 / 1000 / last_time_odds,2)
+    expected_investment = round(investments[method][0]*0.825 / 1000 / last_time_odds,0)
     diff = latest_investment - expected_investment
     if method in ['WIN','PLA']:
         diff_dict[method] = diff_dict[method]._append(diff)
@@ -804,6 +804,6 @@ if st.session_state.reset:
                 investments = get_investment_data()
                 period = 2
                 main(time_now,odds,investments,period)
-                time.sleep(13)
+                time.sleep(30)
 
 
