@@ -768,12 +768,12 @@ if not st.session_state.api_called:
   
   race_dataframes = {}
   numbered_dict ={}
-  for race_no in race_dict:
-      df = pd.DataFrame(race_dict[race_no])
+  for race_number in race_dict:
+      df = pd.DataFrame(race_dict[race_number])
       df.index += 1  # Set index to start from 1
-      numbered_list = [f"{i+1}. {name}" for i, name in enumerate(race_dict[race_no]['馬名'])]
-      numbered_dict[race_no] = numbered_list
-      race_dataframes[race_no] = df
+      numbered_list = [f"{i+1}. {name}" for i, name in enumerate(race_dict[race_number]['馬名'])]
+      numbered_dict[race_number] = numbered_list
+      race_dataframes[race_number] = df
     
 st.button('開始',on_click=click_start_button)
 
