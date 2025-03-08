@@ -2,3 +2,6 @@ streamlit
 matplotlib
 streamlit-autorefresh
 ipywidgets
+asyncio
+aiohttp
+nest_asyncio
