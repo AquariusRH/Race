@@ -6,4 +6,3 @@ asyncio
 aiohttp
 nest_asyncio
 bs4
-re
