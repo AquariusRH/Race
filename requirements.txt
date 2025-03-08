@@ -5,3 +5,4 @@ ipywidgets
 asyncio
 aiohttp
 nest_asyncio
+bs4
