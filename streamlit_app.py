@@ -749,7 +749,7 @@ if not st.session_state.api_called:
               race_number = race["no"]
               post_time = race.get("postTime", "Field not found")
               time_part = datetime.fromisoformat(post_time)
-              post_time_dict[race_no] = time_part
+              post_time_dict[race_number] = time_part
               race_dict[race_number] = {"馬名": [], "騎師": [],'練馬師':[],'最近賽績':[]}
               for runner in race.get('runners', []):
                 if runner.get('standbyNo') == "":
