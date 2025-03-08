@@ -635,6 +635,7 @@ if st.session_state.reset:
     diff_dict.setdefault('overall',pd.DataFrame())
     print(f"DataFrame for Race No: {race_no}")
     url = base_url + 'RaceDate=' + str(Date).replace('-','/') + '&Racecourse=' + place + '&RaceNo=' + str(race_no)
+    url
     race_dataframes
 
     start_time = time.time()
