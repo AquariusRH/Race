@@ -547,7 +547,7 @@ if not st.session_state.api_called:
   race_dataframes = {}
   numbered_dict = {}
   async def fetch_race_data(session, race_no, Date, place):
-      url = base_url + 'RaceDate=' + str(Date.date()).replace('-','/') + '&Racecourse=' + place + '&RaceNo=' + str(race_no)
+      url = base_url + 'RaceDate=' + str(Date).replace('-','/') + '&Racecourse=' + place + '&RaceNo=' + str(race_no)
       async with session.get(url) as response:
           if response.status == 200:
               soup = BeautifulSoup(await response.text(), 'html.parser')
