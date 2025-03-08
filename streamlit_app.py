@@ -547,7 +547,7 @@ if not st.session_state.api_called:
   race_dataframes = {}
   numbered_dict = {}
   async def fetch_race_data(session, race_no, date_picker, place_dropdown):
-      url = base_url + 'RaceDate=' + str(date_picker.value.date()).replace('-','/') + '&Racecourse=' + place_dropdown.value + '&RaceNo=' + str(race_no)
+      url = base_url + 'RaceDate=' + str(Date.date()).replace('-','/') + '&Racecourse=' + place + '&RaceNo=' + str(race_no)
       async with session.get(url) as response:
           if response.status == 200:
               soup = BeautifulSoup(await response.text(), 'html.parser')
@@ -558,7 +558,7 @@ if not st.session_state.api_called:
                   match = re.search(r'\d{2}:\d{2}', race_info)
                   if match:
                       race_time_str = match.group()
-                      race_time = datetime.strptime(race_time_str, '%H:%M').replace(year=date_picker.value.year, month=date_picker.value.month, day=date_picker.value.day, tzinfo=timezone(timedelta(seconds=28800)))
+                      race_time = datetime.strptime(race_time_str, '%H:%M').replace(year=Date.year, month=Date.month, day=Date.day, tzinfo=timezone(timedelta(seconds=28800)))
                       post_time_dict[race_no] = race_time
               if not table_rows:
                   return None
