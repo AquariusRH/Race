@@ -537,81 +537,243 @@ def click_start_button():
     st.session_state.reset =  True
 
 if not st.session_state.api_called:
-  nest_asyncio.apply()
+  url = 'https://info.cld.hkjc.com/graphql/base/'
+  headers = {'Content-Type': 'application/json'}
+  payload = {
+      "operationName": "raceMeetings",
+      "variables": {"date": str(Date), "venueCode": place},
+      "query": """
+      fragment raceFragment on Race {
+        id
+        no
+        status
+        raceName_en
+        raceName_ch
+        postTime
+        country_en
+        country_ch
+        distance
+        wageringFieldSize
+        go_en
+        go_ch
+        ratingType
+        raceTrack {
+          description_en
+          description_ch
+        }
+        raceCourse {
+          description_en
+          description_ch
+          displayCode
+        }
+        claCode
+        raceClass_en
+        raceClass_ch
+        judgeSigns {
+          value_en
+        }
+      }
   
-  # 定義基礎URL
-  base_url = "https://racing.hkjc.com/racing/information/Chinese/racing/RaceCard.aspx?"
-  
-  # 初始化空列表來存儲所有賽事數據
-  all_race_data = {}
-  race_dict = {}
-  post_time_dict = {}
-  race_dataframes = {}
-  numbered_dict = {}
-  async def fetch_race_data(session, race_no, Date, place):
-      url = base_url + 'RaceDate=' + str(Date).replace('-','/') + '&Racecourse=' + place + '&RaceNo=' + str(race_no)
-      async with session.get(url) as response:
-          if response.status == 200:
-              soup = BeautifulSoup(await response.text(), 'html.parser')
-              table_rows = soup.find_all('tr', class_='f_tac f_fs13')
-              race_info_div = soup.find('div', class_='f_fs13')
-              if race_info_div:
-                  race_info = race_info_div.get_text(separator=" ").strip()
-                  match = re.search(r'\d{2}:\d{2}', race_info)
-                  if match:
-                      race_time_str = match.group()
-                      race_time = datetime.strptime(race_time_str, '%H:%M').replace(year=Date.year, month=Date.month, day=Date.day, tzinfo=timezone(timedelta(seconds=28800)))
-                      post_time_dict[race_no] = race_time
-              if not table_rows:
-                  return None
-              race_data = [{
-                  "編號": row.find_all('td')[0].text.strip(),
-                  "馬名": row.find_all('td')[3].text.strip(),
-                  "騎師": row.find_all('td')[6].text.strip(),
-                  "練馬師": row.find_all('td')[9].text.strip(),
-                  "6次近績": row.find_all('td')[1].text.strip(),
-                  "負磅": row.find_all('td')[5].text.strip(),
-                  "排位": row.find_all('td')[8].text.strip(),
-                  "評分": row.find_all('td')[11].text.strip(),
-                  "馬齡": row.find_all('td')[16].text.strip()
-              } for row in table_rows if row.find_all('td')]
-              return race_no, pd.DataFrame(race_data).set_index("編號")
-          else:
-              print(f"無法取得賽事編號 {race_no} 的數據，請檢查URL或網絡連接。")
-              return None
-  
-  async def get_all_race_data():
-      async with aiohttp.ClientSession() as session:
-          tasks = [fetch_race_data(session, race_no, Date, place) for race_no in range(1, 12)]
-          results = await asyncio.gather(*tasks)
-          for result in results:
-              if result:
-                  race_no, df = result
-                  all_race_data[f"Race_{race_no}"] = df
-  
-      for race_no, df in all_race_data.items():
-          race_no_int = int(race_no.split('_')[1])
-          race_dict[race_no_int] = {
-              "馬名": df["馬名"].tolist(),
-              "騎師": df["騎師"].tolist(),
-              "練馬師": df["練馬師"].tolist(),
-              "最近賽績": df["6次近績"].tolist(),
-              "負磅": df["負磅"].tolist(),
-              "排位": df["排位"].tolist(),
-              "評分": df["評分"].tolist(),
-              "馬齡": df["馬齡"].tolist()
+      fragment racingBlockFragment on RaceMeeting {
+        jpEsts: pmPools(
+          oddsTypes: [TCE, TRI, FF, QTT, DT, TT, SixUP]
+          filters: ["jackpot", "estimatedDividend"]
+        ) {
+          leg {
+            number
+            races
           }
-      for race_no in race_dict:
-          df = pd.DataFrame(race_dict[race_no])
-          df.index += 1  # Set index to start from 1
-          numbered_list = [f"{i+1}. {name}" for i, name in enumerate(race_dict[race_no]['馬名'])]
-          numbered_dict[race_no] = numbered_list
-          race_dataframes[race_no] = df
+          oddsType
+          jackpot
+          estimatedDividend
+          mergedPoolId
+        }
+        poolInvs: pmPools(
+          oddsTypes: [WIN, PLA, QIN, QPL, CWA, CWB, CWC, IWN, FCT, TCE, TRI, FF, QTT, DBL, TBL, DT, TT, SixUP]
+        ) {
+          id
+          leg {
+            races
+          }
+        }
+        penetrometerReadings(filters: ["first"]) {
+          reading
+          readingTime
+        }
+        hammerReadings(filters: ["first"]) {
+          reading
+          readingTime
+        }
+        changeHistories(filters: ["top3"]) {
+          type
+          time
+          raceNo
+          runnerNo
+          horseName_ch
+          horseName_en
+          jockeyName_ch
+          jockeyName_en
+          scratchHorseName_ch
+          scratchHorseName_en
+          handicapWeight
+          scrResvIndicator
+        }
+      }
   
+      query raceMeetings($date: String, $venueCode: String) {
+        timeOffset {
+          rc
+        }
+        activeMeetings: raceMeetings {
+          id
+          venueCode
+          date
+          status
+          races {
+            no
+            postTime
+            status
+            wageringFieldSize
+          }
+        }
+        raceMeetings(date: $date, venueCode: $venueCode) {
+          id
+          status
+          venueCode
+          date
+          totalNumberOfRace
+          currentNumberOfRace
+          dateOfWeek
+          meetingType
+          totalInvestment
+          country {
+            code
+            namech
+            nameen
+            seq
+          }
+          races {
+            ...raceFragment
+            runners {
+              id
+              no
+              standbyNo
+              status
+              name_ch
+              name_en
+              horse {
+                id
+                code
+              }
+              color
+              barrierDrawNumber
+              handicapWeight
+              currentWeight
+              currentRating
+              internationalRating
+              gearInfo
+              racingColorFileName
+              allowance
+              trainerPreference
+              last6run
+              saddleClothNo
+              trumpCard
+              priority
+              finalPosition
+              deadHeat
+              winOdds
+              jockey {
+                code
+                name_en
+                name_ch
+              }
+              trainer {
+                code
+                name_en
+                name_ch
+              }
+            }
+          }
+          obSt: pmPools(oddsTypes: [WIN, PLA]) {
+            leg {
+              races
+            }
+            oddsType
+            comingleStatus
+          }
+          poolInvs: pmPools(
+            oddsTypes: [WIN, PLA, QIN, QPL, CWA, CWB, CWC, IWN, FCT, TCE, TRI, FF, QTT, DBL, TBL, DT, TT, SixUP]
+          ) {
+            id
+            leg {
+              number
+              races
+            }
+            status
+            sellStatus
+            oddsType
+            investment
+            mergedPoolId
+            lastUpdateTime
+          }
+          ...racingBlockFragment
+          pmPools(oddsTypes: []) {
+            id
+          }
+          jkcInstNo: foPools(oddsTypes: [JKC], filters: ["top"]) {
+            instNo
+          }
+          tncInstNo: foPools(oddsTypes: [TNC], filters: ["top"]) {
+            instNo
+          }
+        }
+      }
+      """
+  }
+  
+  # Make a POST request to the API
+  response = requests.post(url, json=payload)
+  
+  # Check if the request was successful
+  if response.status_code == 200:
+      data = response.json()
+      # Extract the 'race_no' and 'name_ch' fields and save them into a dictionary
+      race_meetings = data.get('data', {}).get('raceMeetings', [])
+      race_dict = {}
+      post_time_dict = {}
+      for meeting in race_meetings:
+          for race in meeting.get('races', []):
+              id = race.get('runners', [])[0].get('id')
+              if id[8:10] != place_dropdown.value:
+                    continue
+              race_no = race["no"]
+              post_time = race.get("postTime", "Field not found")
+              time_part = datetime.fromisoformat(post_time)
+              post_time_dict[race_no] = time_part
+              race_dict[race_no] = {"馬名": [], "騎師": [],'練馬師':[],'最近賽績':[]}
+              for runner in race.get('runners', []):
+                if runner.get('standbyNo') == "":
+                  name_ch = runner.get('name_ch', 'Field not found')
+                  jockey_name_ch = runner.get('jockey', {}).get('name_ch', 'Field not found')
+                  trainer_name_ch = runner.get('trainer', {}).get('name_ch', 'Field not found')
+                  last6run = runner.get('last6run', 'Field not found')
+                  race_dict[race_no]["馬名"].append(name_ch)
+                  race_dict[race_no]["騎師"].append(jockey_name_ch)
+                  race_dict[race_no]["練馬師"].append(trainer_name_ch)
+                  race_dict[race_no]["最近賽績"].append(last6run)
       print('完成')
   
-  # 執行異步主函數
-  asyncio.run(get_all_race_data())
+  else:
+      print(f'Failed to retrieve data. Status code: {response.status_code}')
+  
+  race_dataframes = {}
+  numbered_dict ={}
+  for race_no in race_dict:
+      df = pd.DataFrame(race_dict[race_no])
+      df.index += 1  # Set index to start from 1
+      numbered_list = [f"{i+1}. {name}" for i, name in enumerate(race_dict[race_no]['馬名'])]
+      numbered_dict[race_no] = numbered_list
+      race_dataframes[race_no] = df
     
 st.button('開始',on_click=click_start_button)
 
