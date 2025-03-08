@@ -580,7 +580,7 @@ if not st.session_state.api_called:
   
   async def get_all_race_data():
       async with aiohttp.ClientSession() as session:
-          tasks = [fetch_race_data(session, race_no, date_picker, place_dropdown) for race_no in range(1, 12)]
+          tasks = [fetch_race_data(session, race_no, Date, place) for race_no in range(1, 12)]
           results = await asyncio.gather(*tasks)
           for result in results:
               if result:
