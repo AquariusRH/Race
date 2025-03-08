@@ -744,7 +744,7 @@ if not st.session_state.api_called:
       for meeting in race_meetings:
           for race in meeting.get('races', []):
               id = race.get('runners', [])[0].get('id')
-              if id[8:10] != place_dropdown.value:
+              if id[8:10] != place:
                     continue
               race_no = race["no"]
               post_time = race.get("postTime", "Field not found")
