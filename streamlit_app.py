@@ -433,11 +433,11 @@ def print_concern_weird_dict():
   
       # Display df_tail in the first column
       with col1:
-          st.dataframe(df_tail, use_container_width=True)
+         df_tail
   
       # Display count_df in the second column
       with col2:
-          st.dataframe(count_df, use_container_width=True)
+          count_df
 
 def print_highlight():
   for method in ['WIN','QIN']:
