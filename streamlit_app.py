@@ -420,13 +420,24 @@ def change_overall(time_now):
   diff_dict['overall'] = diff_dict['overall']._append(total_investment_df)
 
 def print_concern_weird_dict():
-    for method in methodlist:
-        name = methodCHlist[methodlist.index(method)]
-        print(f'{name} 異常投注')
-        df = weird_dict[method]
-        df.tail(20)[::-1]
-        count = df.value_counts('No.')
-        count.to_frame().T
+  for method in methodlist:
+      name = methodCHlist[methodlist.index(method)]
+      st.write(f'{name} 異常投注')
+      df = weird_dict[method]
+      df_tail = df.tail(20)[::-1]
+      count = df.value_counts('No.')
+      count_df = count.to_frame().T
+  
+      # Create two columns
+      col1, col2 = st.columns(2)
+  
+      # Display df_tail in the first column
+      with col1:
+          st.dataframe(df_tail, use_container_width=True)
+  
+      # Display count_df in the second column
+      with col2:
+          st.dataframe(count_df, use_container_width=True)
 
 def print_highlight():
   for method in ['WIN','QIN']:
