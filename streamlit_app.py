@@ -230,7 +230,7 @@ def print_data(time_now,period):
     with pd.option_context('display.max_rows', None, 'display.max_columns',None):  # more options can be specified also
         name = methodCHlist[methodlist.index(watch)]
         print(f'{name} 賠率')
-        st.table(data)
+        data
 
 def investment_combined(time_now,method,df):
   sums = {}
