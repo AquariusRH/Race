@@ -810,20 +810,18 @@ if st.session_state.reset:
     st.write(f"DataFrame for Race No: {race_no}")
     race_dataframes[race_no]
 
+start_time = time.time()
+end_time = start_time + 60*1000
 placeholder = st.empty()
-
-# Add a stop button
-stop_button = st.button("Stop")
-
-while True:
-    if stop_button:
-        st.write("Stopped by user.")
-        break
-    with placeholder.container():
-        time_now = datetime.now() + datere.relativedelta(hours=8)
-        odds = get_odds_data()
-        investments = get_investment_data()
-        period = 2
-        main(time_now, odds, investments, period)
-        time.sleep(25)
+with st.empty():
+        while time.time() <= end_time:
+            with st.container():
+                race_no
+                place
+                time_now = datetime.now() + datere.relativedelta(hours=8)
+                odds = get_odds_data()
+                investments = get_investment_data()
+                period = 2
+                main(time_now,odds,investments,period)
+                time.sleep(25)
 
