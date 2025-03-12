@@ -816,8 +816,6 @@ placeholder = st.empty()
 with st.empty():
         while time.time() <= end_time:
             with st.container():
-                race_no
-                place
                 time_now = datetime.now() + datere.relativedelta(hours=8)
                 odds = get_odds_data()
                 investments = get_investment_data()
