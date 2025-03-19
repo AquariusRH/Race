@@ -534,24 +534,27 @@ def top(method_odds_df, method_investment_df, method):
         # Convert to HTML
         styled_df_html = styled_df.to_html(escape=False)
         
-        # Add custom CSS to adjust column widths
+        # Add custom CSS to set specific column widths
         st.markdown(
             """
             <style>
             table {
                 width: 100%;
-                table-layout: auto;
+                table-layout: fixed;
             }
             th, td {
                 word-wrap: break-word;
                 white-space: normal;
             }
-            th {
-                text-align: left;
-            }
-            td {
-                text-align: right;
-            }
+            th:nth-child(1), td:nth-child(1) { width: 10%; }
+            th:nth-child(2), td:nth-child(2) { width: 15%; }
+            th:nth-child(3), td:nth-child(3) { width: 15%; }
+            th:nth-child(4), td:nth-child(4) { width: 10%; }
+            th:nth-child(5), td:nth-child(5) { width: 10%; }
+            th:nth-child(6), td:nth-child(6) { width: 10%; }
+            th:nth-child(7), td:nth-child(7) { width: 15%; }
+            th:nth-child(8), td:nth-child(8) { width: 10%; }
+            th:nth-child(9), td:nth-child(9) { width: 10%; }
             </style>
             """,
             unsafe_allow_html=True
@@ -573,24 +576,27 @@ def top(method_odds_df, method_investment_df, method):
         # Convert to HTML
         styled_df_html = styled_df.to_html(escape=False)
         
-        # Add custom CSS to adjust column widths
+        # Add custom CSS to set specific column widths
         st.markdown(
             """
             <style>
             table {
                 width: 100%;
-                table-layout: auto;
+                table-layout: fixed;
             }
             th, td {
                 word-wrap: break-word;
                 white-space: normal;
             }
-            th {
-                text-align: left;
-            }
-            td {
-                text-align: right;
-            }
+            th:nth-child(1), td:nth-child(1) { width: 10%; }
+            th:nth-child(2), td:nth-child(2) { width: 15%; }
+            th:nth-child(3), td:nth-child(3) { width: 15%; }
+            th:nth-child(4), td:nth-child(4) { width: 10%; }
+            th:nth-child(5), td:nth-child(5) { width: 10%; }
+            th:nth-child(6), td:nth-child(6) { width: 10%; }
+            th:nth-child(7), td:nth-child(7) { width: 15%; }
+            th:nth-child(8), td:nth-child(8) { width: 10%; }
+            th:nth-child(9), td:nth-child(9) { width: 10%; }
             </style>
             """,
             unsafe_allow_html=True
