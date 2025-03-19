@@ -199,7 +199,7 @@ def save_odds_data(time_now,odds):
             odds_dict[method] = pd.DataFrame(columns=np.arange(1, len(odds[method]) + 1))
         odds_dict[method].loc[time_now] = odds[method]
       elif method in ['QIN','QPL']:
-        combination, odds_array = zip(*odds['QIN'])
+        combination, odds_array = zip(*odds[method])
         if odds_dict[method].empty:
           odds_dict[method] = pd.DataFrame(columns=combination)
         # Set the values with the specified index
