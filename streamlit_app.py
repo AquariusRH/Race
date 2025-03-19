@@ -546,6 +546,12 @@ def top(method_odds_df, method_investment_df, method):
                 word-wrap: break-word;
                 white-space: normal;
             }
+            th {
+                text-align: left;
+            }
+            td {
+                text-align: right;
+            }
             </style>
             """,
             unsafe_allow_html=True
@@ -578,6 +584,12 @@ def top(method_odds_df, method_investment_df, method):
             th, td {
                 word-wrap: break-word;
                 white-space: normal;
+            }
+            th {
+                text-align: left;
+            }
+            td {
+                text-align: right;
             }
             </style>
             """,
