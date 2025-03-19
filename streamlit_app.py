@@ -532,8 +532,25 @@ def top(method_odds_df, method_investment_df, method):
             '上次投注': '{:.2f}k'
         }).applymap(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '上次投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
         
+        # Add custom CSS to adjust column widths
+        st.markdown(
+            """
+            <style>
+            table {
+                width: 100%;
+                table-layout: auto;
+            }
+            th, td {
+                word-wrap: break-word;
+                white-space: normal;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+        
         # Display in Streamlit
-        st.table(styled_df)
+        st.table(styled_df.data)
     else:
         final_df.columns = ['組合', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '上次投注']
         # Apply the conditional formatting to the 初始排名 and 前一排名 columns and add a bar to the 投資變化 column
@@ -545,8 +562,25 @@ def top(method_odds_df, method_investment_df, method):
             '上次投注': '{:.2f}k'
         }).applymap(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '上次投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
         
+        # Add custom CSS to adjust column widths
+        st.markdown(
+            """
+            <style>
+            table {
+                width: 100%;
+                table-layout: auto;
+            }
+            th, td {
+                word-wrap: break-word;
+                white-space: normal;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+        
         # Display in Streamlit
-        st.table(styled_df)    
+        st.table(styled_df.data)  
 
 def print_top():
     for method in methodlist:
