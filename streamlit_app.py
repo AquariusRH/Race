@@ -588,12 +588,12 @@ def top(method_odds_df, method_investment_df, method):
                 word-wrap: break-word;
                 white-space: normal;
             }
-            th:nth-child(1), td:nth-child(1) { width: 7.5%; }
-            th:nth-child(2), td:nth-child(2) { width: 10.5%; }
-            th:nth-child(3), td:nth-child(3) { width: 10.5%; }
-            th:nth-child(4), td:nth-child(4) { width: 8.5%; }
-            th:nth-child(5), td:nth-child(5) { width: 10.5%; }
-            th:nth-child(6), td:nth-child(6) { width: 13.5%; }
+            th:nth-child(1), td:nth-child(1) { width: 14%; }
+            th:nth-child(2), td:nth-child(2) { width: 9%; }
+            th:nth-child(3), td:nth-child(3) { width: 9%; }
+            th:nth-child(4), td:nth-child(4) { width: 8%; }
+            th:nth-child(5), td:nth-child(5) { width: 9%; }
+            th:nth-child(6), td:nth-child(6) { width: 12%; }
             th:nth-child(7), td:nth-child(7) { width: 12.5%; }
             th:nth-child(8), td:nth-child(8) { width: 14%; }
             th:nth-child(9), td:nth-child(9) { width: 12.5%; }
