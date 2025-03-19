@@ -438,6 +438,119 @@ def print_concern_weird_dict():
       # Display count_df in the second column
       with col2:
           count_df
+# Define a function to apply conditional formatting
+def highlight_change(val):
+      color = 'limegreen' if '+' in val else 'crimson' if '-' in val else 'white'
+      return f'color: {color}'
+
+def top(method_odds_df,method_investment_df,method):
+  # Extract the first row from odds DataFrame
+  first_row_odds = method_odds_df.iloc[0]
+  first_row_odds_df = first_row_odds.to_frame(name='Odds').reset_index()
+  first_row_odds_df.columns = ['Combination', 'Odds']
+
+  # Extract the last row from odds DataFrame
+  last_row_odds = method_odds_df.iloc[-1]
+  last_row_odds_df = last_row_odds.to_frame(name='Odds').reset_index()
+  last_row_odds_df.columns = ['Combination', 'Odds']
+
+  # Extract the second last row from odds DataFrame (or the closest available row)
+  second_last_row_index = max(-len(method_odds_df), -3)
+  second_last_row_odds = method_odds_df.iloc[second_last_row_index]
+  second_last_row_odds_df = second_last_row_odds.to_frame(name='Odds').reset_index()
+  second_last_row_odds_df.columns = ['Combination', 'Odds']
+
+  # Calculate the initial rank and initial odds
+  first_row_odds_df['Initial_Rank'] = first_row_odds_df['Odds'].rank(method='min').astype(int)
+  first_row_odds_df['Initial_Odds'] = first_row_odds_df['Odds']
+
+  # Calculate the current rank and current odds
+  last_row_odds_df['Current_Rank'] = last_row_odds_df['Odds'].rank(method='min').astype(int)
+  last_row_odds_df['Initial_Rank'] = first_row_odds_df['Initial_Rank'].values
+  last_row_odds_df['Initial_Odds'] = first_row_odds_df['Initial_Odds'].values
+
+  # Calculate the previous rank using the second last row
+  second_last_row_odds_df['Previous_Rank'] = second_last_row_odds_df['Odds'].rank(method='min').astype(int)
+  last_row_odds_df['Previous_Rank'] = second_last_row_odds_df['Previous_Rank'].values
+
+  # Calculate the change of rank
+  last_row_odds_df['Change_of_Rank'] = last_row_odds_df['Initial_Rank'] - last_row_odds_df['Current_Rank']
+  last_row_odds_df['Change_of_Rank'] = last_row_odds_df['Change_of_Rank'].apply(lambda x: f'+{x}' if x > 0 else (str(x) if x < 0 else '0'))
+
+  # Combine the initial rank and change of rank into the same column format like 10 (+1)
+  last_row_odds_df['Initial_Rank'] = last_row_odds_df.apply(lambda row: f"{row['Initial_Rank']} ({row['Change_of_Rank']})", axis=1)
+
+  # Calculate the difference between the current rank and previous rank and add this difference to the previous rank in the format 10 (+1)
+  last_row_odds_df['Change_of_Previous_Rank'] = last_row_odds_df['Previous_Rank'] - last_row_odds_df['Current_Rank']
+  last_row_odds_df['Change_of_Previous_Rank'] = last_row_odds_df['Change_of_Previous_Rank'].apply(lambda x: f'+{x}' if x > 0 else (str(x) if x < 0 else '0'))
+  last_row_odds_df['Previous_Rank'] = last_row_odds_df.apply(lambda row: f"{row['Previous_Rank']} ({row['Change_of_Previous_Rank']})", axis=1)
+
+  # Rearrange the columns as requested
+  final_df = last_row_odds_df[['Combination', 'Odds', 'Initial_Odds', 'Current_Rank', 'Initial_Rank', 'Previous_Rank']]
+
+  # Format the odds to one decimal place using .loc to avoid SettingWithCopyWarning
+  final_df.loc[:, 'Odds'] = final_df['Odds'].round(1)
+  final_df.loc[:, 'Initial_Odds'] = final_df['Initial_Odds'].round(1)
+
+  # Extract the first row from investment DataFrame
+  first_row_investment = method_investment_df.iloc[0]
+  first_row_investment_df = first_row_investment.to_frame(name='Investment').reset_index()
+  first_row_investment_df.columns = ['Combination', 'Investment']
+
+  # Extract the last row from investment DataFrame
+  last_row_investment = method_investment_df.iloc[-1]
+  last_row_investment_df = last_row_investment.to_frame(name='Investment').reset_index()
+  last_row_investment_df.columns = ['Combination', 'Investment']
+
+  # Extract the second last row from investment DataFrame (or the closest available row)
+  second_last_row_index = max(-len(method_investment_df), -3)
+  second_last_row_investment = method_investment_df.iloc[second_last_row_index]
+  second_last_row_investment_df = second_last_row_investment.to_frame(name='Investment').reset_index()
+  second_last_row_investment_df.columns = ['Combination', 'Investment']
+
+  # Calculate the difference in investment before sorting
+  last_row_investment_df['Investment_Change'] = last_row_investment_df['Investment'] - first_row_investment_df['Investment'].values
+  last_row_investment_df['Investment_Change'] = last_row_investment_df['Investment_Change'].apply(lambda x: x if x > 0 else 0)
+  second_last_row_investment_df['Previous_Investment_Change'] = last_row_investment_df['Investment'] - second_last_row_investment_df['Investment'].values
+  second_last_row_investment_df['Previous_Investment_Change'] = second_last_row_investment_df['Previous_Investment_Change'].apply(lambda x: x if x > 0 else 0)
+  # Sort the final DataFrame by odds value
+  final_df = final_df.sort_values(by='Odds')
+
+  # Combine the investment data with the final DataFrame based on the combination
+  final_df = final_df.merge(last_row_investment_df[['Combination', 'Investment_Change', 'Investment']], on='Combination', how='left')
+  final_df = final_df.merge(second_last_row_investment_df[['Combination', 'Previous_Investment_Change']], on='Combination', how='left')
+
+  if method in ['WIN','PLA']:
+    final_df.columns = ['馬匹', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '上次投注']
+    # Apply the conditional formatting to the 初始排名 and 前一排名 columns and add a bar to the 投資變化 column
+    styled_df = final_df.style.format({
+      '賠率': '{:.1f}',
+      '最初賠率': '{:.1f}',
+      '投注變化': '{:.2f}k',
+      '投注': '{:.2f}k',
+      '上次投注': '{:.2f}k'
+    }).map(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '上次投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
+
+    # Display the styled DataFrame
+    display(styled_df)
+  else:
+    final_df.columns = ['組合', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '上次投注']
+    # Apply the conditional formatting to the 初始排名 and 前一排名 columns and add a bar to the 投資變化 column
+    styled_df = final_df.head(20).style.format({
+      '賠率': '{:.1f}',
+      '最初賠率': '{:.1f}',
+      '投注變化': '{:.2f}k',
+      '投注': '{:.2f}k',
+      '上次投注': '{:.2f}k'
+    }).map(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '上次投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
+
+    # Display the styled DataFrame
+    display(styled_df)
+
+def print_top():
+  for method in methodlist:
+    methodCHlist[methodlist.index(method)]
+    top(odds_dict[method],investment_dict[method],method)
 
 def print_highlight():
   for method in ['WIN','QIN']:
