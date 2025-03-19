@@ -589,6 +589,7 @@ def main(time_now,odds,investments,period):
   change_overall(time_now)
   print_concern_weird_dict()
   print_bar_chart(time_now)
+  print_top()
   print_highlight()
 
 # Display the date picker widget
