@@ -440,7 +440,7 @@ def print_concern_weird_dict():
           count_df
 # Define a function to apply conditional formatting
 def highlight_change(val):
-    color = 'limegreen' if '+' in val else 'crimson' if '-' in val else 'white'
+    color = 'limegreen' if '+' in val else 'crimson' if '-' in val else ''
     return f'color: {color}'
 
 def top(method_odds_df, method_investment_df, method):
