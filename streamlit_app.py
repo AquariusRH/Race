@@ -563,10 +563,10 @@ def top(method_odds_df, method_investment_df, method):
             th:nth-child(4), td:nth-child(4) { width: 9%; }
             th:nth-child(5), td:nth-child(5) { width: 10%; }
             th:nth-child(6), td:nth-child(6) { width: 12%; }
-            th:nth-child(7), td:nth-child(7) { width: 11%; }
+            th:nth-child(7), td:nth-child(7) { width: 13%; }
             th:nth-child(8), td:nth-child(8) { width: 13%; }
-            th:nth-child(9), td:nth-child(9) { width: 11%; }
-            th:nth-child(10), td:nth-child(10) { width: 11%; }
+            th:nth-child(9), td:nth-child(9) { width: 13%; }
+            th:nth-child(10), td:nth-child(10) { width: 13%; }
             
             </style>
             """,
@@ -609,10 +609,10 @@ def top(method_odds_df, method_investment_df, method):
             th:nth-child(4), td:nth-child(4) { width: 9%; }
             th:nth-child(5), td:nth-child(5) { width: 10%; }
             th:nth-child(6), td:nth-child(6) { width: 12%; }
-            th:nth-child(7), td:nth-child(7) { width: 11%; }
+            th:nth-child(7), td:nth-child(7) { width: 13%; }
             th:nth-child(8), td:nth-child(8) { width: 13%; }
-            th:nth-child(9), td:nth-child(9) { width: 11%; }
-            th:nth-child(10), td:nth-child(10) { width: 11%; }
+            th:nth-child(9), td:nth-child(9) { width: 13%; }
+            th:nth-child(10), td:nth-child(10) { width: 13%; }
             </style>
             """,
             unsafe_allow_html=True
