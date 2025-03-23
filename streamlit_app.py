@@ -453,7 +453,10 @@ def top(method_odds_df, method_investment_df, method):
     last_row_odds = method_odds_df.iloc[-1]
     last_row_odds_df = last_row_odds.to_frame(name='Odds').reset_index()
     last_row_odds_df.columns = ['Combination', 'Odds']
-
+    third_last_row_index = max(-len(method_odds_df), -11)
+    third_last_row_odds = method_odds_df.iloc[third_last_row_index]
+    third_last_row_odds_df = third_last_row_odds.to_frame(name='Odds').reset_index()
+    third_last_row_odds_df.columns = ['Combination', 'Odds']
     # Extract the second last row from odds DataFrame (or the closest available row)
     second_last_row_index = max(-len(method_odds_df), -3)
     second_last_row_odds = method_odds_df.iloc[second_last_row_index]
@@ -507,30 +510,38 @@ def top(method_odds_df, method_investment_df, method):
     second_last_row_investment = method_investment_df.iloc[second_last_row_index]
     second_last_row_investment_df = second_last_row_investment.to_frame(name='Investment').reset_index()
     second_last_row_investment_df.columns = ['Combination', 'Investment']
-
+    third_last_row_index = max(-len(method_investment_df), -11)
+    third_last_row_investment = method_investment_df.iloc[third_last_row_index]
+    third_last_row_investment_df = third_last_row_investment.to_frame(name='Investment').reset_index()
+    third_last_row_investment_df.columns = ['Combination', 'Investment']
     # Calculate the difference in investment before sorting
     last_row_investment_df['Investment_Change'] = last_row_investment_df['Investment'] - first_row_investment_df['Investment'].values
     last_row_investment_df['Investment_Change'] = last_row_investment_df['Investment_Change'].apply(lambda x: x if x > 0 else 0)
     second_last_row_investment_df['Previous_Investment_Change'] = last_row_investment_df['Investment'] - second_last_row_investment_df['Investment'].values
     second_last_row_investment_df['Previous_Investment_Change'] = second_last_row_investment_df['Previous_Investment_Change'].apply(lambda x: x if x > 0 else 0)
-
+    third_last_row_investment_df['Previous_Investment_Change'] = last_row_investment_df['Investment'] - third_last_row_investment_df['Investment'].values
+    third_last_row_investment_df['Previous_Investment_Change'] = third_last_row_investment_df['Previous_Investment_Change'].apply(lambda x: x if x > 0 else 0)
+    
     # Sort the final DataFrame by odds value
     final_df = final_df.sort_values(by='Odds')
 
     # Combine the investment data with the final DataFrame based on the combination
     final_df = final_df.merge(last_row_investment_df[['Combination', 'Investment_Change', 'Investment']], on='Combination', how='left')
     final_df = final_df.merge(second_last_row_investment_df[['Combination', 'Previous_Investment_Change']], on='Combination', how='left')
+    final_df = final_df.merge(third_last_row_investment_df[['Combination', 'Previous_Investment_Change']], on='Combination', how='left')
 
     if method in ['WIN', 'PLA']:
-        final_df.columns = ['馬匹', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '上次投注']
+        final_df.columns =['馬匹', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '一分鐘投注','五分鐘投注']
         # Apply the conditional formatting to the 初始排名 and 前一排名 columns and add a bar to the 投資變化 column
         styled_df = final_df.style.format({
-            '賠率': '{:.1f}',
-            '最初賠率': '{:.1f}',
-            '投注變化': '{:.2f}k',
-            '投注': '{:.2f}k',
-            '上次投注': '{:.2f}k'
-        }).applymap(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '上次投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
+          '賠率': '{:.1f}',
+          '最初賠率': '{:.1f}',
+          '投注變化': '{:.2f}k',
+          '投注': '{:.2f}k',
+          '一分鐘投注': '{:.2f}k',
+          '五分鐘投注': '{:.2f}k'
+        }).map(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
+
         # Convert to HTML
         styled_df_html = styled_df.to_html(escape=False)
         
@@ -546,15 +557,17 @@ def top(method_odds_df, method_investment_df, method):
                 word-wrap: break-word;
                 white-space: normal;
             }
-            th:nth-child(1), td:nth-child(1) { width: 7.5%; }
-            th:nth-child(2), td:nth-child(2) { width: 10.5%; }
-            th:nth-child(3), td:nth-child(3) { width: 10.5%; }
-            th:nth-child(4), td:nth-child(4) { width: 8.5%; }
-            th:nth-child(5), td:nth-child(5) { width: 10.5%; }
-            th:nth-child(6), td:nth-child(6) { width: 13.5%; }
-            th:nth-child(7), td:nth-child(7) { width: 12.5%; }
-            th:nth-child(8), td:nth-child(8) { width: 14%; }
-            th:nth-child(9), td:nth-child(9) { width: 12.5%; }
+            th:nth-child(1), td:nth-child(1) { width: 10%; }
+            th:nth-child(2), td:nth-child(2) { width: 10%; }
+            th:nth-child(3), td:nth-child(3) { width: 10%; }
+            th:nth-child(4), td:nth-child(4) { width: 10%; }
+            th:nth-child(5), td:nth-child(5) { width: 10%; }
+            th:nth-child(6), td:nth-child(6) { width: 10%; }
+            th:nth-child(7), td:nth-child(7) { width: 10%; }
+            th:nth-child(8), td:nth-child(8) { width: 10%; }
+            th:nth-child(9), td:nth-child(9) { width: 10%; }
+            th:nth-child(10), td:nth-child(10) { width: 10%; }
+            
             </style>
             """,
             unsafe_allow_html=True
@@ -563,15 +576,17 @@ def top(method_odds_df, method_investment_df, method):
         # Display in Streamlit
         st.write(styled_df_html, unsafe_allow_html=True)
     else:
-        final_df.columns = ['組合', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '上次投注']
+        final_df.columns = ['組合', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '一分鐘投注','五分鐘投注']
         # Apply the conditional formatting to the 初始排名 and 前一排名 columns and add a bar to the 投資變化 column
         styled_df = final_df.head(20).style.format({
-            '賠率': '{:.1f}',
-            '最初賠率': '{:.1f}',
-            '投注變化': '{:.2f}k',
-            '投注': '{:.2f}k',
-            '上次投注': '{:.2f}k'
-        }).applymap(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '上次投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
+          '賠率': '{:.1f}',
+          '最初賠率': '{:.1f}',
+          '投注變化': '{:.2f}k',
+          '投注': '{:.2f}k',
+          '一分鐘投注': '{:.2f}k',
+          '五分鐘投注': '{:.2f}k'
+        }).map(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
+
         
         # Convert to HTML
         styled_df_html = styled_df.to_html(escape=False)
@@ -588,15 +603,16 @@ def top(method_odds_df, method_investment_df, method):
                 word-wrap: break-word;
                 white-space: normal;
             }
-            th:nth-child(1), td:nth-child(1) { width: 14%; }
-            th:nth-child(2), td:nth-child(2) { width: 9%; }
-            th:nth-child(3), td:nth-child(3) { width: 9%; }
-            th:nth-child(4), td:nth-child(4) { width: 8%; }
-            th:nth-child(5), td:nth-child(5) { width: 9%; }
-            th:nth-child(6), td:nth-child(6) { width: 12%; }
-            th:nth-child(7), td:nth-child(7) { width: 12.5%; }
-            th:nth-child(8), td:nth-child(8) { width: 14%; }
-            th:nth-child(9), td:nth-child(9) { width: 12.5%; }
+            th:nth-child(1), td:nth-child(1) { width: 10%; }
+            th:nth-child(2), td:nth-child(2) { width: 10%; }
+            th:nth-child(3), td:nth-child(3) { width: 10%; }
+            th:nth-child(4), td:nth-child(4) { width: 10%; }
+            th:nth-child(5), td:nth-child(5) { width: 10%; }
+            th:nth-child(6), td:nth-child(6) { width: 10%; }
+            th:nth-child(7), td:nth-child(7) { width: 10%; }
+            th:nth-child(8), td:nth-child(8) { width: 10%; }
+            th:nth-child(9), td:nth-child(9) { width: 10%; }
+            th:nth-child(10), td:nth-child(10) { width: 10%; }
             </style>
             """,
             unsafe_allow_html=True
