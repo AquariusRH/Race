@@ -541,8 +541,6 @@ def top(method_odds_df, method_investment_df, method):
           '一分鐘投注': '{:.2f}k',
           '五分鐘投注': '{:.2f}k'
         }).map(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
-        
-        st.dataframe(styled_df)
 
       
     else:
@@ -557,7 +555,12 @@ def top(method_odds_df, method_investment_df, method):
           '五分鐘投注': '{:.2f}k'
         }).map(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
     
-        st.dataframe(styled_df)
+    # Convert styled DataFrame to HTML
+    html = styled_df.render()
+    
+    # Display the HTML in Streamlit
+    st.components.v1.html(html, height=600)
+
 
 
 def print_top():
