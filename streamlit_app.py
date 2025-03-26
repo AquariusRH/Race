@@ -226,7 +226,7 @@ def print_data(time_now,period):
     data = odds_dict[watch].tail(period)
     data.index = data.index.strftime('%H:%M:%S')
     if watch in ['WIN','PLA']:
-      data.columns = numbered_dict[race_no]
+      data.columns = np.arange(len(numbered_dict[race_no]))+1
     with pd.option_context('display.max_rows', None, 'display.max_columns',None):  # more options can be specified also
         name = methodCHlist[methodlist.index(watch)]
         print(f'{name} 賠率')
@@ -541,8 +541,9 @@ def top(method_odds_df, method_investment_df, method):
           '一分鐘投注': '{:.2f}k',
           '五分鐘投注': '{:.2f}k'
         }).map(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
-    styled_df
-    
+        
+        styled_df
+      
     else:
         final_df.columns = ['組合', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '一分鐘投注','五分鐘投注']
         # Apply the conditional formatting to the 初始排名 and 前一排名 columns and add a bar to the 投資變化 column
@@ -554,7 +555,8 @@ def top(method_odds_df, method_investment_df, method):
           '一分鐘投注': '{:.2f}k',
           '五分鐘投注': '{:.2f}k'
         }).map(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
-    styled_df
+    
+        styled_df
 
 def print_top():
     for method in methodlist:
@@ -593,12 +595,8 @@ def main(time_now,odds,investments,period):
   save_investment_data(time_now,investments,odds)
   print_data(time_now,period)
   get_overall_investment(time_now,investments)
-  weird_data(investments)
   change_overall(time_now)
-  print_concern_weird_dict()
-  print_bar_chart(time_now)
   print_top()
-  print_highlight()
 
 # Display the date picker widget
 infoColumns = st.columns(3)
@@ -942,7 +940,7 @@ with st.empty():
                 time_now = datetime.now() + datere.relativedelta(hours=8)
                 odds = get_odds_data()
                 investments = get_investment_data()
-                period = 2
+                period = 10
                 main(time_now,odds,investments,period)
                 time.sleep(25)
 
