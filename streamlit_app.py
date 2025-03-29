@@ -599,7 +599,9 @@ def main(time_now,odds,investments,period):
   save_investment_data(time_now,investments,odds)
   print_data(time_now,period)
   get_overall_investment(time_now,investments)
+  weird_data(investments)
   change_overall(time_now)
+  print_bar_chart(time_now)
   print_top()
 
 # Display the date picker widget
@@ -944,7 +946,7 @@ with st.empty():
                 time_now = datetime.now() + datere.relativedelta(hours=8)
                 odds = get_odds_data()
                 investments = get_investment_data()
-                period = 10
+                period = 2
                 main(time_now,odds,investments,period)
                 time.sleep(25)
 
