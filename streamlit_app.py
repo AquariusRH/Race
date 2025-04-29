@@ -600,7 +600,6 @@ def print_highlight():
 def main(time_now,odds,investments,period):
   save_odds_data(time_now,odds)
   save_investment_data(time_now,investments,odds)
-  print_data(time_now,period)
   get_overall_investment(time_now,investments)
   weird_data(investments)
   change_overall(time_now)
@@ -638,8 +637,8 @@ list2 = ['WIN','PLA','QIN']
 list1_ch = ['獨贏','位置','連贏','位置Q']
 list2_ch = ['獨贏','位置','連贏']
 
-print_list_1 = ['overall', 'qin_qpl', 'WIN', 'PLA']
-print_list_2 = ['overall', 'qin', 'WIN', 'PLA']
+print_list_1 = ['overall', 'qin_qpl', 'PLA','WIN']
+print_list_2 = ['overall', 'qin', 'PLA','WIN']
 
 methodlist = list1
 methodCHlist = list1_ch
