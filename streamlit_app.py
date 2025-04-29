@@ -228,8 +228,10 @@ def print_data(time_now, period):
         if watch in ['WIN', 'PLA']:
             data.columns = np.arange(len(numbered_dict[race_no])) + 1
         
-        # Swap the two rows
-        data.iloc[[0, 1]] = data.iloc[[1, 0]]
+        # Check if the DataFrame has exactly two rows
+        if len(data) == 2:
+            # Swap the two rows
+            data.iloc[[0, 1]] = data.iloc[[1, 0]]
         
         # Transpose the DataFrame
         data = data.T
