@@ -227,10 +227,11 @@ def print_data(time_now,period):
     data.index = data.index.strftime('%H:%M:%S')
     if watch in ['WIN','PLA']:
       data.columns = np.arange(len(numbered_dict[race_no]))+1
+      pd.set_option('display.max_colwidth', 10)
     with pd.option_context('display.max_rows', None, 'display.max_columns',None):  # more options can be specified also
         name = methodCHlist[methodlist.index(watch)]
         print(f'{name} 賠率')
-        st.dataframe(data,width=800)
+        data
 
 
 
