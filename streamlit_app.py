@@ -221,25 +221,16 @@ def save_investment_data(time_now,investment,odds):
         # Set the values with the specified index
         investment_dict[method].loc[time_now] = investment_df
 
-def print_data(time_now, period):
-    for watch in watchlist:
-        data = odds_dict[watch].tail(period)
-        data.index = data.index.strftime('%H:%M:%S')
-        if watch in ['WIN', 'PLA']:
-            data.columns = np.arange(len(numbered_dict[race_no])) + 1
-        
-        # Check if the DataFrame has exactly two rows
-        if len(data) == 2:
-            # Swap the two rows
-            data.iloc[[0, 1]] = data.iloc[[1, 0]]
-        
-        # Transpose the DataFrame
-        data = data.T
-        
-        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-            name = methodCHlist[methodlist.index(watch)]
-            print(f'{name} 賠率')
-            st.dataframe(data, width=800)
+def print_data(time_now,period):
+  for watch in watchlist:
+    data = odds_dict[watch].tail(period)
+    data.index = data.index.strftime('%H:%M:%S')
+    if watch in ['WIN','PLA']:
+      data.columns = np.arange(len(numbered_dict[race_no]))+1
+    with pd.option_context('display.max_rows', None, 'display.max_columns',None):  # more options can be specified also
+        name = methodCHlist[methodlist.index(watch)]
+        print(f'{name} 賠率')
+        data
 
 
 
