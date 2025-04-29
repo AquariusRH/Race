@@ -221,16 +221,25 @@ def save_investment_data(time_now,investment,odds):
         # Set the values with the specified index
         investment_dict[method].loc[time_now] = investment_df
 
-def print_data(time_now,period):
-  for watch in watchlist:
-    data = odds_dict[watch].tail(period)
-    data.index = data.index.strftime('%H:%M:%S')
-    if watch in ['WIN','PLA']:
-      data.columns = np.arange(len(numbered_dict[race_no]))+1
-    with pd.option_context('display.max_rows', None, 'display.max_columns',None):  # more options can be specified also
-        name = methodCHlist[methodlist.index(watch)]
-        print(f'{name} 賠率')
-        data
+def print_data(time_now, period):
+    for watch in watchlist:
+        data = odds_dict[watch].tail(period)
+        data.index = data.index.strftime('%H:%M:%S')
+        if watch in ['WIN', 'PLA']:
+            data.columns = np.arange(len(numbered_dict[race_no])) + 1
+        
+        # Swap the two rows
+        data.iloc[[0, 1]] = data.iloc[[1, 0]]
+        
+        # Transpose the DataFrame
+        data = data.T
+        
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            name = methodCHlist[methodlist.index(watch)]
+            print(f'{name} 賠率')
+            print(data)
+
+
 
 def investment_combined(time_now,method,df):
   sums = {}
@@ -563,7 +572,7 @@ def top(method_odds_df, method_investment_df, method):
 
 
 def print_top():
-    for method in methodlist:
+    for method in ['QIN','WIN','PLA']:
         methodCHlist[methodlist.index(method)]
         top(odds_dict[method], investment_dict[method], method)
 
@@ -615,16 +624,11 @@ with infoColumns[2]:
     race_options = np.arange(1, 12)
     race_no = st.selectbox('場次:', race_options)
 
-# Display the number input widgets
-benchmarkColumns = st.columns(4)
-with benchmarkColumns[0]:
-    benchmark_win = st.number_input('獨贏:', min_value=0, value=10, step=1)
-with benchmarkColumns[1]:
-    benchmark_pla = st.number_input('位置:', min_value=0, value=100, step=1)
-with benchmarkColumns[2]:
-    benchmark_qin = st.number_input('連贏:', min_value=0, value=50, step=1)
-with benchmarkColumns[3]:
-    benchmark_qpl = st.number_input('位置Q:', min_value=0, value=100, step=1)
+
+benchmark_win = 10
+benchmark_pla = 100
+benchmark_qin = 50
+benchmark_qpl = 100
 
 
 # Display the checkbox for 沒有位置Q
