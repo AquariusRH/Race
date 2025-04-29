@@ -239,7 +239,7 @@ def print_data(time_now, period):
         with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             name = methodCHlist[methodlist.index(watch)]
             print(f'{name} 賠率')
-            st.dataframe(data, width=800)  
+            st.dataframe(data, width=800)
 
 
 
