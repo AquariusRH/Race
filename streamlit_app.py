@@ -637,8 +637,8 @@ list2 = ['WIN','PLA','QIN']
 list1_ch = ['獨贏','位置','連贏','位置Q']
 list2_ch = ['獨贏','位置','連贏']
 
-print_list_1 = ['overall', 'qin_qpl', 'PLA','WIN']
-print_list_2 = ['overall', 'qin', 'PLA','WIN']
+print_list_1 = ['qin_qpl', 'PLA','WIN']
+print_list_2 = ['qin', 'PLA','WIN']
 
 methodlist = list1
 methodCHlist = list1_ch
@@ -944,5 +944,5 @@ with st.empty():
                 investments = get_investment_data()
                 period = 2
                 main(time_now,odds,investments,period)
-                time.sleep(25)
+                time.sleep(20)
 
