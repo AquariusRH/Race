@@ -26,29 +26,6 @@ import re
 st.set_page_config(page_title="Jockey Race")
 st.title("Jockey Race 賽馬程式")
 
-
-st.button('開始',on_click=click_start_button)
-
-if st.session_state.reset:
-    odds_dict = {}
-    for method in methodlist:
-        odds_dict[method] = pd.DataFrame()
-    investment_dict = {}
-    for method in methodlist:
-        investment_dict[method] = pd.DataFrame()
-    overall_investment_dict = {}
-    for method in methodlist:
-        overall_investment_dict.setdefault(method, pd.DataFrame())
-    overall_investment_dict.setdefault('overall',pd.DataFrame())
-    weird_dict = {}
-    for method in methodlist:
-        weird_dict.setdefault(method,pd.DataFrame([],columns=['No.','error','odds','Highlight']))
-    diff_dict = {}
-    for method in methodlist:
-        diff_dict.setdefault(method, pd.DataFrame())
-    diff_dict.setdefault('overall',pd.DataFrame())
-    st.write(f"DataFrame for Race No: {race_no}")
-    race_dataframes[race_no]
 # @title 2. {func} 下載數據
 # @title 處理數據
 def get_investment_data():
@@ -933,7 +910,29 @@ if not st.session_state.api_called:
       numbered_dict[race_number] = numbered_list
       race_dataframes[race_number] = df
     
+st.button('開始',on_click=click_start_button)
 
+if st.session_state.reset:
+    odds_dict = {}
+    for method in methodlist:
+        odds_dict[method] = pd.DataFrame()
+    investment_dict = {}
+    for method in methodlist:
+        investment_dict[method] = pd.DataFrame()
+    overall_investment_dict = {}
+    for method in methodlist:
+        overall_investment_dict.setdefault(method, pd.DataFrame())
+    overall_investment_dict.setdefault('overall',pd.DataFrame())
+    weird_dict = {}
+    for method in methodlist:
+        weird_dict.setdefault(method,pd.DataFrame([],columns=['No.','error','odds','Highlight']))
+    diff_dict = {}
+    for method in methodlist:
+        diff_dict.setdefault(method, pd.DataFrame())
+    diff_dict.setdefault('overall',pd.DataFrame())
+    st.write(f"DataFrame for Race No: {race_no}")
+    race_dataframes[race_no]
+    
 start_time = time.time()
 end_time = start_time + 60*1000
 placeholder = st.empty()
