@@ -551,7 +551,7 @@ def top(method_odds_df, method_investment_df, method):
     else:
         final_df.columns = ['組合', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '一分鐘投注','五分鐘投注']
         # Apply the conditional formatting to the 初始排名 and 前一排名 columns and add a bar to the 投資變化 column
-        styled_df = final_df.head(20).style.format({
+        styled_df = final_df.head(25).style.format({
           '賠率': '{:.1f}',
           '最初賠率': '{:.1f}',
           '投注變化': '{:.2f}k',
