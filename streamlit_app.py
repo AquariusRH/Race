@@ -562,6 +562,50 @@ def top(method_odds_df, method_investment_df, method):
     
         st.write(styled_df.to_html(), unsafe_allow_html=True)
 
+  if method in ['WIN','PLA']:
+    final_df.columns = ['馬匹', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '一分鐘投注','五分鐘投注']
+    target_df = final_df
+    rows_with_plus = target_df[
+        target_df['最初排名'].astype(str).str.contains('\+') |
+        target_df['上一次排名'].astype(str).str.contains('\+')
+    ][['馬匹', '賠率', '最初排名', '上一次排名']]
+    # Apply the conditional formatting to the 初始排名 and 前一排名 columns and add a bar to the 投資變化 column
+    styled_df = final_df.style.format({
+      '賠率': '{:.1f}',
+      '最初賠率': '{:.1f}',
+      '投注變化': '{:.2f}k',
+      '投注': '{:.2f}k',
+      '一分鐘投注': '{:.2f}k',
+      '五分鐘投注': '{:.2f}k'
+    }).map(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
+
+    # Display the styled DataFrame
+    st.write(styled_df.to_html(), unsafe_allow_html=True)
+    st.write(rows_with_plus.to_html(), unsafe_allow_html=True)
+
+
+  else:
+    final_df.columns = ['組合', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '一分鐘投注','五分鐘投注']
+    target_df = final_df.head(25)
+    rows_with_plus = target_df[
+        target_df['最初排名'].astype(str).str.contains('\+') |
+        target_df['上一次排名'].astype(str).str.contains('\+')
+    ][['組合', '賠率', '最初排名', '上一次排名']]
+
+
+    # Apply the conditional formatting to the 初始排名 and 前一排名 columns and add a bar to the 投資變化 column
+    styled_df = target_df.style.format({
+      '賠率': '{:.1f}',
+      '最初賠率': '{:.1f}',
+      '投注變化': '{:.2f}k',
+      '投注': '{:.2f}k',
+      '一分鐘投注': '{:.2f}k',
+      '五分鐘投注': '{:.2f}k'
+    }).map(highlight_change, subset=['最初排名', '上一次排名']).bar(subset=['投注變化', '一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
+
+    # Display the styled DataFrame
+    st.write(styled_df.to_html(), unsafe_allow_html=True)
+    st.write(rows_with_plus.to_html(), unsafe_allow_html=True)
 
 
 
