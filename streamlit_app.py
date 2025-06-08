@@ -925,7 +925,10 @@ if not st.session_state.api_called:
       numbered_dict[race_number] = numbered_list
       race_dataframes[race_number] = df
     
-st.button('開始',on_click=click_start_button)
+st.button('開始', on_click=click_start_button)
+
+# 定義單一的 placeholder
+placeholder = st.empty()
 
 if st.session_state.reset:
     odds_dict = {}
@@ -937,27 +940,27 @@ if st.session_state.reset:
     overall_investment_dict = {}
     for method in methodlist:
         overall_investment_dict.setdefault(method, pd.DataFrame())
-    overall_investment_dict.setdefault('overall',pd.DataFrame())
+    overall_investment_dict.setdefault('overall', pd.DataFrame())
     weird_dict = {}
     for method in methodlist:
-        weird_dict.setdefault(method,pd.DataFrame([],columns=['No.','error','odds','Highlight']))
+        weird_dict.setdefault(method, pd.DataFrame([], columns=['No.', 'error', 'odds', 'Highlight']))
     diff_dict = {}
     for method in methodlist:
         diff_dict.setdefault(method, pd.DataFrame())
-    diff_dict.setdefault('overall',pd.DataFrame())
+    diff_dict.setdefault('overall', pd.DataFrame())
     st.write(f"DataFrame for Race No: {race_no}")
     race_dataframes[race_no]
-    
-start_time = time.time()
-end_time = start_time + 60*1000
-placeholder = st.empty()
-with st.empty():
-        while time.time() <= end_time:
-            with st.container():
-                time_now = datetime.now() + datere.relativedelta(hours=8)
-                odds = get_odds_data()
-                investments = get_investment_data()
-                period = 2
-                main(time_now,odds,investments,period)
-                time.sleep(20)
+
+    # 使用 post time 作為條件
+    start_time = time.time()
+    end_time = start_time + 60*1000
+    while time_time<=end_time:  # 在 post time 前更新
+        with placeholder.container():
+            time_now = datetime.now() + datere.relativedelta(hours=8)
+            odds = get_odds_data()
+            investments = get_investment_data()
+            period = 2
+            main(time_now, odds, investments, period)
+            time.sleep(20)
+
 
