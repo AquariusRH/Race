@@ -309,8 +309,8 @@ def print_bar_chart(time_now):
     df_1st_2nd = pd.DataFrame()
     df_2nd = pd.DataFrame()
     #df_3rd = pd.DataFrame()
-    change_data_1st = df.tail(20).sum(axis=0)
-    change_data_2nd = df.tail(10).sum(axis=0)
+    change_data_1st = df.tail(10).sum(axis=0)
+    change_data_2nd = df.tail(3).sum(axis=0)
     change_data = change_data_2nd - (change_data_1st-change_data_2nd)
     df_1st = df[df.index< time_25_minutes_before].tail(1)
     df_1st_2nd = df[df.index >= time_25_minutes_before].head(1)
@@ -359,7 +359,7 @@ def print_bar_chart(time_now):
                   #bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
     else:
           if df_2nd.equals(df_1st_2nd):
-            bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[0], 0.4, label='25分鐘', color='blue')
+            bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[0], 0.4, label='25分鐘', color=bar_colour)
           else:
               bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[1], 0.4, label='25分鐘', color=bar_colour)
               bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
