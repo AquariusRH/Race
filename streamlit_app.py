@@ -932,6 +932,8 @@ st.button('開始', on_click=click_start_button)
 placeholder = st.empty()
 
 if st.session_state.reset:
+    st.write(f"DataFrame for Race No: {race_no}")
+    race_dataframes[race_no]
     odds_dict = {}
     for method in methodlist:
         odds_dict[method] = pd.DataFrame()
@@ -949,8 +951,7 @@ if st.session_state.reset:
     for method in methodlist:
         diff_dict.setdefault(method, pd.DataFrame())
     diff_dict.setdefault('overall', pd.DataFrame())
-    st.write(f"DataFrame for Race No: {race_no}")
-    race_dataframes[race_no]
+
 
     # 使用 post time 作為條件
     start_time = time.time()
