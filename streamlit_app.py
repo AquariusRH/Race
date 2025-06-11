@@ -345,15 +345,14 @@ def print_bar_chart(time_now):
     X = sorted_final_data_df.columns
     X_axis = np.arange(len(X))
     sorted_change_df = change_df[X]
+    if df_3st.empty:
+                bar_colour = 'blue'
+              else:
+                bar_colour = 'red'
     if not df_1st.empty:
         if df_2nd.empty:
               bars_1st = ax1.bar(X_axis, sorted_final_data_df.iloc[0], 0.4, label='投注額', color='pink')
         else:
-              if df_3st.empty:
-                bar_colour = 'blue'
-              else:
-                bar_colour = 'red'
-              
               bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[1], 0.4, label='25分鐘', color=bar_colour)
               bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
               #if not df_3rd.empty:
@@ -362,10 +361,6 @@ def print_bar_chart(time_now):
           if df_2nd.equals(df_1st_2nd):
             bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[0], 0.4, label='25分鐘', color='blue')
           else:
-              if df_3st.empty:
-                bar_colour = 'blue'
-              else:
-                bar_colour = 'red'
               bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[1], 0.4, label='25分鐘', color=bar_colour)
               bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
               #if not df_3rd.empty:
