@@ -347,7 +347,7 @@ def print_bar_chart(time_now):
     sorted_change_df = change_df[X]
     if df_3st.empty:
                 bar_colour = 'blue'
-              else:
+    else:
                 bar_colour = 'red'
     if not df_1st.empty:
         if df_2nd.empty:
