@@ -955,7 +955,7 @@ if st.session_state.reset:
     # 使用 post time 作為條件
     start_time = time.time()
     end_time = start_time + 60*1000
-    while time_time<=end_time:  # 在 post time 前更新
+    while time.time()<=end_time:  # 在 post time 前更新
         with placeholder.container():
             time_now = datetime.now() + datere.relativedelta(hours=8)
             odds = get_odds_data()
