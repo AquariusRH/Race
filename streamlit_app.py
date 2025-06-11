@@ -326,10 +326,7 @@ def print_bar_chart(time_now):
     bars_1st = None
     bars_2nd = None
     #bars_3rd = None
-    if df_1st.empty:
-      data_df = df_1st_2nd._append(df_2nd)
-    else:
-      data_df = df_1st._append(df_2nd)
+    data_df = df_1st._append(df_2nd)
     #final_data_df = data_df._append(df_3rd)
     final_data_df = data_df
     sorted_final_data_df = final_data_df.sort_values(by=final_data_df.index[0], axis=1, ascending=False)
