@@ -307,26 +307,27 @@ def print_bar_chart(time_now):
     df.index = pd.to_datetime(df.index)
     df_1st = pd.DataFrame()
     df_2nd = pd.DataFrame()
-    df_3rd = pd.DataFrame()
+    #df_3rd = pd.DataFrame()
 
     df_1st = df[df.index< time_25_minutes_before].tail(1)
 
-    df_2nd = df[(df.index >= time_25_minutes_before) & (df.index < time_5_minutes_before)].tail(1)
+    df_2nd = df[df.index >= time_25_minutes_before].tail(1)
 
-    df_3rd = df[df.index>= time_5_minutes_before].tail(1)
+    #df_3rd = df[df.index>= time_5_minutes_before].tail(1)
 
     change_df = pd.DataFrame([change_data.apply(lambda x: x*3 if x > 0 else x)],columns=change_data.index,index =[df.index[-1]])
     if method in ['WIN', 'PLA']:
         odds_list.index = pd.to_datetime(odds_list.index)
         odds_1st = odds_list[odds_list.index< time_25_minutes_before].tail(1)
-        odds_2nd = odds_list[(odds_list.index >= time_25_minutes_before) & (odds_list.index < time_5_minutes_before)].tail(1)
-        odds_3rd = odds_list[odds_list.index>= time_5_minutes_before].tail(1)
+        odds_2nd = odds_list[odds_list.index >= time_25_minutes_before].tail(1)
+       # odds_3rd = odds_list[odds_list.index>= time_5_minutes_before].tail(1)
 
     bars_1st = None
     bars_2nd = None
-    bars_3rd = None
+    #bars_3rd = None
     data_df = df_1st._append(df_2nd)
-    final_data_df = data_df._append(df_3rd)
+    #final_data_df = data_df._append(df_3rd)
+    final_data_df = data_df
     sorted_final_data_df = final_data_df.sort_values(by=final_data_df.index[0], axis=1, ascending=False)
     diff = sorted_final_data_df.diff().dropna()
     diff[diff < 0] = 0
@@ -337,19 +338,19 @@ def print_bar_chart(time_now):
         if df_2nd.empty:
               bars_1st = ax1.bar(X_axis, sorted_final_data_df.iloc[0], 0.4, label='投注額', color='pink')
         else:
-              bars_2nd = ax1.bar(X_axis - 0.3, sorted_final_data_df.iloc[1], 0.3, label='25分鐘', color='blue')
-              bar = ax1.bar(X_axis+0.3,sorted_change_df.iloc[0],0.3,label='改變',color='grey')
-              if not df_3rd.empty:
-                  bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
+              bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[1], 0.4, label='25分鐘', color='blue')
+              bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
+              #if not df_3rd.empty:
+                  #bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
     else:
           if not df_2nd.empty:
-              bars_2nd = ax1.bar(X_axis - 0.3, sorted_final_data_df.iloc[0], 0.3, label='25分鐘', color='blue')
-              bar = ax1.bar(X_axis+0.3,sorted_change_df.iloc[0],0.3,label='改變',color='grey')
-              if not df_3rd.empty:
-                  bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
-          else:
-              bars_3rd = ax1.bar(X_axis-0.2, sorted_final_data_df.iloc[0], 0.4, label='5分鐘', color='red')
+              bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[0], 0.4, label='25分鐘', color='blue')
               bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
+              #if not df_3rd.empty:
+                  #bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
+          #else:
+              #bars_3rd = ax1.bar(X_axis-0.2, sorted_final_data_df.iloc[0], 0.4, label='5分鐘', color='red')
+              #bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
 
       # Add numbers above bars
     if method in ['WIN', 'PLA']:
@@ -358,11 +359,11 @@ def print_bar_chart(time_now):
           for bar, odds in zip(bars_2nd, sorted_odds_list_2nd):
               yval = bar.get_height()
               ax1.text(bar.get_x() + bar.get_width() / 2, yval, odds, ha='center', va='bottom')
-        if bars_3rd is not None:
-          sorted_odds_list_3rd = odds_3rd[X].iloc[0]
-          for bar, odds in zip(bars_3rd, sorted_odds_list_3rd):
-                yval = bar.get_height()
-                ax1.text(bar.get_x() + bar.get_width() / 2, yval, odds, ha='center', va='bottom')
+        #if bars_3rd is not None:
+          #sorted_odds_list_3rd = odds_3rd[X].iloc[0]
+          #for bar, odds in zip(bars_3rd, sorted_odds_list_3rd):
+               # yval = bar.get_height()
+                #ax1.text(bar.get_x() + bar.get_width() / 2, yval, odds, ha='center', va='bottom')
         elif bars_1st is not None:
           sorted_odds_list_1st = odds_1st[X].iloc[0]
           for bar, odds in zip(bars_1st, sorted_odds_list_1st):
