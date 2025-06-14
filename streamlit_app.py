@@ -951,7 +951,7 @@ if st.session_state.reset:
     for method in methodlist:
         diff_dict.setdefault(method, pd.DataFrame())
     diff_dict.setdefault('overall', pd.DataFrame())
-    diff_dict['WIN']
+    print(diff_dict['WIN'])
 
     # 使用 post time 作為條件
     start_time = time.time()
