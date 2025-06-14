@@ -306,14 +306,13 @@ def print_bar_chart(time_now):
 
       df.index = pd.to_datetime(df.index)
       df_1st = pd.DataFrame()
+      df_1st_2nd = pd.DataFrame()
       df_2nd = pd.DataFrame()
       #df_3rd = pd.DataFrame()
-
       df_1st = df[df.index< time_25_minutes_before].tail(1)
-
+      df_1st_2nd = df[df.index >= time_25_minutes_before].head(1)
       df_2nd = df[df.index >= time_25_minutes_before].tail(1)
-
-      #df_3rd = df[df.index>= time_5_minutes_before].tail(1)
+      df_3rd = df[df.index>= time_5_minutes_before].tail(1)
 
       change_df = pd.DataFrame([change_data.apply(lambda x: x*3 if x > 0 else x)],columns=change_data.index,index =[df.index[-1]])
       print(change_df)
@@ -326,7 +325,16 @@ def print_bar_chart(time_now):
       bars_1st = None
       bars_2nd = None
       #bars_3rd = None
-      data_df = df_1st._append(df_2nd)
+      # Initialize data_df
+      if not df_1st.empty:
+          data_df = df_1st
+          data_df = data_df._append(df_2nd)
+      elif not df_1st_2nd.empty:
+          data_df = df_1st_2nd
+          if not df_2nd.empty and not df_2nd.equals(df_1st_2nd):  # Avoid appending identical df_2nd
+              data_df = data_df._append(df_2nd)
+      else:
+          data_df = pd.DataFrame()  # Fallback if both are empty
       #final_data_df = data_df._append(df_3rd)
       final_data_df = data_df
       sorted_final_data_df = final_data_df.sort_values(by=final_data_df.index[0], axis=1, ascending=False)
@@ -335,23 +343,29 @@ def print_bar_chart(time_now):
       X = sorted_final_data_df.columns
       X_axis = np.arange(len(X))
       sorted_change_df = change_df[X]
+      if df_3rd.empty:
+                  bar_colour = 'blue'
+      else:
+                  bar_colour = 'red'
       if not df_1st.empty:
           if df_2nd.empty:
-              bars_1st = ax1.bar(X_axis, sorted_final_data_df.iloc[0], 0.4, label='投注額', color='pink')
+                bars_1st = ax1.bar(X_axis, sorted_final_data_df.iloc[0], 0.4, label='投注額', color='pink')
           else:
-              bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[1], 0.4, label='25分鐘', color='blue')
-              bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
-              #if not df_3rd.empty:
-                  #bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
+                bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[1], 0.4, label='25分鐘', color=bar_colour)
+                bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
+                #if not df_3rd.empty:
+                    #bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
       else:
-          if not df_2nd.empty:
-              bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[0], 0.4, label='25分鐘', color='blue')
-              bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
-              #if not df_3rd.empty:
-                  #bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
-          #else:
-              #bars_3rd = ax1.bar(X_axis-0.2, sorted_final_data_df.iloc[0], 0.4, label='5分鐘', color='red')
-              #bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
+            if df_2nd.equals(df_1st_2nd):
+              bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[0], 0.4, label='25分鐘', color=bar_colour)
+            else:
+                bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[1], 0.4, label='25分鐘', color=bar_colour)
+                bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
+                #if not df_3rd.empty:
+                    #bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
+            #else:
+                #bars_3rd = ax1.bar(X_axis-0.2, sorted_final_data_df.iloc[0], 0.4, label='5分鐘', color='red')
+                #bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
 
       # Add numbers above bars
       if method in ['WIN', 'PLA']:
