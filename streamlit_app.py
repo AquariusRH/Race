@@ -961,6 +961,7 @@ if st.session_state.reset:
             odds = get_odds_data()
             investments = get_investment_data()
             period = 2
+            diff_dict
             main(time_now, odds, investments, period)
             time.sleep(20)
 
