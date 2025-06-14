@@ -282,7 +282,7 @@ def get_overall_investment(time_now,dict):
         total_investment_df[horse] = total_investment
     overall_investment_dict['overall'] = overall_investment_dict['overall']._append(total_investment_df)
 
-def print_bar_chart(time_now):More actions
+def print_bar_chart(time_now):
   post_time = post_time_dict[race_no]
   time_25_minutes_before = np.datetime64(post_time - timedelta(minutes=25) + timedelta(hours=8))
   time_5_minutes_before = np.datetime64(post_time - timedelta(minutes=5) + timedelta(hours=8))
