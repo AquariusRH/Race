@@ -1,4 +1,4 @@
-import altair as altMore actions
+import altair as alt
 import pandas as pd
 import streamlit as st
 import requests
