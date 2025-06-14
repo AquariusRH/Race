@@ -292,17 +292,17 @@ def print_bar_chart(time_now):
     odds_list = pd.DataFrame()
     if method == 'overall':
           df = overall_investment_dict[method]
-          #change_data = diff_dict[method].iloc[-1]
+          change_data = diff_dict[method].iloc[-1]
     elif method == 'qin_qpl':
           df = overall_investment_dict['QIN'] + overall_investment_dict['QPL']
-          #change_data = diff_dict['QIN'].tail(10).sum(axis = 0) + diff_dict['QPL'].tail(10).sum(axis = 0)
+          change_data = diff_dict['QIN'].tail(10).sum(axis = 0) + diff_dict['QPL'].tail(10).sum(axis = 0)
     elif method == 'qin':
           df = overall_investment_dict['QIN']
-          #change_data = diff_dict[method].tail(10).sum(axis = 0)
+          change_data = diff_dict[method].tail(10).sum(axis = 0)
     elif method in ['WIN', 'PLA']:
           df = overall_investment_dict[method]
           odds_list = odds_dict[method]
-          #change_data = diff_dict[method].tail(10).sum(axis = 0)
+          change_data = diff_dict[method].tail(10).sum(axis = 0)
 
     df.index = pd.to_datetime(df.index)
     df_1st = pd.DataFrame()
@@ -314,17 +314,17 @@ def print_bar_chart(time_now):
       change_data_1st = df.iloc[-10]
     else:
       change_data_1st = df.iloc[0] 
-    change_data_2nd = df.iloc[-1]
-    change_data_df = change_data_2nd-change_data_1st
-    change_data_mean = change_data_df.mean()
-    change_data = change_data_df - change_data_mean
-    change_df = change_data.apply(lambda x: x * 2 if x > 0 else x)
+    #change_data_2nd = df.iloc[-1]
+    #change_data_df = change_data_2nd-change_data_1st
+    #change_data_mean = change_data_df.mean()
+    #change_data = change_data_df - change_data_mean
+    #change_df = change_data.apply(lambda x: x * 2 if x > 0 else x)
     df_1st = df[df.index< time_25_minutes_before].tail(1)
     df_1st_2nd = df[df.index >= time_25_minutes_before].head(1)
     df_2nd = df[df.index >= time_25_minutes_before].tail(1)
     df_3rd = df[df.index>= time_5_minutes_before].tail(1)
 
-    #change_df = pd.DataFrame([change_data.apply(lambda x: x*2 if x > 0 else x)],columns=change_data.index,index =[df.index[-1]])
+    change_df = pd.DataFrame([change_data.apply(lambda x: x*2 if x > 0 else x*2)],columns=change_data.index,index =[df.index[-1]])
     if method in ['WIN', 'PLA']:
         odds_list.index = pd.to_datetime(odds_list.index)
         odds_1st = odds_list[odds_list.index< time_25_minutes_before].tail(1)
