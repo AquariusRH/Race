@@ -389,6 +389,7 @@ def print_bar_chart(time_now):
       elif method == 'PLA':
           plt.title('位置', fontsize=15)
       st.pyplot(fig)
+      
 
 def weird_data(investments):
   for method in methodlist:
@@ -950,7 +951,7 @@ if st.session_state.reset:
     for method in methodlist:
         diff_dict.setdefault(method, pd.DataFrame())
     diff_dict.setdefault('overall', pd.DataFrame())
-
+    diff_dict['WIN']
 
     # 使用 post time 作為條件
     start_time = time.time()
@@ -961,7 +962,7 @@ if st.session_state.reset:
             odds = get_odds_data()
             investments = get_investment_data()
             period = 2
-            st.write(diff_dict['WIN'])
+            
             main(time_now, odds, investments, period)
             time.sleep(20)
 
