@@ -417,7 +417,7 @@ def weird_data(investments):
           highlight = '***'
         error_df = pd.DataFrame([[index,error,odds_dict[method].tail(1)[index].values,highlight]], columns=['No.', 'error','odds', 'Highlight'],index = diff.index)
       weird_dict[method] = weird_dict[method]._append(error_df)
-
+      
 def change_overall(time_now):
   total_investment = diff_dict['WIN'].sum(axis=0)+diff_dict['PLA'].sum(axis=0)+diff_dict['QIN'].sum(axis=0)+diff_dict['QPL'].sum(axis=0)
   total_investment_df = pd.DataFrame([total_investment],index = [time_now])
@@ -951,7 +951,7 @@ if st.session_state.reset:
     for method in methodlist:
         diff_dict.setdefault(method, pd.DataFrame())
     diff_dict.setdefault('overall', pd.DataFrame())
-    print(diff_dict['WIN'])
+    
 
     # 使用 post time 作為條件
     start_time = time.time()
