@@ -314,7 +314,7 @@ def print_bar_chart(time_now):
       df_2nd = df[df.index >= time_25_minutes_before].tail(1)
       df_3rd = df[df.index>= time_5_minutes_before].tail(1)
 
-      change_df = pd.DataFrame([change_data.apply(lambda x: x*3 if x > 0 else x)],columns=change_data.index,index =[df.index[-1]])
+      change_df = pd.DataFrame([change_data.apply(lambda x: x*2 if x > 0 else x*2)],columns=change_data.index,index =[df.index[-1]])
       print(change_df)
       if method in ['WIN', 'PLA']:
         odds_list.index = pd.to_datetime(odds_list.index)
