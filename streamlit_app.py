@@ -309,11 +309,11 @@ def print_bar_chart(time_now):
     df_1st_2nd = pd.DataFrame()
     df_2nd = pd.DataFrame()
     #df_3rd = pd.DataFrame()
-    total_rows = len(df)
-    if total_rows >= 10:
-      change_data_1st = df.iloc[-10]
-    else:
-      change_data_1st = df.iloc[0] 
+    #total_rows = len(df)
+    #if total_rows >= 10:
+      #change_data_1st = df.iloc[-10]
+    #else:
+      #change_data_1st = df.iloc[0] 
     #change_data_2nd = df.iloc[-1]
     #change_data_df = change_data_2nd-change_data_1st
     #change_data_mean = change_data_df.mean()
