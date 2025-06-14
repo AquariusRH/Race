@@ -288,78 +288,63 @@ def print_bar_chart(time_now):
   time_5_minutes_before = np.datetime64(post_time - timedelta(minutes=5) + timedelta(hours=8))
 
   for method in print_list:
-    fig, ax1 = plt.subplots(figsize=(12, 6))
-    odds_list = pd.DataFrame()
-    if method == 'overall':
+      fig, ax1 = plt.subplots(figsize=(12, 6))
+      odds_list = pd.DataFrame()
+      if method == 'overall':
           df = overall_investment_dict[method]
           change_data = diff_dict[method].iloc[-1]
-    elif method == 'qin_qpl':
+      elif method == 'qin_qpl':
           df = overall_investment_dict['QIN'] + overall_investment_dict['QPL']
           change_data = diff_dict['QIN'].tail(20).sum(axis = 0) + diff_dict['QPL'].tail(20).sum(axis = 0)
-    elif method == 'qin':
+      elif method == 'qin':
           df = overall_investment_dict['QIN']
           change_data = diff_dict[method].tail(20).sum(axis = 0)
-    elif method in ['WIN', 'PLA']:
+      elif method in ['WIN', 'PLA']:
           df = overall_investment_dict[method]
           odds_list = odds_dict[method]
           change_data = diff_dict[method].tail(20).sum(axis = 0)
 
-    df.index = pd.to_datetime(df.index)
-    df_1st = pd.DataFrame()
-    df_1st_2nd = pd.DataFrame()
-    df_2nd = pd.DataFrame()
-    #df_3rd = pd.DataFrame()
+      df.index = pd.to_datetime(df.index)
+      df_1st = pd.DataFrame()
+      df_2nd = pd.DataFrame()
+      #df_3rd = pd.DataFrame()
 
-    df_1st = df[df.index< time_25_minutes_before].tail(1)
-    df_1st_2nd = df[df.index >= time_25_minutes_before].head(1)
-    df_2nd = df[df.index >= time_25_minutes_before].tail(1)
-    df_3rd = df[df.index>= time_5_minutes_before].tail(1)
+      df_1st = df[df.index< time_25_minutes_before].tail(1)
 
-    change_df = pd.DataFrame([change_data.apply(lambda x: x*3 if x > 0 else x)],columns=change_data.index,index =[df.index[-1]])
-    if method in ['WIN', 'PLA']:
+      df_2nd = df[df.index >= time_25_minutes_before].tail(1)
+
+      #df_3rd = df[df.index>= time_5_minutes_before].tail(1)
+
+      change_df = pd.DataFrame([change_data.apply(lambda x: x*3 if x > 0 else x)],columns=change_data.index,index =[df.index[-1]])
+      if method in ['WIN', 'PLA']:
         odds_list.index = pd.to_datetime(odds_list.index)
         odds_1st = odds_list[odds_list.index< time_25_minutes_before].tail(1)
         odds_2nd = odds_list[odds_list.index >= time_25_minutes_before].tail(1)
-       # odds_3rd = odds_list[odds_list.index>= time_5_minutes_before].tail(1)
+        #odds_3rd = odds_list[odds_list.index>= time_5_minutes_before].tail(1)
 
-    bars_1st = None
-    bars_2nd = None
-    #bars_3rd = None
-    # Initialize data_df
-    if not df_1st.empty:
-        data_df = df_1st
-        data_df = data_df._append(df_2nd)
-    elif not df_1st_2nd.empty:
-        data_df = df_1st_2nd
-        if not df_2nd.empty and not df_2nd.equals(df_1st_2nd):  # Avoid appending identical df_2nd
-            data_df = data_df._append(df_2nd)
-    else:
-        data_df = pd.DataFrame()  # Fallback if both are empty
-    #final_data_df = data_df._append(df_3rd)
-    final_data_df = data_df
-    sorted_final_data_df = final_data_df.sort_values(by=final_data_df.index[0], axis=1, ascending=False)
-    diff = sorted_final_data_df.diff().dropna()
-    diff[diff < 0] = 0
-    X = sorted_final_data_df.columns
-    X_axis = np.arange(len(X))
-    sorted_change_df = change_df[X]
-    if df_3rd.empty:
-                bar_colour = 'blue'
-    else:
-                bar_colour = 'red'
-    if not df_1st.empty:
-        if df_2nd.empty:
+      bars_1st = None
+      bars_2nd = None
+      #bars_3rd = None
+      data_df = df_1st._append(df_2nd)
+      #final_data_df = data_df._append(df_3rd)
+      final_data_df = data_df
+      sorted_final_data_df = final_data_df.sort_values(by=final_data_df.index[0], axis=1, ascending=False)
+      diff = sorted_final_data_df.diff().dropna()
+      diff[diff < 0] = 0
+      X = sorted_final_data_df.columns
+      X_axis = np.arange(len(X))
+      sorted_change_df = change_df[X]
+      if not df_1st.empty:
+          if df_2nd.empty:
               bars_1st = ax1.bar(X_axis, sorted_final_data_df.iloc[0], 0.4, label='投注額', color='pink')
-        else:
-              bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[1], 0.4, label='25分鐘', color=bar_colour)
+          else:
+              bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[1], 0.4, label='25分鐘', color='blue')
               bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
               #if not df_3rd.empty:
                   #bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
-    else:
-          if df_2nd.equals(df_1st_2nd):
-            bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[0], 0.4, label='25分鐘', color=bar_colour)
-          else:
-              bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[1], 0.4, label='25分鐘', color=bar_colour)
+      else:
+          if not df_2nd.empty:
+              bars_2nd = ax1.bar(X_axis - 0.2, sorted_final_data_df.iloc[0], 0.4, label='25分鐘', color='blue')
               bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
               #if not df_3rd.empty:
                   #bars_3rd = ax1.bar(X_axis, diff.iloc[0], 0.3, label='5分鐘', color='red')
@@ -368,7 +353,7 @@ def print_bar_chart(time_now):
               #bar = ax1.bar(X_axis+0.2,sorted_change_df.iloc[0],0.4,label='改變',color='grey')
 
       # Add numbers above bars
-    if method in ['WIN', 'PLA']:
+      if method in ['WIN', 'PLA']:
         if bars_2nd is not None:
           sorted_odds_list_2nd = odds_2nd[X].iloc[0]
           for bar, odds in zip(bars_2nd, sorted_odds_list_2nd):
@@ -385,26 +370,25 @@ def print_bar_chart(time_now):
               yval = bar.get_height()
               ax1.text(bar.get_x() + bar.get_width() / 2, yval, odds, ha='center', va='bottom')
 
-    namelist_sort = [numbered_dict[race_no][i - 1] for i in X]
-    formatted_namelist = [label.split('.')[0] + '.' + '\n'.join(label.split('.')[1]) for label in namelist_sort]
-    plt.xticks(X_axis, formatted_namelist, fontsize=15)
-    ax1.grid(color='lightgrey', axis='y', linestyle='--')
-    ax1.set_ylabel('投注額',fontsize=15)
-    ax1.tick_params(axis='y')
-    fig.legend()
+      namelist_sort = [numbered_dict[race_no][i - 1] for i in X]
+      formatted_namelist = [label.split('.')[0] + '.' + '\n'.join(label.split('.')[1]) for label in namelist_sort]
+      plt.xticks(X_axis, formatted_namelist, fontsize=12)
+      ax1.grid(color='lightgrey', axis='y', linestyle='--')
+      ax1.set_ylabel('投注額',fontsize=15)
+      ax1.tick_params(axis='y')
+      fig.legend()
 
-    if method == 'overall':
+      if method == 'overall':
           plt.title('綜合', fontsize=15)
-    elif method == 'qin_qpl':
+      elif method == 'qin_qpl':
           plt.title('連贏 / 位置Q', fontsize=15)
-    elif method == 'qin':
+      elif method == 'qin':
           plt.title('連贏', fontsize=15)
-    elif method == 'WIN':
+      elif method == 'WIN':
           plt.title('獨贏', fontsize=15)
-    elif method == 'PLA':
+      elif method == 'PLA':
           plt.title('位置', fontsize=15)
-
-    st.pyplot(fig)
+      st.pyplot(fig)
 
 def weird_data(investments):
   for method in methodlist:
