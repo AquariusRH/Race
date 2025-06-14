@@ -288,18 +288,18 @@ def print_bar_chart(time_now):
   time_5_minutes_before = np.datetime64(post_time - timedelta(minutes=5) + timedelta(hours=8))
 
   for method in print_list:
-      fig, ax1 = plt.subplots(figsize=(12, 6))
-      odds_list = pd.DataFrame()
-      if method == 'overall':
+    fig, ax1 = plt.subplots(figsize=(12, 6))
+    odds_list = pd.DataFrame()
+    if method == 'overall':
           df = overall_investment_dict[method]
           change_data = diff_dict[method].iloc[-1]
-      elif method == 'qin_qpl':
+    elif method == 'qin_qpl':
           df = overall_investment_dict['QIN'] + overall_investment_dict['QPL']
           change_data = diff_dict['QIN'].tail(20).sum(axis = 0) + diff_dict['QPL'].tail(20).sum(axis = 0)
-      elif method == 'qin':
+    elif method == 'qin':
           df = overall_investment_dict['QIN']
           change_data = diff_dict[method].tail(20).sum(axis = 0)
-      elif method in ['WIN', 'PLA']:
+    elif method in ['WIN', 'PLA']:
           df = overall_investment_dict[method]
           odds_list = odds_dict[method]
           change_data = diff_dict[method].tail(20).sum(axis = 0)
