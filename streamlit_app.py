@@ -941,12 +941,12 @@ if not st.session_state.api_called:
       race_dataframes[race_number] = df
     
 st.button('開始', on_click=click_start_button)
-
+top_container = st.container()
 # 定義單一的 placeholder
 placeholder = st.empty()
 
 if st.session_state.reset:
-    with st.container():
+    with top_container:
       st.write(f"DataFrame for Race No: {race_no}")
       st.dataframe(race_dataframes[race_no], use_container_width=True)
     odds_dict = {}
