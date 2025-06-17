@@ -947,7 +947,7 @@ placeholder = st.empty()
 
 if st.session_state.reset:
     st.write(f"DataFrame for Race No: {race_no}")
-    st.dataframe(race_dataframes[race_no])
+    st.dataframe(race_dataframes[race_no], use_container_width=True)
     odds_dict = {}
     for method in methodlist:
         odds_dict[method] = pd.DataFrame()
