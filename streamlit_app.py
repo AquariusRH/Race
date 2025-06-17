@@ -942,12 +942,12 @@ if not st.session_state.api_called:
     
 st.button('開始', on_click=click_start_button)
 
-st.write(f"DataFrame for Race No: {race_no}")
-st.dataframe(race_dataframes[race_no], use_container_width=True)
 # 定義單一的 placeholder
 placeholder = st.empty()
 
 if st.session_state.reset:
+    st.write(f"DataFrame for Race No: {race_no}")
+    st.dataframe(race_dataframes[race_no], use_container_width=True)
     odds_dict = {}
     for method in methodlist:
         odds_dict[method] = pd.DataFrame()
