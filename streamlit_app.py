@@ -583,7 +583,7 @@ def top(method_odds_df, method_investment_df, method):
           target_df['最初排名'].astype(str).str.contains('\+') |
           target_df['上一次排名'].astype(str).str.contains('\+')
       ][['組合', '賠率', '最初排名', '上一次排名']]
-
+    
 
       # Apply the conditional formatting to the 初始排名 and 前一排名 columns and add a bar to the 投資變化 column
       styled_df = target_df.style.format({
@@ -599,7 +599,10 @@ def top(method_odds_df, method_investment_df, method):
       st.write(styled_df.to_html(), unsafe_allow_html=True)
       st.write(styled_rows_with_plus.to_html(), unsafe_allow_html=True)
 
-
+      if method in ["TRI","FF"]:
+        notice_df = final_df[final_df['五分鐘投注']>10][['組合', '賠率', '一分鐘投注', '五分鐘投注']]
+        styled_notice_df = notice_df.style.format('賠率': '{:.1f}','一分鐘投注': '{:.2f}k','五分鐘投注': '{:.2f}k'}).bar(subset=['一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
+        st.write(styled_notice_df.to_html(), unsafe_allow_html=True)
 
 def print_top():
     for method in ['QIN',"TRI","FF",'WIN','PLA']:
