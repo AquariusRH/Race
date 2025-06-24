@@ -72,7 +72,9 @@ def get_investment_data():
           "WIN": [],
           "PLA": [],
           "QIN": [],
-          "QPL": []
+          "QPL": [],
+          "TRI": [],
+          "FF": []
       }
 
       race_meetings = investment_data.get('data', {}).get('raceMeetings', [])
@@ -153,7 +155,9 @@ def get_odds_data():
           "WIN": [],
           "PLA": [],
           "QIN": [],
-          "QPL": []
+          "QPL": [],
+          "TRI": [],
+          "FF": []
       }
 
       race_meetings = odds_data.get('data', {}).get('raceMeetings', [])
@@ -173,7 +177,7 @@ def get_odds_data():
                   else:
                     oddsValue = float(oddsValue)
 
-                  if odds_type in ["QIN", "QPL"]:
+                  if odds_type in ["QIN", "QPL","TRI","FF"]:
                       odds_values[odds_type].append((node.get('combString'), oddsValue))
                   else:
                       odds_values[odds_type].append(oddsValue)
@@ -181,6 +185,8 @@ def get_odds_data():
       # Sorting the QIN and QPL odds values by combString in ascending order
       odds_values["QIN"].sort(key=lambda x: x[0])
       odds_values["QPL"].sort(key=lambda x: x[0])
+      odds_values["TRI"].sort(key=lambda x: x[0])
+      odds_values["FF"].sort(key=lambda x: x[0])
 
       #print("WIN Odds Values:", odds_values["WIN"])
       #print("PLA Odds Values:", odds_values["PLA"])
@@ -198,7 +204,7 @@ def save_odds_data(time_now,odds):
             # Initialize the DataFrame with the correct number of columns
             odds_dict[method] = pd.DataFrame(columns=np.arange(1, len(odds[method]) + 1))
         odds_dict[method].loc[time_now] = odds[method]
-      elif method in ['QIN','QPL']:
+      elif method in ['QIN','QPL',"TRI","FF"]:
         combination, odds_array = zip(*odds[method])
         if odds_dict[method].empty:
           odds_dict[method] = pd.DataFrame(columns=combination)
@@ -213,7 +219,7 @@ def save_investment_data(time_now,investment,odds):
             investment_dict[method] = pd.DataFrame(columns=np.arange(1, len(odds[method]) + 1))
         investment_df = [round(investments[method][0] * 0.825 / 1000 / odd, 2) for odd in odds[method]]
         investment_dict[method].loc[time_now] = investment_df
-      elif method in ['QIN','QPL']:
+      elif method in ['QIN','QPL',"TRI","FF"]:
         combination, odds_array = zip(*odds[method])
         if investment_dict[method].empty:
           investment_dict[method] = pd.DataFrame(columns=combination)
@@ -406,7 +412,7 @@ def print_bar_chart(time_now):
       st.pyplot(fig)
 
 def weird_data(investments):
-  for method in methodlist:
+  for method in methodlist[0:3]:
     latest_investment = investment_dict[method].tail(1).values
     last_time_odds = odds_dict[method].tail(2).head(1)
     expected_investment = investments[method][0]*0.825 / 1000 / last_time_odds
@@ -438,7 +444,7 @@ def change_overall(time_now):
   diff_dict['overall'] = diff_dict['overall']._append(total_investment_df)
 
 def print_concern_weird_dict():
-  for method in methodlist:
+  for method in methodlist[0:3]:
       name = methodCHlist[methodlist.index(method)]
       st.write(f'{name} 異常投注')
       df = weird_dict[method]
@@ -596,7 +602,7 @@ def top(method_odds_df, method_investment_df, method):
 
 
 def print_top():
-    for method in ['QIN','WIN','PLA']:
+    for method in ['QIN',"TRI","FF",'WIN','PLA']:
         methodCHlist[methodlist.index(method)]
         top(odds_dict[method], investment_dict[method], method)
 
@@ -661,11 +667,11 @@ checkbox_no_qpl = st.checkbox('沒有位置Q', value=False)
 race_no_value = None
 watchlist = ['WIN','PLA']
 
-list1 = ['WIN','PLA','QIN','QPL']
-list2 = ['WIN','PLA','QIN']
+list1 = ['WIN','PLA','QIN','QPL',"TRI","FF"]
+list2 = ['WIN','PLA','QIN',"TRI","FF"]
 
-list1_ch = ['獨贏','位置','連贏','位置Q']
-list2_ch = ['獨贏','位置','連贏']
+list1_ch = ['獨贏','位置','連贏','位置Q','單T','四連環']
+list2_ch = ['獨贏','位置','連贏','單T','四連環']
 
 print_list_1 = ['qin_qpl', 'PLA','WIN']
 print_list_2 = ['qin', 'PLA','WIN']
