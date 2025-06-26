@@ -578,7 +578,7 @@ def top(method_odds_df, method_investment_df, method):
 
     else:
       final_df.columns = ['組合', '賠率', '最初賠率', '排名', '最初排名', '上一次排名', '投注變化', '投注', '一分鐘投注','五分鐘投注']
-      target_df = final_df.head(15)
+      target_df = final_df.head(20)
       rows_with_plus = target_df[
           target_df['最初排名'].astype(str).str.contains('\+') |
           target_df['上一次排名'].astype(str).str.contains('\+')
@@ -600,7 +600,7 @@ def top(method_odds_df, method_investment_df, method):
       st.write(styled_rows_with_plus.to_html(), unsafe_allow_html=True)
 
       if method in ["TRI","FF"]:
-        notice_df = final_df[final_df['一分鐘投注']>=5 | final_df['五分鐘投注']>=5]  [['組合', '賠率', '一分鐘投注', '五分鐘投注']]
+        notice_df = final_df[final_df['一分鐘投注']>=5 | final_df['五分鐘投注']>=10]  [['組合', '賠率', '一分鐘投注', '五分鐘投注']]
         styled_notice_df = notice_df.style.format({'賠率': '{:.1f}','一分鐘投注': '{:.2f}k','五分鐘投注': '{:.2f}k'}).bar(subset=['一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
         st.write(styled_notice_df.to_html(), unsafe_allow_html=True)
 
