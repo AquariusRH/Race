@@ -604,7 +604,10 @@ def top(method_odds_df, method_investment_df, method):
       st.write(styled_rows_with_plus.to_html(), unsafe_allow_html=True)
 
       if method in ["FCT","TRI","FF"]:
-        notice_df = final_df[(final_df['一分鐘投注'] >= 5) | (final_df['五分鐘投注'] >= 15)][['組合', '賠率', '一分鐘投注', '五分鐘投注']]
+        if method in ["QIN"]:
+          notice_df = final_df[(final_df['一分鐘投注'] >= 50) | (final_df['五分鐘投注'] >= 100)][['組合', '賠率', '一分鐘投注', '五分鐘投注']]
+        else:
+          notice_df = final_df[(final_df['一分鐘投注'] >= 5) | (final_df['五分鐘投注'] >= 15)][['組合', '賠率', '一分鐘投注', '五分鐘投注']]
         styled_notice_df = notice_df.style.format({'賠率': '{:.1f}','一分鐘投注': '{:.2f}k','五分鐘投注': '{:.2f}k'}).bar(subset=['一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
         st.write(styled_notice_df.to_html(), unsafe_allow_html=True)
 
