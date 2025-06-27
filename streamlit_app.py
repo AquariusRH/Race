@@ -601,7 +601,6 @@ def top(method_odds_df, method_investment_df, method):
       styled_rows_with_plus = rows_with_plus.style.format({'賠率': '{:.1f}'}).map(highlight_change, subset=['最初排名', '上一次排名']).hide(axis='index')
       # Display the styled DataFrame
       st.write(styled_df.to_html(), unsafe_allow_html=True)
-      st.write(styled_rows_with_plus.to_html(), unsafe_allow_html=True)
 
       if method in ["QIN","FCT","TRI","FF"]:
         if method in ["QIN"]:
@@ -609,6 +608,12 @@ def top(method_odds_df, method_investment_df, method):
         else:
           notice_df = final_df[(final_df['一分鐘投注'] >= 5) | (final_df['五分鐘投注'] >= 15)][['組合', '賠率', '一分鐘投注', '五分鐘投注']]
         styled_notice_df = notice_df.style.format({'賠率': '{:.1f}','一分鐘投注': '{:.2f}k','五分鐘投注': '{:.2f}k'}).bar(subset=['一分鐘投注','五分鐘投注'], color='rgba(173, 216, 230, 0.5)').hide(axis='index')
+        
+
+      col1, col2 = st.columns(2)
+      with col1:
+        st.write(styled_rows_with_plus.to_html(), unsafe_allow_html=True)
+      with col2:
         st.write(styled_notice_df.to_html(), unsafe_allow_html=True)
 
 def print_top():
