@@ -73,6 +73,7 @@ def get_investment_data():
           "PLA": [],
           "QIN": [],
           "QPL": [],
+          "FCT": [],
           "TRI": [],
           "FF": []
       }
@@ -156,6 +157,7 @@ def get_odds_data():
           "PLA": [],
           "QIN": [],
           "QPL": [],
+          "FCT": [],
           "TRI": [],
           "FF": []
       }
@@ -177,7 +179,7 @@ def get_odds_data():
                   else:
                     oddsValue = float(oddsValue)
 
-                  if odds_type in ["QIN", "QPL","TRI","FF"]:
+                  if odds_type in ["QIN", "QPL","FCT","TRI","FF"]:
                       odds_values[odds_type].append((node.get('combString'), oddsValue))
                   else:
                       odds_values[odds_type].append(oddsValue)
@@ -185,6 +187,7 @@ def get_odds_data():
       # Sorting the QIN and QPL odds values by combString in ascending order
       odds_values["QIN"].sort(key=lambda x: x[0])
       odds_values["QPL"].sort(key=lambda x: x[0])
+      odds_values["FCT"].sort(key=lambda x: x[0])
       odds_values["TRI"].sort(key=lambda x: x[0])
       odds_values["FF"].sort(key=lambda x: x[0])
 
@@ -204,7 +207,7 @@ def save_odds_data(time_now,odds):
             # Initialize the DataFrame with the correct number of columns
             odds_dict[method] = pd.DataFrame(columns=np.arange(1, len(odds[method]) + 1))
         odds_dict[method].loc[time_now] = odds[method]
-      elif method in ['QIN','QPL',"TRI","FF"]:
+      elif method in ['QIN','QPL',"FCT","TRI","FF"]:
         combination, odds_array = zip(*odds[method])
         if odds_dict[method].empty:
           odds_dict[method] = pd.DataFrame(columns=combination)
@@ -605,7 +608,7 @@ def top(method_odds_df, method_investment_df, method):
         st.write(styled_notice_df.to_html(), unsafe_allow_html=True)
 
 def print_top():
-    for method in ['QIN',"TRI","FF",'WIN','PLA']:
+    for method in ['QIN',"FCT","TRI","FF",'WIN','PLA']:
         methodCHlist[methodlist.index(method)]
         top(odds_dict[method], investment_dict[method], method)
 
@@ -670,11 +673,11 @@ checkbox_no_qpl = st.checkbox('沒有位置Q', value=False)
 race_no_value = None
 watchlist = ['WIN','PLA']
 
-list1 = ['WIN','PLA','QIN','QPL',"TRI","FF"]
-list2 = ['WIN','PLA','QIN',"TRI","FF"]
+list1 = ['WIN','PLA','QIN','QPL',"FCT","TRI","FF"]
+list2 = ['WIN','PLA','QIN',"FCT","TRI","FF"]
 
-list1_ch = ['獨贏','位置','連贏','位置Q','單T','四連環']
-list2_ch = ['獨贏','位置','連贏','單T','四連環']
+list1_ch = ['獨贏','位置','連贏','位置Q','二重彩','單T','四連環']
+list2_ch = ['獨贏','位置','連贏','二重彩','單T','四連環']
 
 print_list_1 = ['qin_qpl', 'PLA','WIN']
 print_list_2 = ['qin', 'PLA','WIN']
