@@ -603,7 +603,7 @@ def top(method_odds_df, method_investment_df, method):
       st.write(styled_df.to_html(), unsafe_allow_html=True)
       st.write(styled_rows_with_plus.to_html(), unsafe_allow_html=True)
 
-      if method in ["FCT","TRI","FF"]:
+      if method in ["QIN","FCT","TRI","FF"]:
         if method in ["QIN"]:
           notice_df = final_df[(final_df['一分鐘投注'] >= 50) | (final_df['五分鐘投注'] >= 100)][['組合', '賠率', '一分鐘投注', '五分鐘投注']]
         else:
