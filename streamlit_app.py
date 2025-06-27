@@ -222,7 +222,7 @@ def save_investment_data(time_now,investment,odds):
             investment_dict[method] = pd.DataFrame(columns=np.arange(1, len(odds[method]) + 1))
         investment_df = [round(investments[method][0] * 0.825 / 1000 / odd, 2) for odd in odds[method]]
         investment_dict[method].loc[time_now] = investment_df
-      elif method in ['QIN','QPL',"TRI","FF"]:
+      elif method in ['QIN','QPL',"FCT","TRI","FF"]:
         combination, odds_array = zip(*odds[method])
         if investment_dict[method].empty:
           investment_dict[method] = pd.DataFrame(columns=combination)
