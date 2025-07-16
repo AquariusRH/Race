@@ -304,7 +304,7 @@ def print_bar_chart(time_now):
           change_data = diff_dict[method].iloc[-1]
       elif method == 'qin_qpl':
           df = overall_investment_dict['QIN'] + overall_investment_dict['QPL']
-          change_data = diff_dict['QIN'].tail(10).sum(axis = 0) + diff_dict['QPL'].tail(10).sum(axis = 0)
+          change_data = (diff_dict['QIN'].tail(10).sum(axis = 0) + diff_dict['QPL'].tail(10).sum(axis = 0))*2
       elif method == 'qin':
           df = overall_investment_dict['QIN']
           change_data = diff_dict[method].tail(10).sum(axis = 0)
@@ -447,7 +447,7 @@ def change_overall(time_now):
   diff_dict['overall'] = diff_dict['overall']._append(total_investment_df)
 
 def print_concern_weird_dict():
-  for method in methodlist[0:3]:
+  for method in methodlist[0:4]:
       name = methodCHlist[methodlist.index(method)]
       st.write(f'{name} 異常投注')
       df = weird_dict[method]
