@@ -415,7 +415,10 @@ def print_bar_chart(time_now):
       st.pyplot(fig)
 
 def weird_data(investments):
-  for method in methodlist[0:3]:
+  target_list = methodlist[0:4]
+  if 'QPL' not in target_list:
+      target_list = methodlist[0:3]
+  for method in target_list:
     latest_investment = investment_dict[method].tail(1).values
     last_time_odds = odds_dict[method].tail(2).head(1)
     expected_investment = investments[method][0]*0.825 / 1000 / last_time_odds
@@ -447,7 +450,10 @@ def change_overall(time_now):
   diff_dict['overall'] = diff_dict['overall']._append(total_investment_df)
 
 def print_concern_weird_dict():
-  for method in methodlist[0:4]:
+    target_list = methodlist[0:4]
+    if 'QPL' not in target_list:
+      target_list = methodlist[0:3]
+    for method in target_list:
       name = methodCHlist[methodlist.index(method)]
       st.write(f'{name} 異常投注')
       df = weird_dict[method]
