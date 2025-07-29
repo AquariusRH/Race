@@ -445,7 +445,10 @@ def weird_data(investments):
       weird_dict[method] = weird_dict[method]._append(error_df)
 
 def change_overall(time_now):
-  total_investment = diff_dict['WIN'].sum(axis=0)+diff_dict['PLA'].sum(axis=0)+diff_dict['QIN'].sum(axis=0)+diff_dict['QPL'].sum(axis=0)
+  if 'QPL' in methodlist[0:4]:
+    total_investment = diff_dict['WIN'].sum(axis=0)+diff_dict['PLA'].sum(axis=0)+diff_dict['QIN'].sum(axis=0)+diff_dict['QPL'].sum(axis=0)
+  else:
+    total_investment = diff_dict['WIN'].sum(axis=0)+diff_dict['PLA'].sum(axis=0)+diff_dict['QIN'].sum(axis=0)
   total_investment_df = pd.DataFrame([total_investment],index = [time_now])
   diff_dict['overall'] = diff_dict['overall']._append(total_investment_df)
 
