@@ -307,7 +307,7 @@ def print_bar_chart(time_now):
           change_data = (diff_dict['QIN'].tail(10).sum(axis = 0) + diff_dict['QPL'].tail(10).sum(axis = 0))*2
       elif method == 'qin':
           df = overall_investment_dict['QIN']
-          change_data = diff_dict[method].tail(10).sum(axis = 0)
+          change_data = diff_dict['QIN'].tail(10).sum(axis = 0)
       elif method in ['WIN', 'PLA']:
           df = overall_investment_dict[method]
           odds_list = odds_dict[method]
