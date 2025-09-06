@@ -180,7 +180,7 @@ def get_odds_data():
                   oddsValue = node.get('oddsValue')
                   # Skip iteration if oddsValue is None, empty, or '---'
                   if oddsValue == '---':
-                      oddsValue = ''
+                      oddsValue = 1
                   if oddsValue == 'SCR':
                       oddsValue = np.inf
                   else:
