@@ -401,10 +401,10 @@ def print_bar_chart(time_now):
 
       if method == 'overall':
           plt.title('綜合', fontsize=15)
-      elif method == 'qin_qpl':
-          plt.title('連贏 / 位置Q', fontsize=15)
-      elif method == 'qin':
+      elif method == 'QIN':
           plt.title('連贏', fontsize=15)
+      elif method == 'QPL':
+          plt.title('位置Q', fontsize=15)
       elif method == 'WIN':
           plt.title('獨贏', fontsize=15)
       elif method == 'PLA':
