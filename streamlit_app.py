@@ -314,6 +314,7 @@ def print_bar_chart(time_now):
             odds_list = odds_dict[method].tail(1)
       if df.empty:
         continue
+      st.write(df)
       df.index = pd.to_datetime(df.index)
       df_1st = pd.DataFrame()
       df_1st_2nd = pd.DataFrame()
