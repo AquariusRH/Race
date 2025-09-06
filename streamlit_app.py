@@ -318,8 +318,11 @@ def print_bar_chart(time_now):
           df = overall_investment_dict[method]
           change_data = diff_dict[method].tail(10).sum(axis = 0)
           odds_list = odds_dict[method].tail(1)
+
+      st.write(df)
       if df.empty or df.eq(0).all:
         continue
+      
       df.index = pd.to_datetime(df.index)
       df_1st = pd.DataFrame()
       df_1st_2nd = pd.DataFrame()
