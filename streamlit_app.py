@@ -299,19 +299,17 @@ def print_bar_chart(time_now):
   time_5_minutes_before = np.datetime64(post_time - timedelta(minutes=5) + timedelta(hours=8))
 
   for method in print_list:
-      
-      if not odd_dict[method]:
-        continue
-  
       fig, ax1 = plt.subplots(figsize=(12, 6))
       odds_list = pd.DataFrame()
+      df = []
       if method == 'overall':
           df = overall_investment_dict[method]
           change_data = diff_dict[method].iloc[-1]
       elif method in methodlist:
           df = overall_investment_dict[method]
           change_data = diff_dict[method].tail(10).sum(axis = 0)
-      
+      if df.empty():
+        continue
       df.index = pd.to_datetime(df.index)
       df_1st = pd.DataFrame()
       df_1st_2nd = pd.DataFrame()
