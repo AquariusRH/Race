@@ -299,22 +299,19 @@ def print_bar_chart(time_now):
   time_5_minutes_before = np.datetime64(post_time - timedelta(minutes=5) + timedelta(hours=8))
 
   for method in print_list:
+      
+      if not odd_dict[method]:
+        continue
+  
       fig, ax1 = plt.subplots(figsize=(12, 6))
       odds_list = pd.DataFrame()
       if method == 'overall':
           df = overall_investment_dict[method]
           change_data = diff_dict[method].iloc[-1]
-      elif method == 'qin_qpl':
-          df = overall_investment_dict['QIN'] + overall_investment_dict['QPL']
-          change_data = (diff_dict['QIN'].tail(10).sum(axis = 0) + diff_dict['QPL'].tail(10).sum(axis = 0))*2
-      elif method == 'qin':
-          df = overall_investment_dict['QIN']
-          change_data = diff_dict['QIN'].tail(10).sum(axis = 0)
-      elif method in ['WIN', 'PLA']:
+      elif method in methodlist:
           df = overall_investment_dict[method]
-          odds_list = odds_dict[method]
           change_data = diff_dict[method].tail(10).sum(axis = 0)
-
+      
       df.index = pd.to_datetime(df.index)
       df_1st = pd.DataFrame()
       df_1st_2nd = pd.DataFrame()
@@ -697,13 +694,13 @@ race_no_value = None
 watchlist = ['WIN','PLA']
 
 list2 = ['WIN','PLA','QIN','QPL',"FCT","TRI","FF"]
-list1 = ['WIN','PLA','QIN',"TRI"]
+list1 = ['WIN','PLA','QIN',"QPL","TRI"]
 
 list2_ch = ['獨贏','位置','連贏','位置Q','二重彩','單T','四連環']
 list1_ch = ['獨贏','位置','連贏','單T']
 
 print_list_2 = ['qin_qpl', 'PLA','WIN']
-print_list_1 = ['qin', 'PLA','WIN']
+print_list_1 = ['QIN','QPL', 'PLA','WIN']
 
 methodlist = list1
 methodCHlist = list1_ch
