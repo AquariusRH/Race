@@ -306,6 +306,7 @@ def print_bar_chart(time_now):
   time_5_minutes_before = np.datetime64(post_time - timedelta(minutes=5) + timedelta(hours=8))
 
   for method in print_list:
+    if odds[method] or method == 'overall':
       fig, ax1 = plt.subplots(figsize=(12, 6))
       odds_list = pd.DataFrame()
       df = pd.DataFrame()
