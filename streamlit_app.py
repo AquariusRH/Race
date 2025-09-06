@@ -310,8 +310,7 @@ def print_bar_chart(time_now):
       elif method in methodlist:
           df = overall_investment_dict[method]
           change_data = diff_dict[method].tail(10).sum(axis = 0)
-          if method in ["WIN","PLA"]:
-            odds_list = odds_dict[method].tail(1)
+          odds_list = odds_dict[method].tail(1)
       if df.empty :
         continue
       st.write(odds_list)
