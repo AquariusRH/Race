@@ -165,25 +165,24 @@ def get_odds_data():
       
       race_meetings = odds_data.get('data', {}).get('raceMeetings', [])
       for meeting in race_meetings:
-          pm_pools = meeting.get('pmPools', [])
-          for pool in pm_pools:
-              if place not in ['ST','HV']:
-                id = pool.get('id')
-                if id[8:10] != place:
-                  continue
-              odds_nodes = pool.get('oddsNodes', [])
-              odds_type = pool.get('oddsType')
-              for node in odds_nodes:
-                  oddsValue = node.get('oddsValue')
-               
-                  if oddsValue == 'SCR':
-                    oddsValue = np.inf
-                  else:
-                    oddsValue = float(oddsValue)
-                  if odds_type in ["QIN", "QPL","FCT","TRI","FF"]:
-                      odds_values[odds_type].append((node.get('combString'), oddsValue))
-                  else:
-                      odds_values[odds_type].append(oddsValue)
+        pm_pools = meeting.get('pmPools', [])
+        for pool in pm_pools:
+          if place not in ['ST','HV']:
+            id = pool.get('id')
+            if id[8:10] != place:
+              continue
+              odds_nodes = pool.get('oddsNodes', [])
+              odds_type = pool.get('oddsType')
+              for node in odds_nodes:
+                oddsValue = node.get('oddsValue')
+                if oddsValue == 'SCR':
+                  oddsValue = np.inf
+                else:
+                  oddsValue = float(oddsValue)
+                  if odds_type in ["QIN", "QPL","FCT","TRI","FF"]:
+                    odds_values[odds_type].append((node.get('combString'), oddsValue))
+                  else:
+                    odds_values[odds_type].append(oddsValue)
         # Sorting the odds values for specific types by combString in ascending order
       for odds_type in ["QIN", "QPL", "FCT", "TRI", "FF"]:
             # Only sort if there are valid tuples (skip empty tuples)
