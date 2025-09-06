@@ -610,9 +610,11 @@ def top(method_odds_df, method_investment_df, method):
       # Display the styled DataFrame
       st.write(styled_df.to_html(), unsafe_allow_html=True)
 
-      if method in ["QIN","FCT","TRI","FF"]:
+      if method in ["QIN","QPL","FCT","TRI","FF"]:
         if method in ["QIN"]:
           notice_df = final_df[(final_df['一分鐘投注'] >= 100) | (final_df['五分鐘投注'] >= 500)][['組合', '賠率', '一分鐘投注', '五分鐘投注']]
+        elif method in ["QPL"]:
+          notice_df = final_df[(final_df['一分鐘投注'] >= 200) | (final_df['五分鐘投注'] >= 700)][['組合', '賠率', '一分鐘投注', '五分鐘投注']]
         elif method in ["FCT"]:
           notice_df = final_df[(final_df['一分鐘投注'] >= 10) | (final_df['五分鐘投注'] >= 30)][['組合', '賠率', '一分鐘投注', '五分鐘投注']]
         else:
@@ -627,7 +629,7 @@ def top(method_odds_df, method_investment_df, method):
         st.write(styled_notice_df.to_html(), unsafe_allow_html=True)
 
 def print_top():
-    for method in ['QIN',"TRI",'WIN','PLA']:
+    for method in ['QIN',"QPL","TRI",'WIN','PLA']:
         if odds[method]:
           methodCHlist[methodlist.index(method)]
           top(odds_dict[method], investment_dict[method], method)
