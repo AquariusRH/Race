@@ -199,11 +199,11 @@ def get_odds_data():
                   else:
                       odds_values[odds_type].append(oddsValue)
         # Sorting the odds values for specific types by combString in ascending order
-        for odds_type in ["QIN", "QPL", "FCT", "TRI", "FF"]:
+      for odds_type in ["QIN", "QPL", "FCT", "TRI", "FF"]:
             # Only sort if there are valid tuples (skip empty tuples)
             odds_values[odds_type] = sorted([x for x in odds_values[odds_type] if x and len(x) == 2], key=lambda x: x[0], reverse=False)
         # Debug: Print final odds_values
-        return odds_values
+      return odds_values
 
       #print("WIN Odds Values:", odds_values["WIN"])
       #print("PLA Odds Values:", odds_values["PLA"])
