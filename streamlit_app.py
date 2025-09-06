@@ -312,9 +312,9 @@ def print_bar_chart(time_now):
           change_data = diff_dict[method].tail(10).sum(axis = 0)
           if method in ["WIN","PLA"]:
             odds_list = odds_dict[method].tail(1)
-      if df.empty:
+      if df.empty :
         continue
-      st.write(df)
+      st.write(odds_list)
       df.index = pd.to_datetime(df.index)
       df_1st = pd.DataFrame()
       df_1st_2nd = pd.DataFrame()
