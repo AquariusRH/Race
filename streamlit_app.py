@@ -308,7 +308,7 @@ def print_bar_chart(time_now):
       elif method in methodlist:
           df = overall_investment_dict[method]
           change_data = diff_dict[method].tail(10).sum(axis = 0)
-      if df.empty():
+      if df.empty:
         continue
       df.index = pd.to_datetime(df.index)
       df_1st = pd.DataFrame()
