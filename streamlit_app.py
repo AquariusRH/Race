@@ -708,7 +708,7 @@ list2_ch = ['獨贏','位置','連贏','位置Q','二重彩','單T','四連環']
 list1_ch = ['獨贏','位置','連贏','位置Q']
 
 print_list_2 = ['qin_qpl','PLA','WIN']
-print_list_1 = ['QIN','QPL','PLA','WIN']
+print_list_1 = ['PLA','QPL','QIN','WIN']
 
 methodlist = list1
 methodCHlist = list1_ch
