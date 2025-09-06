@@ -173,6 +173,7 @@ def get_odds_data():
                       continue
               odds_nodes = pool.get('oddsNodes', [])
               odds_type = pool.get('oddsType')
+              odds_values[odds_type] = []
               # Skip if odds_type is invalid or not in odds_values
               if not odds_type or odds_type not in odds_values:
                   continue
@@ -180,11 +181,7 @@ def get_odds_data():
                   oddsValue = node.get('oddsValue')
                   # Skip iteration if oddsValue is None, empty, or '---'
                   if not oddsValue or oddsValue == '---':
-                      comb_string = node.get('combString')
-                      oddsValue=1
-                      if comb_string:  # Ensure combString exists
-                          odds_values[odds_type].append((comb_string, oddsValue))
-                      continue
+                    continue    
                   if oddsValue == 'SCR':
                       oddsValue = np.inf
                   else:
