@@ -304,9 +304,9 @@ def print_bar_chart(time_now):
   post_time = post_time_dict[race_no]
   time_25_minutes_before = np.datetime64(post_time - timedelta(minutes=25) + timedelta(hours=8))
   time_5_minutes_before = np.datetime64(post_time - timedelta(minutes=5) + timedelta(hours=8))
-  if odds[method]: 
-    for method in print_list:
-    
+  
+  for method in print_list:
+     if odds_dict[method]:: 
       fig, ax1 = plt.subplots(figsize=(12, 6))
       odds_list = pd.DataFrame()
       df = pd.DataFrame()
