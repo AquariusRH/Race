@@ -315,7 +315,7 @@ def print_bar_chart(time_now):
           df = overall_investment_dict[method]
           change_data = diff_dict[method].tail(10).sum(axis = 0)
           odds_list = odds_dict[method].tail(1)
-      if df.tail(1).sum(axis=1).value==0:
+      if df.tail(1).sum(axis=1)[0]==0:
         continue
       fig, ax1 = plt.subplots(figsize=(12, 6))
       df.index = pd.to_datetime(df.index)
