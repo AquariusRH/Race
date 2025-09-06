@@ -300,13 +300,13 @@ def get_overall_investment(time_now,dict):
         total_investment_df[horse] = total_investment
     overall_investment_dict['overall'] = overall_investment_dict['overall']._append(total_investment_df)
 
-def print_bar_chart(time_now,odds):
+def print_bar_chart(time_now):
   post_time = post_time_dict[race_no]
   time_25_minutes_before = np.datetime64(post_time - timedelta(minutes=25) + timedelta(hours=8))
   time_5_minutes_before = np.datetime64(post_time - timedelta(minutes=5) + timedelta(hours=8))
 
   for method in print_list:
-    if method == 'overall' or odds[method]: 
+    if odds[method]: 
       fig, ax1 = plt.subplots(figsize=(12, 6))
       odds_list = pd.DataFrame()
       df = pd.DataFrame()
@@ -673,7 +673,7 @@ def main(time_now,odds,investments,period):
   get_overall_investment(time_now,investments)
   weird_data(investments)
   change_overall(time_now)
-  print_bar_chart(time_now,odds)
+  print_bar_chart(time_now)
   print_top()
 
 # Display the date picker widget
