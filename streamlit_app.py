@@ -175,6 +175,8 @@ def get_odds_data():
               odds_type = pool.get('oddsType')
               for node in odds_nodes:
                 oddsValue = node.get('oddsValue')
+                if oddsValue == '---':
+                  continue
                 if oddsValue == 'SCR':
                   oddsValue = np.inf
                 else:
