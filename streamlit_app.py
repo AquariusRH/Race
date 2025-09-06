@@ -180,24 +180,24 @@ def get_odds_data():
                   oddsValue = node.get('oddsValue')
                   # Skip iteration if oddsValue is None, empty, or '---'
                   if not oddsValue or oddsValue == '---':
-                # Append empty tuple for '---' or missing oddsValue
-                if odds_type in ["QIN", "QPL", "FCT", "TRI", "FF"]:
-                    if comb_string:  # Ensure combString exists
-                        odds_values[odds_type].append(())
-                continue
-            if oddsValue == 'SCR':
-                oddsValue = np.inf
-            else:
-                try:
-                    oddsValue = float(oddsValue)
-                except (ValueError, TypeError):
-                    continue  # Skip if oddsValue can't be converted to float
-            # Store data based on odds_type
-            if odds_type in ["QIN", "QPL", "FCT", "TRI", "FF"]:
-                if comb_string:  # Ensure combString exists
-                    odds_values[odds_type].append((comb_string, oddsValue))
-            else:
-                odds_values[odds_type].append(oddsValue)
+                      # Append empty tuple for '---' or missing oddsValue
+                      if odds_type in ["QIN", "QPL", "FCT", "TRI", "FF"]:
+                          if comb_string:  # Ensure combString exists
+                              odds_values[odds_type].append(())
+                      continue
+                  if oddsValue == 'SCR':
+                      oddsValue = np.inf
+                  else:
+                      try:
+                          oddsValue = float(oddsValue)
+                      except (ValueError, TypeError):
+                          continue  # Skip if oddsValue can't be converted to float
+                  # Store data based on odds_type
+                  if odds_type in ["QIN", "QPL", "FCT", "TRI", "FF"]:
+                      if comb_string:  # Ensure combString exists
+                          odds_values[odds_type].append((comb_string, oddsValue))
+                  else:
+                      odds_values[odds_type].append(oddsValue)
     # Sorting the odds values for specific types by combString in ascending order
     for odds_type in ["QIN", "QPL", "FCT", "TRI", "FF"]:
         # Only sort if there are valid tuples (skip empty tuples)
