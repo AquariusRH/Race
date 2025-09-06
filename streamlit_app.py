@@ -301,7 +301,7 @@ def print_bar_chart(time_now):
   for method in print_list:
       fig, ax1 = plt.subplots(figsize=(12, 6))
       odds_list = pd.DataFrame()
-      df = []
+      df = pd.DataFrame()
       if method == 'overall':
           df = overall_investment_dict[method]
           change_data = diff_dict[method].iloc[-1]
@@ -697,8 +697,8 @@ list1 = ['WIN','PLA','QIN',"QPL","TRI"]
 list2_ch = ['獨贏','位置','連贏','位置Q','二重彩','單T','四連環']
 list1_ch = ['獨贏','位置','連贏','單T']
 
-print_list_2 = ['qin_qpl', 'PLA','WIN']
-print_list_1 = ['QIN','QPL', 'PLA','WIN']
+print_list_2 = ['qin_qpl','PLA','WIN']
+print_list_1 = ['QIN','QPL','PLA','WIN']
 
 methodlist = list1
 methodCHlist = list1_ch
