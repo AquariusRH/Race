@@ -181,8 +181,9 @@ def get_odds_data():
                   # Skip iteration if oddsValue is None, empty, or '---'
                   if not oddsValue or oddsValue == '---':
                       comb_string = node.get('combString')
+                      oddsValue=1
                       if comb_string:  # Ensure combString exists
-                          odds_values[odds_type]=[]
+                          odds_values[odds_type].append((comb_string, oddsValue))
                       continue
                   if oddsValue == 'SCR':
                       oddsValue = np.inf
