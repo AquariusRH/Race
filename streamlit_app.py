@@ -320,7 +320,7 @@ def print_bar_chart(time_now):
           odds_list = odds_dict[method].tail(1)
 
       st.write(df)
-      if df.empty or df.tail(1).eq(0).all().all:
+      if df.empty or df.tail(1).sum() ==0:
         continue
       
       df.index = pd.to_datetime(df.index)
