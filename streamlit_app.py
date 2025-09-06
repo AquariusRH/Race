@@ -306,8 +306,6 @@ def print_bar_chart(time_now):
   time_5_minutes_before = np.datetime64(post_time - timedelta(minutes=5) + timedelta(hours=8))
   
   for method in print_list:
-      st.write(odds_dict[method])
-      fig, ax1 = plt.subplots(figsize=(12, 6))
       odds_list = pd.DataFrame()
       df = pd.DataFrame()
       if method == 'overall':
@@ -317,7 +315,9 @@ def print_bar_chart(time_now):
           df = overall_investment_dict[method]
           change_data = diff_dict[method].tail(10).sum(axis = 0)
           odds_list = odds_dict[method].tail(1)
-      
+      if df.sum == 0:
+        continue
+      fig, ax1 = plt.subplots(figsize=(12, 6))
       df.index = pd.to_datetime(df.index)
       df_1st = pd.DataFrame()
       df_1st_2nd = pd.DataFrame()
