@@ -306,7 +306,6 @@ def print_bar_chart(time_now):
   time_5_minutes_before = np.datetime64(post_time - timedelta(minutes=5) + timedelta(hours=8))
 
   for method in print_list:
-    if odds[method]:
       fig, ax1 = plt.subplots(figsize=(12, 6))
       odds_list = pd.DataFrame()
       df = pd.DataFrame()
@@ -636,6 +635,7 @@ def top(method_odds_df, method_investment_df, method):
 
 def print_top():
     for method in ['QIN',"QPL","TRI",'WIN','PLA']:
+        st.write(odds[method])
         if odds[method]:
           methodCHlist[methodlist.index(method)]
           top(odds_dict[method], investment_dict[method], method)
