@@ -164,7 +164,7 @@ def get_odds_data():
       }
       
       race_meetings = odds_data.get('data', {}).get('raceMeetings', [])
-      for meeting in race_meetings:
+      for meeting in race_meetings:
           pm_pools = meeting.get('pmPools', [])
           for pool in pm_pools:
               if place not in ['ST','HV']:
