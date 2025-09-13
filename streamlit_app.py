@@ -427,10 +427,10 @@ def print_bar_chart(time_now):
       st.pyplot(fig)
 
 def weird_data(investments):
-  target_list = methodlist[0:4]
-  if 'QPL' not in target_list:
-      target_list = methodlist[0:3]
-  for method in target_list:
+
+  for method in methodlist:
+    if investment_dict[method].empty:
+      continue
     latest_investment = investment_dict[method].tail(1).values
     last_time_odds = odds_dict[method].tail(2).head(1)
     expected_investment = investments[method][0]*0.825 / 1000 / last_time_odds
