@@ -233,11 +233,11 @@ def save_investment_data(time_now,investment,odds):
       elif method in ['QIN','QPL',"FCT","TRI","FF"]:
         if odds[method]:
           combination, odds_array = zip(*odds[method])
-        if investment_dict[method].empty:
-          investment_dict[method] = pd.DataFrame(columns=combination)
-        investment_df = [round(investments[method][0] * 0.825 / 1000 / odd, 2) for odd in odds_array]
-          # Set the values with the specified index
-        investment_dict[method].loc[time_now] = investment_df
+          if investment_dict[method].empty:
+            investment_dict[method] = pd.DataFrame(columns=combination)
+          investment_df = [round(investments[method][0] * 0.825 / 1000 / odd, 2) for odd in odds_array]
+            # Set the values with the specified index
+          investment_dict[method].loc[time_now] = investment_df
 
 def print_data(time_now,period):
   for watch in watchlist:
