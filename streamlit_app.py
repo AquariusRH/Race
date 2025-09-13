@@ -288,7 +288,7 @@ def get_overall_investment(time_now,dict):
       if method in ['WIN','PLA']:
         overall_investment_dict[method] = overall_investment_dict[method]._append(investment_dict[method].tail(1))
       elif method in ['QIN','QPL']:
-        if investment_df[method]:
+        if not investment_df[method].empty:
           overall_investment_dict[method] = overall_investment_dict[method]._append(investment_combined(time_now,method,investment_dict[method].tail(1)))
         else:
           continue
@@ -299,7 +299,7 @@ def get_overall_investment(time_now,dict):
             if method in ['WIN', 'PLA']:
                 investment = overall_investment_dict[method][horse].values[-1]
             elif method in ['QIN','QPL']:
-              if investment_df[method]: 
+              if not investment_df[method].empty: 
                 investment = overall_investment_dict[method][horse].values[-1]
               else:
                 continue
