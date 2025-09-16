@@ -694,59 +694,56 @@ with infoColumns[2]:
     race_options = np.arange(1, 12)
     race_no = st.selectbox('場次:', race_options)
 
+# Initialize lists (using list2 and list2_ch as default; change to list1 and list1_ch if preferred)
+available_methods = ['WIN', 'PLA', 'QIN', 'QPL', 'FCT', 'TRI', 'FF']
+available_methods_ch = ['獨贏', '位置', '連贏', '位置Q', '二重彩', '單T', '四連環']
+print_list_default = ['qin_qpl', 'PLA', 'WIN']
 
-benchmark_win = 10
-benchmark_pla = 100
-benchmark_qin = 50
-benchmark_qpl = 100
-
-
-# Display the checkbox for 沒有位置Q
-checkbox_no_qpl = st.checkbox('沒有位置Q', value=False)
-
-# Initialize variables
-race_no_value = None
-watchlist = ['WIN','PLA']
-
-list2 = ['WIN','PLA','QIN','QPL',"FCT","TRI","FF"]
-list1 = ['WIN','PLA','QIN',"QPL"]
-
-list2_ch = ['獨贏','位置','連贏','位置Q','二重彩','單T','四連環']
-list1_ch = ['獨贏','位置','連贏','位置Q']
-
-print_list_2 = ['qin_qpl','PLA','WIN']
-print_list_1 = ['PLA','QPL','QIN','WIN']
-
-methodlist = list1
-methodCHlist = list1_ch
-print_list = print_list_1
-
-# Switch lists based on 沒有位置Q checkbox
-if checkbox_no_qpl:
-    methodlist = list2
-    methodCHlist = list2_ch
-    print_list = print_list_2
-else:
-    methodlist = list1
-    methodCHlist = list1_ch
-    print_list = print_list_1
-
-# Save changes to race_no
-race_no_value = race_no
-
-benchmark_dict = {
-      "WIN": benchmark_win,
-      "PLA": benchmark_pla,
-      "QIN": benchmark_qin,
-      "QPL": benchmark_qpl
-  }
-
+# Initialize session state variables
 if 'reset' not in st.session_state:
     st.session_state.reset = False
 if 'api_called' not in st.session_state:
     st.session_state.api_called = False
+
+# Create individual checkboxes for each betting method
+st.write("選擇投注方式 (Select Betting Methods):")
+selected_methods = []
+for method, method_ch in zip(available_methods, available_methods_ch):
+    if st.checkbox(method_ch, value=True, key=method):  # Default to checked
+        selected_methods.append(method)
+
+# Update methodlist and methodCHlist based on selections
+methodlist = selected_methods
+methodCHlist = [available_methods_ch[available_methods.index(method)] for method in selected_methods]
+
+# Update print_list based on selections (only include selected methods that are in the default print_list)
+print_list = [item for item in print_list_default if item in selected_methods or item == 'qin_qpl']
+
+# Save changes to race_no (assuming race_no is defined elsewhere)
+race_no_value = race_no if 'race_no' in globals() else None
+
+# Example benchmark dictionary (assuming these variables are defined elsewhere)
+benchmark_dict = {
+    "WIN": benchmark_win if 'benchmark_win' in globals() else None,
+    "PLA": benchmark_pla if 'benchmark_pla' in globals() else None,
+    "QIN": benchmark_qin if 'benchmark_qin' in globals() else None,
+    "QPL": benchmark_qpl if 'benchmark_qpl' in globals() else None
+}
+
+# Define the button callback
 def click_start_button():
-    st.session_state.reset =  True
+    st.session_state.reset = True
+
+# Add a button to trigger an action
+if st.button("Start", on_click=click_start_button):
+    st.write(f"Selected methods: {methodlist}")
+    st.write(f"Chinese labels: {methodCHlist}")
+    st.write(f"Print list: {print_list}")
+
+# Display current state for debugging
+st.write("Current methodlist:", methodlist)
+st.write("Current methodCHlist:", methodCHlist)
+st.write("Current print_list:", print_list)
 
 if not st.session_state.api_called:
   url = 'https://info.cld.hkjc.com/graphql/base/'
