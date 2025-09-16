@@ -698,7 +698,7 @@ with infoColumns[2]:
 available_methods = ['WIN', 'PLA', 'QIN', 'QPL', 'FCT', 'TRI', 'FF']
 available_methods_ch = ['獨贏', '位置', '連贏', '位置Q', '二重彩', '單T', '四連環']
 print_list_default = ['PLA','QPL','QIN', 'WIN']
-
+default_checked_methods = ['WIN', 'PLA', 'QIN', 'QPL']
 # Initialize session state variables
 if 'reset' not in st.session_state:
     st.session_state.reset = False
@@ -709,7 +709,8 @@ if 'api_called' not in st.session_state:
 st.write("選擇投注方式 (Select Betting Methods):")
 selected_methods = []
 for method, method_ch in zip(available_methods, available_methods_ch):
-    if st.checkbox(method_ch, value=True, key=method):  # Default to checked
+    is_default_checked = method in default_checked_methods
+    if st.checkbox(method_ch, value=is_default_checked, key=method):
         selected_methods.append(method)
 
 # Update methodlist and methodCHlist based on selections
