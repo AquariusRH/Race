@@ -711,7 +711,7 @@ num_methods = len(available_methods)
 method_columns = st.columns(num_methods)  # Create one column per method
 selected_methods = []
 for idx, (method, method_ch) in enumerate(zip(available_methods, available_methods_ch)):
-  with columns[idx]:
+  with method_columns[idx]:
     is_default_checked = method in default_checked_methods
     if st.checkbox(method_ch, value=is_default_checked, key=method):
         selected_methods.append(method)
