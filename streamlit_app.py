@@ -738,7 +738,7 @@ def click_start_button():
     st.session_state.reset = True
 
 # Add a button to trigger an action
-if st.button("Start", on_click=click_start_button):
+if st.button("開始", on_click=click_start_button):
     st.write(f"Selected methods: {methodlist}")
     st.write(f"Chinese labels: {methodCHlist}")
     st.write(f"Print list: {print_list}")
@@ -986,8 +986,7 @@ if not st.session_state.api_called:
       numbered_list = [f"{i+1}. {name}" for i, name in enumerate(race_dict[race_number]['馬名'])]
       numbered_dict[race_number] = numbered_list
       race_dataframes[race_number] = df
-    
-st.button('開始', on_click=click_start_button)
+  
 top_container = st.container()
 # 定義單一的 placeholder
 placeholder = st.empty()
