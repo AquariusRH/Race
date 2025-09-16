@@ -705,16 +705,16 @@ if 'reset' not in st.session_state:
 if 'api_called' not in st.session_state:
     st.session_state.api_called = False
 
-# Create a row of checkboxes using st.columns
+# Create individual checkboxes for each betting method
 st.write("選擇投注方式 (Select Betting Methods):")
 num_methods = len(available_methods)
-columns = st.columns(num_methods)  # Create one column per method
+method_columns = st.columns(num_methods)  # Create one column per method
 selected_methods = []
 for idx, (method, method_ch) in enumerate(zip(available_methods, available_methods_ch)):
-    with columns[idx]:
-        if st.checkbox(method_ch, value=(method in default_methods), key=method, label_visibility="visible"):
-            selected_methods.append(method)
-
+  with columns[idx]:
+    is_default_checked = method in default_checked_methods
+    if st.checkbox(method_ch, value=is_default_checked, key=method):
+        selected_methods.append(method)
 # Update methodlist and methodCHlist based on selections
 methodlist = selected_methods
 methodCHlist = [available_methods_ch[available_methods.index(method)] for method in selected_methods]
