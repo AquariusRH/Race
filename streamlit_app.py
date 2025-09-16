@@ -744,9 +744,9 @@ if st.button("Start", on_click=click_start_button):
     st.write(f"Print list: {print_list}")
 
 # Display current state for debugging
-st.write("Current methodlist:", methodlist)
-st.write("Current methodCHlist:", methodCHlist)
-st.write("Current print_list:", print_list)
+#st.write("Current methodlist:", methodlist)
+#st.write("Current methodCHlist:", methodCHlist)
+#st.write("Current print_list:", print_list)
 
 if not st.session_state.api_called:
   url = 'https://info.cld.hkjc.com/graphql/base/'
