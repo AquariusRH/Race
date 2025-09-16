@@ -697,7 +697,7 @@ with infoColumns[2]:
 # Initialize lists (using list2 and list2_ch as default; change to list1 and list1_ch if preferred)
 available_methods = ['WIN', 'PLA', 'QIN', 'QPL', 'FCT', 'TRI', 'FF']
 available_methods_ch = ['獨贏', '位置', '連贏', '位置Q', '二重彩', '單T', '四連環']
-print_list_default = ['qin_qpl', 'PLA', 'WIN']
+print_list_default = ['PLA','QPL','QIN', 'WIN']
 
 # Initialize session state variables
 if 'reset' not in st.session_state:
