@@ -439,22 +439,22 @@ def weird_data(investments):
         diff_dict[method] = diff_dict[method]._append(diff)
     elif method in ['QIN','QPL']:
         diff_dict[method] = diff_dict[method]._append(investment_combined(time_now,method,diff))
-    benchmark = benchmark_dict.get(method)
-    diff.index = diff.index.strftime('%H:%M:%S')
-    for index in investment_dict[method].tail(1).columns:
-      error = diff[index].values[0]
-      error_df = []
-      if error > benchmark:
-        if error < benchmark * 2 :
-          highlight = '-'
-        elif error < benchmark * 3 :
-          highlight = '*'
-        elif error < benchmark * 4 :
-          highlight = '**'
-        else:
-          highlight = '***'
-        error_df = pd.DataFrame([[index,error,odds_dict[method].tail(1)[index].values,highlight]], columns=['No.', 'error','odds', 'Highlight'],index = diff.index)
-      weird_dict[method] = weird_dict[method]._append(error_df)
+    #benchmark = benchmark_dict.get(method)
+    #diff.index = diff.index.strftime('%H:%M:%S')
+    #for index in investment_dict[method].tail(1).columns:
+      #error = diff[index].values[0]
+      #error_df = []
+      #if error > benchmark:
+        #if error < benchmark * 2 :
+         # highlight = '-'
+        #elif error < benchmark * 3 :
+        #  highlight = '*'
+       # elif error < benchmark * 4 :
+        #  highlight = '**'
+        #else:
+        #  highlight = '***'
+        #error_df = pd.DataFrame([[index,error,odds_dict[method].tail(1)[index].values,highlight]], columns=['No.', 'error','odds', 'Highlight'],index = diff.index)
+      #weird_dict[method] = weird_dict[method]._append(error_df)
 
 def change_overall(time_now):
   if 'QPL' in methodlist[0:4]:
