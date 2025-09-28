@@ -697,7 +697,7 @@ with infoColumns[2]:
 available_methods = ['WIN', 'PLA', 'QIN', 'QPL', 'FCT', 'TRI', 'FF']
 available_methods_ch = ['獨贏', '位置', '連贏', '位置Q', '二重彩', '單T', '四連環']
 print_list_default = ['WIN','PLA','QIN','QPL']
-default_checked_methods = ['QIN']
+default_checked_methods = ['WIN','QIN']
 # Initialize session state variables
 if 'reset' not in st.session_state:
     st.session_state.reset = False
