@@ -1025,6 +1025,6 @@ if st.session_state.reset:
             period = 2
             
             main(time_now, odds, investments, period)
-            time.sleep(20)
+            time.sleep(15)
 
 
