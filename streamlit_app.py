@@ -696,7 +696,7 @@ with infoColumns[2]:
 # Initialize lists (using list2 and list2_ch as default; change to list1 and list1_ch if preferred)
 available_methods = ['WIN', 'PLA', 'QIN', 'QPL', 'FCT', 'TRI', 'FF']
 available_methods_ch = ['獨贏', '位置', '連贏', '位置Q', '二重彩', '單T', '四連環']
-print_list_default = ['QIN']
+print_list_default = ['WIN','PLA','QIN','QPL']
 default_checked_methods = ['QIN']
 # Initialize session state variables
 if 'reset' not in st.session_state:
@@ -716,6 +716,7 @@ for idx, (method, method_ch) in enumerate(zip(available_methods, available_metho
         selected_methods.append(method)
 # Update methodlist and methodCHlist based on selections
 methodlist = selected_methods
+
 methodCHlist = [available_methods_ch[available_methods.index(method)] for method in selected_methods]
 
 # Update print_list based on selections (only include selected methods that are in the default print_list)
