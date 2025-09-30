@@ -229,14 +229,14 @@ def save_investment_data(time_now,investment,odds):
         if investment_dict[method].empty:
             # Initialize the DataFrame with the correct number of columns
             investment_dict[method] = pd.DataFrame(columns=np.arange(1, len(odds[method]) + 1))
-        investment_df = [round(investments[method][0] * 0.825 / 1000 / odd, 2) for odd in odds[method]]
+        investment_df = [round(investments[method][0]  / 1000 / odd, 2) for odd in odds[method]]
         investment_dict[method].loc[time_now] = investment_df
       elif method in ['QIN','QPL',"FCT","TRI","FF"]:
         if odds[method]:
           combination, odds_array = zip(*odds[method])
           if investment_dict[method].empty:
             investment_dict[method] = pd.DataFrame(columns=combination)
-          investment_df = [round(investments[method][0] * 0.825 / 1000 / odd, 2) for odd in odds_array]
+          investment_df = [round(investments[method][0]  / 1000 / odd, 2) for odd in odds_array]
               # Set the values with the specified index
           investment_dict[method].loc[time_now] = investment_df
   #st.write(investment_dict)
@@ -433,7 +433,7 @@ def weird_data(investments):
       continue
     latest_investment = investment_dict[method].tail(1).values
     last_time_odds = odds_dict[method].tail(2).head(1)
-    expected_investment = investments[method][0]*0.825 / 1000 / last_time_odds
+    expected_investment = investments[method][0] / 1000 / last_time_odds
     diff = round(latest_investment - expected_investment,0)
     if method in ['WIN','PLA']:
         diff_dict[method] = diff_dict[method]._append(diff)
