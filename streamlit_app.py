@@ -641,7 +641,7 @@ def top(method_odds_df, method_investment_df, method):
         st.write(styled_notice_df.to_html(), unsafe_allow_html=True)
 
 def print_top():
-  for method in methodlist:
+  for method in top_list:
         if odds[method]:
           methodCHlist[methodlist.index(method)]
           top(odds_dict[method], investment_dict[method], method)
@@ -697,6 +697,7 @@ with infoColumns[2]:
 available_methods = ['WIN', 'PLA', 'QIN', 'QPL', 'FCT', 'TRI', 'FF']
 available_methods_ch = ['獨贏', '位置', '連贏', '位置Q', '二重彩', '單T', '四連環']
 print_list_default = ['WIN','PLA','QIN','QPL','FCT', 'TRI', 'FF']
+top_list_default = ['QIN','QPL','WIN','PLA','FCT', 'TRI', 'FF']
 default_checked_methods = ['WIN','QIN']
 # Initialize session state variables
 if 'reset' not in st.session_state:
@@ -720,8 +721,8 @@ methodlist = selected_methods
 methodCHlist = [available_methods_ch[available_methods.index(method)] for method in selected_methods]
 
 # Update print_list based on selections (only include selected methods that are in the default print_list)
-print_list = [item for item in print_list_default if item in selected_methods or item == 'qin_qpl']
-
+print_list = [item for item in print_list_default if item in selected_methods ]
+top_list = [item for item in top_list_default if item in selected_methods ]
 # Save changes to race_no (assuming race_no is defined elsewhere)
 race_no_value = race_no if 'race_no' in globals() else None
 
