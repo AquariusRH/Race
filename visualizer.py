@@ -1,3 +1,22 @@
+import streamlit as st
+import requests
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta, timezone
+from dateutil import relativedelta as datere
+import time
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+import plotly.graph_objects as go
+import os
+from warnings import simplefilter
+from bs4 import BeautifulSoup
+import re
+from math import log
+from collections import Counter
+import plotly.express as px
+import itertools
+import matplotlib.colors as mcolors
 # ==================== 3. 繪圖函數 (簡化版) ====================
 def print_bar_chart(time_now):
   post_time = st.session_state.post_time_dict[race_no]
