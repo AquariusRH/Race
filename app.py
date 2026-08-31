@@ -5,9 +5,9 @@ import time
 from datetime import datetime, timedelta, timezone
 
 # 引入自訂模組（當你把檔案拆分出去時使用）
-# import config
-# import data_fetcher
-# import visualizer
+import config
+import data_fetcher
+import visualizer
 
 # ==================== 1. 頁面與全域設定 ====================
 st.set_page_config(
