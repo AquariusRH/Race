@@ -1,9 +1,22 @@
 import streamlit as st
+import requests
 import pandas as pd
 import numpy as np
-import time
 from datetime import datetime, timedelta, timezone
-
+from dateutil import relativedelta as datere
+import time
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+import plotly.graph_objects as go
+import os
+from warnings import simplefilter
+from bs4 import BeautifulSoup
+import re
+from math import log
+from collections import Counter
+import plotly.express as px
+import itertools
+import matplotlib.colors as mcolors
 # 引入自訂模組（當你把檔案拆分出去時使用）
 import config
 import data_fetcher
