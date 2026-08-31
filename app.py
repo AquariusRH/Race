@@ -1,3 +1,40 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+import time
+from datetime import datetime, timedelta, timezone
+
+# 引入自訂模組（當你把檔案拆分出去時使用）
+# import config
+# import data_fetcher
+# import visualizer
+
+# ==================== 1. 頁面與全域設定 ====================
+st.set_page_config(
+    page_title="🏇 Jockey Race 賽馬預測",
+    page_icon="🏇",
+    layout="wide"
+)
+# 模擬 config.init_session_state()：初始化所有 session_state 變數
+def init_session_state():
+    defaults = {
+        'api_called': False,
+        'odds_dict': {},
+        'investment_dict': {},
+        'overall_investment_dict': {},
+        'diff_dict': {},
+        'race_dataframes': {},
+        'post_time_dict': {},
+        'high_moneyflow_alerts': pd.DataFrame(columns=["分鐘", "時間", "馬號", "當刻賠率", "moneyflow"]),
+        'last_update': None,
+        'top_rank_history': [],
+        'top_4_history': []
+    }
+    for key, val in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = val
+
+init_session_state()
 # --- 輸入區 ---
 with st.sidebar:
     st.header("設定")
