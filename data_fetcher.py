@@ -526,7 +526,7 @@ def save_odds_data(time_now,odds,methodlist):
           st.session_state.odds_dict[method].loc[time_now] = odds_array
   #st.write(st.session_state.odds_dict)
 
-def save_investment_data(time_now,investment,odds):
+def save_investment_data(time_now,investment,odds,methodlist):
   for method in methodlist:
       if method in ['WIN', 'PLA']:
         if st.session_state.investment_dict[method].empty:
@@ -569,7 +569,7 @@ def investment_combined(time_now,method,df):
   sums_df = pd.DataFrame([sums],index = [time_now]) /2
   return sums_df
 
-def get_overall_investment(time_now,dict):
+def get_overall_investment(time_now,dict,methodlist):
     investment_df = st.session_state.investment_dict
     no_of_horse = len(investment_df['WIN'].columns)
     total_investment_df = pd.DataFrame(index =[time_now], columns=np.arange(1,no_of_horse +1))
@@ -636,7 +636,7 @@ def weird_data(time_now, investments, odds, methodlist):
             # st.error(f"Error in weird_data: {e}")
             pass
 
-def weird_data(investments):
+def weird_data(investments,methodlist):
     for method in methodlist:
         if st.session_state.investment_dict[method].empty:
             continue
@@ -660,7 +660,7 @@ def weird_data(investments):
                 [st.session_state.diff_dict[method], combined_diff]
             )
     
-def change_overall(time_now):
+def change_overall(time_now,methodlist):
     total_investment = 0
     for method in methodlist:
         # Summing the diffs for each method
