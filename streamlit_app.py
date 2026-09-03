@@ -711,8 +711,8 @@ def calculate_smart_score_static(race_no):
     static_df['FormScore'] = static_df['近績'].apply(parse_form_score)
     
     # 2. 騎師分數 (Jockey Score) - 權重 15% (取代部分 Synergy)
-    j_df, j_err = fetch_hkjc_jockey_ranking()
-    t_df, t_err = fetch_hkjc_trainer_ranking()
+    j_df, j_err = data_fetcher.fetch_hkjc_jockey_ranking()
+    t_df, t_err = data_fetcher.fetch_hkjc_trainer_ranking()
     static_df['JockeyScore'] = static_df['騎師'].apply(
         lambda x: calculate_jockey_score(str(x).strip(), j_df)
     )
