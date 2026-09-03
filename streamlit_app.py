@@ -615,8 +615,8 @@ def calculate_smart_score(race_no):
     static_df['FormScore'] = static_df['近績'].apply(parse_form_score)
     
     # 2. 騎師分數 (Jockey Score) - 權重 15% (取代部分 Synergy)
-    j_df, j_err = fetch_hkjc_jockey_ranking()
-    t_df, t_err = fetch_hkjc_trainer_ranking()
+    j_df, j_err = data_fetcher.fetch_hkjc_jockey_ranking()
+    t_df, t_err = data_fetcher.fetch_hkjc_trainer_ranking()
     static_df['JockeyScore'] = static_df['騎師'].apply(
         lambda x: calculate_jockey_score(str(x).strip(), j_df)
     )
@@ -823,18 +823,18 @@ if monitoring_on:
         # 1. 抓取數據 (這裡需要您的實際抓取邏輯)
     
     
-        odds = get_odds_data()
-        investments = get_investment_data()
+        odds = data_fetcher.get_odds_data()
+        investments = data_fetcher.get_investment_data()
     
         if odds and investments:
             with st.spinner(f"更新數據中 ({time_str})..."):
                 # 2. 處理數據
                 # 這裡需要您的 
-                save_odds_data(time_now,odds)
-                save_investment_data(time_now,investments,odds)
-                get_overall_investment(time_now,investments)
-                weird_data(investments)
-                change_overall(time_now)
+                data_fetcher.save_odds_data(time_now,odds)
+                data_fetcher.save_investment_data(time_now,investments,odds)
+                data_fetcher.get_overall_investment(time_now,investments)
+                data_fetcher.weird_data(investments)
+                data_fetcher.change_overall(time_now)
                 # 由於篇幅限制，假設已運行
                 st.session_state.last_update = time_now
         
