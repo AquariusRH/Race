@@ -831,10 +831,10 @@ if monitoring_on:
                 # 2. 處理數據
                 # 這裡需要您的 
                 data_fetcher.save_odds_data(time_now,odds,methodlist)
-                data_fetcher.save_investment_data(time_now,investments,odds)
-                data_fetcher.get_overall_investment(time_now,investments)
-                data_fetcher.weird_data(investments)
-                data_fetcher.change_overall(time_now)
+                data_fetcher.save_investment_data(time_now,investments,odds,methodlist)
+                data_fetcher.get_overall_investment(time_now,investments,methodlist)
+                data_fetcher.weird_data(investments,methodlist)
+                data_fetcher.change_overall(time_now,methodlist)
                 # 由於篇幅限制，假設已運行
                 st.session_state.last_update = time_now
         
