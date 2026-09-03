@@ -510,7 +510,7 @@ def fetch_horse_age_only(date_val, place_val, race_no):
             return None
 
 
-def save_odds_data(time_now,odds):
+def save_odds_data(time_now,odds,methodlist):
   for method in methodlist:
       if method in ['WIN', 'PLA']:
         if st.session_state.odds_dict[method].empty:
