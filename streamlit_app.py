@@ -830,7 +830,7 @@ if monitoring_on:
             with st.spinner(f"更新數據中 ({time_str})..."):
                 # 2. 處理數據
                 # 這裡需要您的 
-                data_fetcher.save_odds_data(time_now,odds)
+                data_fetcher.save_odds_data(time_now,odds,methodlist)
                 data_fetcher.save_investment_data(time_now,investments,odds)
                 data_fetcher.get_overall_investment(time_now,investments)
                 data_fetcher.weird_data(investments)
