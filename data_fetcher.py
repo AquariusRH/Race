@@ -58,7 +58,7 @@ def _fetch_graphql_data(operation_name, query, variables):
         time.sleep(0.5)
     return None
 
-def get_investment_data():
+def get_investment_data(Date,place,race_no,methodlist):
     # 這裡假設 Date, place, race_no, methodlist 已在外部定義 (原程式碼結構)
     # 若是在 Streamlit 內執行，會讀取到全域變數
     variables = {
@@ -120,7 +120,7 @@ def get_investment_data():
             
     return investments
 
-def get_odds_data():
+def get_odds_data(Date,place,race_no,methodlist):
     variables = {
         "date": str(Date),
         "venueCode": place,
