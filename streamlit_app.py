@@ -959,6 +959,39 @@ if monitoring_on:
                     """, unsafe_allow_html=True)
                  
                 st.table(display_df.style.hide(axis='index'))   
+                # ==================== 資料庫操作區塊 ====================
+                st.markdown("---")
+                st.markdown("### 💾 資料庫同步狀態")
+                
+                # 1. 測試用按鈕
+                if st.button("🛠️ 測試上傳當前資料到 Database"):
+                    with st.spinner("測試上傳中..."):
+                        # 將測試資料寫入一個獨立的 test_upload_table 避免弄亂正式數據
+                        success, msg = upload_data_to_supabase(display_df, "test_upload_table")
+                        if success:
+                            st.success("測試成功！資料已寫入 test_upload_table 表格。")
+                            st.balloons()
+                        else:
+                            st.error(msg)
+                
+                # 2. 自動上傳邏輯 (開跑時觸發)
+                # 使用 Date, place, race_no 組成唯一識別碼，確保該場次只上傳一次
+                current_race_id = f"{Date}_{place}_Race{race_no}"
+                
+                if "已開跑" in time_str:
+                    if current_race_id not in st.session_state.uploaded_races:
+                        with st.spinner("偵測到已開跑，正在自動將最終數據備份至 Supabase..."):
+                            # 正式資料寫入 official_race_records 表格
+                            success, msg = upload_data_to_supabase(display_df, "official_race_records")
+                            if success:
+                                st.success(f"{current_race_id} 最終數據已自動儲存！")
+                                # 紀錄已上傳，避免下一次迴圈重複觸發
+                                st.session_state.uploaded_races.add(current_race_id)
+                            else:
+                                st.error(f"自動儲存失敗，請檢查連線狀態: {msg}")
+                    else:
+                        st.info(f"✅ {current_race_id} 數據已成功封存。")
+                # ========================================================
 
                 # 應用高亮函數
                 #st.table(display_df.style.apply(highlight_top_realtime, axis=1).hide(axis='index'))                
