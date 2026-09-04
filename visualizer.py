@@ -637,7 +637,7 @@ def get_rank_font_colors(series):
         else:
             colors.append('white') # 預設顏色
     return colors
-def print_henery_model(gamma,race_no):
+def print_henery_model(gamma,race_no,time_delay):
     """
     Henery Model 完整實作版
     解決問題：
@@ -729,7 +729,7 @@ def print_henery_model(gamma,race_no):
                 "Value": round(val_score, 2)
             })
 
-    tables = top(st.session_state.odds_dict["QIN"], st.session_state.investment_dict["QIN"], "QIN")
+    tables = top(st.session_state.odds_dict["QIN"], st.session_state.investment_dict["QIN"], "QIN",time_delay)
     plus_df = tables.get("plus_df")
     plus_df_clean = plus_df.copy()
     plus_df_clean = plus_df_clean[['組合', '排名','最初排名', '上一次排名']]
