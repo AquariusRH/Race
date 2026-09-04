@@ -285,7 +285,7 @@ def print_bubble(race_no, print_list):
             
         except Exception as e:
             st.error(f"Bubble Chart Error: {e}")
-def top(method_odds_df, method_investment_df, method):
+def top(method_odds_df, method_investment_df, method,time_delay):
     result = {
         "main_table": None,
         "plus_table": None,
