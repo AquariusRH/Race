@@ -50,6 +50,26 @@ def init_session_state():
             st.session_state[key] = val
 
 init_session_state()
+
+# ==================== 資料庫上傳函數 ====================
+def upload_data_to_supabase(df, table_name):
+    """將 DataFrame 寫入 Supabase"""
+    try:
+        # 從 Streamlit secrets 讀取密碼
+        password = st.secrets["DB_PASSWORD"] 
+        host = "db.tpwpybytsnnhyozfommb.supabase.co"
+        port = "5432"
+        database = "postgres"
+        user = "postgres"
+        
+        # 建立連線引擎
+        engine = sqlalchemy.create_engine(f"postgresql://{user}:{password}@{host}:{port}/{database}")
+        
+        # 將 DataFrame 直接寫入 Database，if_exists='append' 代表如果表已存在則往後新增
+        df.to_sql(table_name, engine, if_exists='append', index=True)
+        return True, "成功寫入資料庫！"
+    except Exception as e:
+        return False, f"寫入失敗: {e}"
 # --- 輸入區 ---
 with st.sidebar:
     st.header("設定")
