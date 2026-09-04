@@ -457,7 +457,7 @@ def top(method_odds_df, method_investment_df, method,time_delay):
 
 def print_top(top_list,time_delay):
   for method in top_list:
-        tables = top(st.session_state.odds_dict[method], st.session_state.investment_dict[method], method)
+        tables = top(st.session_state.odds_dict[method], st.session_state.investment_dict[method], method,time_delay)
         if tables["main_table"]:
             st.write(tables["main_table"].to_html(), unsafe_allow_html=True)
         if tables["plus_table"] or tables["notice_table"]:
