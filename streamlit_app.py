@@ -994,7 +994,7 @@ if monitoring_on:
                     #st.plotly_chart(fig4, width='stretch', key=f"top4_{time_now.strftime('&H%M%S')}")
             if show_top:
                 st.markdown("### 連贏賠率排名")
-                visualizer.print_top()
+                visualizer.print_top(top_list)
                 
             if show_henery:
                 visualizer.print_henery_model(gamma=1.18)
