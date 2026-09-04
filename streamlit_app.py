@@ -17,6 +17,7 @@ from collections import Counter
 import plotly.express as px
 import itertools
 import matplotlib.colors as mcolors
+import sqlalchemy
 # 引入自訂模組（當你把檔案拆分出去時使用）
 import config
 import data_fetcher
