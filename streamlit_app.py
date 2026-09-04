@@ -997,7 +997,7 @@ if monitoring_on:
                 visualizer.print_top(top_list,time_delay)
                 
             if show_henery:
-                visualizer.print_henery_model(gamma=1.18,race_no)
+                visualizer.print_henery_model(gamma=1.18)
             time.sleep(time_delay)
         
 
