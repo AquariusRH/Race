@@ -984,7 +984,7 @@ if monitoring_on:
                 st.markdown("### 💾 資料庫同步狀態")
                 
                 # 建立這場比賽的唯一識別碼 (這行原本就在)
-                current_race_id = f"{Date}_{place}_Race{race_no}"
+                current_race_id = f"{Date}_{place}_Race{race_no}_{time_now}"
                 
                 # 1. 測試用按鈕 (加上 key 參數，避免 Duplicate ID 錯誤)
                 if st.button(f"🛠️ 測試上傳 {current_race_id} 到 Database", key=f"upload_btn_{current_race_id}"):
