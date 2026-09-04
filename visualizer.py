@@ -637,7 +637,7 @@ def get_rank_font_colors(series):
         else:
             colors.append('white') # 預設顏色
     return colors
-def print_henery_model(gamma=1.18):
+def print_henery_model(gamma=1.18,race_no):
     """
     Henery Model 完整實作版
     解決問題：
