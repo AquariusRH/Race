@@ -526,7 +526,7 @@ def save_odds_data(time_now,odds,methodlist):
           st.session_state.odds_dict[method].loc[time_now] = odds_array
   #st.write(st.session_state.odds_dict)
 
-def save_investment_data(time_now,investment,odds,methodlist):
+def save_investment_data(time_now,investments,odds,methodlist):
   for method in methodlist:
       if method in ['WIN', 'PLA']:
         if st.session_state.investment_dict[method].empty:
