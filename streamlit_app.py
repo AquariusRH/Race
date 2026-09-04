@@ -41,7 +41,8 @@ def init_session_state():
         'high_moneyflow_alerts': pd.DataFrame(columns=["分鐘", "時間", "馬號", "當刻賠率", "moneyflow"]),
         'last_update': None,
         'top_rank_history': [],
-        'top_4_history': []
+        'top_4_history': [],
+        'uploaded_races': set()
     }
     for key, val in defaults.items():
         if key not in st.session_state:
