@@ -636,7 +636,7 @@ def weird_data(time_now, investments, odds, methodlist):
             # st.error(f"Error in weird_data: {e}")
             pass
 
-def weird_data(investments,methodlist):
+def weird_data_2(investments,methodlist):
     for method in methodlist:
         if st.session_state.investment_dict[method].empty:
             continue
