@@ -477,7 +477,7 @@ import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime, timedelta
 
-def print_plotly_advanced_bar(race_no, method): # 建議傳入 method 區分
+def print_plotly_advanced_bar(race_no, print_list): # 建議傳入 method 區分
     # 1. 取得對應數據 (這裡以 WIN/QIN 為例，你可以根據 method 調整)
     # 假設你的 method 分別是 'WIN&QIN' 或 'PLA&QPL'
     for method in print_list:
